@@ -1,1 +1,62 @@
-/* You can add global styles to this file, and also import other style files */
+
+@use 'colors' as *;
+@use '@angular/material' as mat;
+@use './assets/styles/theme/theme.scss' as main-theme;
+
+
+$theme: mat.define-theme((
+  color: (
+    primary: main-theme.$primary-palette,
+    tertiary: main-theme.$tertiary-palette,
+  ),
+    typography: (
+      plain-family: 'Inter',
+      brand-family: 'Inter',
+      bold-weight: 700,
+      medium-weight: 400,
+      regular-weight: 300,
+    ),
+));
+
+$container-shape: 4px;
+$text-size: 16px;
+$text-weight: 400;
+
+html {
+  @include mat.all-component-themes($theme);
+  @include mat.color-variants-backwards-compatibility($theme);
+  @include mat.button-overrides((
+    outlined-outline-color: $white,
+  ));
+}
+
+
+/* Set default font styles */
+body {
+  margin: 0;
+  padding: 0;
+  letter-spacing: 0.5px;
+  background-color: $white;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Set headers to use Stattliches font */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul, li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

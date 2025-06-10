@@ -1,0 +1,44 @@
+@use "colors" as *;
+
+.footer {
+    background-color: $primary-800;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 100px 12px;
+    gap: 10px;
+
+
+    &__content {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__links {
+
+        &__list {
+            display: flex;
+            color: $white;
+        }
+
+        &__link {
+            padding: 8px 20px;
+            font-weight: 600;
+            font-size: 12px;
+            line-height: 16px;
+            letter-spacing: 0%;
+            color: $white;
+        }
+    }
+
+    &__copyright {
+        font-weight: 400;
+        font-size: 10px;
+        line-height: 12px;
+        letter-spacing: 0%;
+        text-align: center;
+        color: $light-grey;
+    }
+}

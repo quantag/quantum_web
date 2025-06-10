@@ -1,0 +1,58 @@
+@use 'colors' as *;
+
+.plan__card {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    color: $white;
+
+    &-0 {
+        background-color: $primary-700;
+        border-top-left-radius: 13px;
+        border-bottom-left-radius: 13px;
+    }
+
+    &-1 {
+        background-color: $primary-600;
+    }
+
+    &-2 {
+        background-color: $primary-500;
+        border-top-right-radius: 13px;
+        border-bottom-right-radius: 13px;
+    }
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    &__title {
+        font-weight: 600;
+        font-size: 28px;
+        line-height: 34px;
+
+    }
+
+    &__price {
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 16px;
+        letter-spacing: 0%;
+
+    }
+
+    &__features {
+        margin: 12px 0 66px;
+
+        &__item {
+            padding: 28px 12px;
+            border-bottom: 1px solid $white-100;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 24px;
+
+        }
+    }
+}

@@ -1,0 +1,171 @@
+<div class="home">
+    <div class="slider">
+        @for (slide of slides; track slide.title) {
+            <div class="slider__item" [ngClass]="{'active': slide.active}">
+                <img [src]="slide.image" alt="Slide Image" />
+                <div class="slider__content">
+                    <h2 [innerHTML]="slide.title"></h2>
+                    <div class="slider__download">
+                        <app-button
+                            [label]="'Try In VS Code'"
+                            [customIcon]="'assets/images/vs-code-icon.svg'"
+                            (clicked)="gotToExtension()">
+                        </app-button>
+                        <span class="slider__download__count"><img src="assets/images/download-icon.svg" alt=""download icon>2.3k installs</span>
+                    </div>
+                </div>
+            </div>
+        }
+        
+        <div class="slider__indicators">
+            @for (slide of slides; track slide.title; let i = $index) {
+                <div 
+                    class="slider__indicator" 
+                    [ngClass]="{'active': slide.active}"
+                    [style.transform]="'scale(' + getIndicatorScale(i) + ')'"
+                    (click)="goToSlide(i)">
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="partners">
+        <span>Accepted by IBM Qiskit ecosystem and Microsoft DAP <br> OpenQASM implmentation</span>
+        <div class="partners__logos">
+            @for (partner of partners; track partner.name) {
+                <img [src]="partner.logo" [alt]="partner.name" />
+            }
+        </div>
+    </div>
+
+    <div class="description">
+        <div class="description__illustration">
+            <div class="description__illustration__highlight-area"></div>
+            <img src="assets/images/structure.svg" alt="structure">
+        </div>
+
+        <div class="description__content">
+            <h3 class="description__content__title">Understand <br> the quantum code</h3>
+            <p class="description__content__text">Debugging in classical software means stepping through code and viewing variable states. In quantum computing, variables are qubit states — which can't be directly measured. Quantum Debugger solves this using simulation.</p>
+
+        </div>
+    </div>
+    
+    <div class="samples">
+        <div class="samples__header">
+            <h2 class="samples__header__title">heading for real screenshots</h2>
+            <p class="samples__header__text">description to the real in app screenshots that will be probably animated and</p>
+        </div>
+
+        <div class="samples__highlight-area" 
+             [style.opacity]="samplesHighlightOpacity"
+             [class.fade-in]="samplesHighlightOpacity === 1"></div>
+
+        <div class="slider slider-samples">
+            @for (slide of sampleSlides; track slide.title) {
+                <div class="slider__item" [ngClass]="{'active': slide.active}">
+                    <img [src]="slide.image" alt="Slide Image" />
+                    <div class="slider__content">
+                        <h2 [innerHTML]="slide.title"></h2>
+                    </div>
+                </div>
+            }
+    
+            <div class="slider__indicators">
+                @for (slide of sampleSlides; track slide.title; let i = $index) {
+                    <div 
+                        class="slider__indicator" 
+                        [ngClass]="{'active': slide.active}"
+                        [style.transform]="'scale(' + getIndicatorScale(i) + ')'"
+                        (click)="goToSampleSlide(i)">
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="plans">
+        <div class="plans__header">
+            <h2 class="plans__header__title">Plans</h2>
+            <div class="plans__header__switcher">
+                <div class="plans__header__switcher__slider" [class.annually]="!isMonthlyPlan"></div>
+                <div class="plans__header__switcher__item" (click)="togglePlan(true)">
+                    Monthly
+                </div>
+                <div class="plans__header__switcher__item" (click)="togglePlan(false)">
+                    Annually -30%
+                </div>
+            </div>
+        </div>
+
+        <div class="plans__content">
+            <div class="plans__features">
+                <div class="plans__features__item">
+                    <div class="plans__features__item__icon">
+                    </div>
+                    <div class="plans__features__item__description">
+                        <span class="plans__features__item__title">Feature 1</span>
+                        <span class="plans__features__item__text">This makes debugging almost <br> impossible on real hardware.</span>
+                    </div>
+                </div>
+                <div class="plans__features__item">
+                    <div class="plans__features__item__icon">
+                    </div>
+                    <div class="plans__features__item__description">
+                        <span class="plans__features__item__title">Feature 2</span>
+                        <span class="plans__features__item__text">Optimized algorithms can significantly <br> reduce processing time.</span>
+                    </div>
+                </div>
+                <div class="plans__features__item">
+                    <div class="plans__features__item__icon">
+                    </div>
+                    <div class="plans__features__item__description">
+                        <span class="plans__features__item__title">Feature 3</span>
+                        <span class="plans__features__item__text">The system can easily adapt to <br> increased user loads without performance  <br> degradation.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="plans__cards">
+                @for (plan of activePlans; let index = $index; track plan.title) {
+                    <app-plan-card [plan]="plan" [sequence]="index"></app-plan-card>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="contact-us">
+        <div class="contact-us__content">
+            <div class="contact-us__content__highlight-area"></div>
+            <h2 class="contact-us__content__title">Get in Touch</h2>
+            <p class="contact-us__content__text">In classical programs, we can easily view variables at each stage. In quantum programs, we cannot do so without losing coherence. </p>
+            <app-button [label]="'For Investors'" (clicked)="goToForInvestors()"></app-button>
+        </div>
+
+        <div class="contact-us__form">
+            <form>
+                <div class="contact-us__form__row">
+                    <div class="contact-us__form__field">
+                        <label for="name">First Name</label>
+                        <input type="text" id="name" name="name" required [placeholder]="'Type name here...'">
+                    </div>
+
+                    <div class="contact-us__form__field">
+                        <label for="surname">Last Name</label>
+                        <input type="text" id="surname" name="surname" required [placeholder]="'Type surname here...'">
+                    </div>
+                </div>
+
+                <div class="contact-us__form__field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required [placeholder]="'Type email here...'">
+                </div>
+                <div class="contact-us__form__field">
+                    <label for="message">Message</label>
+                    <input type="email" id="email" name="email" [placeholder]="'Type message here...'" required>
+                </div>
+                <app-button [label]="'Submit'" [type]="'stroked'" [color]="'accent'"></app-button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+:host {
+    display: inline-block;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  .button-text-with-icon {
+    margin: 0 4px;
+  }
+  
+  .loading-icon {
+    animation: spin 1.5s linear infinite;
+  }
+  
+  mat-icon {
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+
+  .custom-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+  
+  button[disabled] .custom-icon {
+    filter: brightness(0) opacity(0.38);
+  }
+  
+  .icon-button mat-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+    vertical-align: top;
+  }
+
+  .icon-button.custom-icon {
+    width: 24px;
+    height: 24px;
+    vertical-align: top;
+    object-fit: contain;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(-360deg);
+    }
+  }

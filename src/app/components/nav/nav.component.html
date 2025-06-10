@@ -1,0 +1,15 @@
+<div class="navigation">
+    <ul class="navigation__list">
+        <li class="navigation__item">
+            <a class="navigation__link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+        </li>
+        <li class="navigation__item">
+            <a class="navigation__link" routerLink="/for-investors" routerLinkActive="active">For Investors</a>
+        </li>
+        <li class="navigation__item">
+            <a class="navigation__link" routerLink="/docs" routerLinkActive="active">Docs</a>
+        </li>
+    </ul>
+
+    <app-button [label]="'Log In'" (clicked)="onLogin()"></app-button>
+</div>

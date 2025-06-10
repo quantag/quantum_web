@@ -51,11 +51,26 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets/images",
+                "output": "assets/images"
               }
             ],
             "styles": [
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/assets/styles/colors"
+              ]
+            },
             "scripts": []
           },
           "configurations": {
@@ -110,11 +125,26 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets/images",
+                "output": "assets/images"
               }
             ],
             "styles": [
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/assets/styles/colors"
+              ]
+            },
             "scripts": []
           }
         }

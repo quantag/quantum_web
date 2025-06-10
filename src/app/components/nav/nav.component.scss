@@ -1,0 +1,26 @@
+@use 'colors' as *;
+
+.navigation {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    gap: 15px;
+
+  &__list {
+    display: flex;
+    gap: 15px;
+  }
+
+  &__link {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 16px;
+    border: 3px solid transparent;
+    font-size: 12px;
+  }
+
+  .active {
+    background-color: $white-100;
+    border-color: $border-color;
+  }
+}

@@ -1,0 +1,23 @@
+<div [class]="['plan__card','plan__card-' + sequence]">
+    <div class="plan__card__header">
+        <h3 class="plan__card__title">{{ plan.title }}</h3>
+        <p class="plan__card__price"><b>{{plan.price}}$</b>/{{plan.type}}</p>
+    </div>
+
+    <div class="plan__card__features">
+        <ul class="plan__card__features__list">
+            @for (feature of plan.features; track feature) {
+                <li class="plan__card__features__item">{{ feature }}</li>
+            }
+        </ul>
+    </div>
+
+    <div class="plan__card__actions">
+        <app-button
+            [type]="'stroked'"
+            [color]="'accent'"
+            [label]="plan.buttonText"
+            (click)="onPlanSelect(plan)">
+        </app-button>
+    </div>
+</div>
