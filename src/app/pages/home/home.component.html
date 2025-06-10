@@ -30,10 +30,17 @@
     </div>
 
     <div class="partners">
-        <span>Accepted by IBM Qiskit ecosystem and Microsoft DAP <br> OpenQASM implmentation</span>
+        <span>
+            Accepted by <a href="https://www.ibm.com/quantum/ecosystem">IBM</a> Qiskit ecosystem and 
+            <br>by <a href="https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/">Microsoft</a>
+            as Debugger Adapter Protocol OpenQASM implementation
+        </span>
         <div class="partners__logos">
             @for (partner of partners; track partner.name) {
-                <img [src]="partner.logo" [alt]="partner.name" />
+                <a [href]="partner.link">
+                    <img [src]="partner.logo" [alt]="partner.name" />
+                </a>
+                
             }
         </div>
     </div>
@@ -53,8 +60,8 @@
     
     <div class="samples">
         <div class="samples__header">
-            <h2 class="samples__header__title">heading for real screenshots</h2>
-            <p class="samples__header__text">description to the real in app screenshots that will be probably animated and</p>
+            <h2 class="samples__header__title">Quantum development in standard IDE </h2>
+            <!-- <p class="samples__header__text"></p> -->
         </div>
 
         <div class="samples__highlight-area" 
@@ -93,7 +100,7 @@
                     Monthly
                 </div>
                 <div class="plans__header__switcher__item" (click)="togglePlan(false)">
-                    Annually -10%
+                    Annually
                 </div>
             </div>
         </div>
@@ -138,8 +145,8 @@
         <div class="contact-us__content">
             <div class="contact-us__content__highlight-area"></div>
             <h2 class="contact-us__content__title">Get in Touch</h2>
-            <p class="contact-us__content__text">In classical programs, we can easily view variables at each stage. In quantum programs, we cannot do so without losing coherence. </p>
-            <app-button [label]="'For Investors'" (clicked)="goToForInvestors()"></app-button>
+            <p class="contact-us__content__text">If you have any questions - please fill contact form.</p>
+            <!-- <app-button [label]="'For Investors'" (clicked)="goToForInvestors()"></app-button> -->
         </div>
 
         <div class="contact-us__form">

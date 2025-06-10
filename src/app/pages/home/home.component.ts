@@ -21,7 +21,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     },
     {
       image: 'assets/images/header-2.jpg',
-      title: 'Over 25 <br> different IDEs',
+      title: 'Many <br> different IDEs',
       active: false
     },
     {
@@ -70,9 +70,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   ];
 
   public partners = [
-    {logo: 'assets/images/IBM-logo.svg', name: 'IBM'},
-    {logo: 'assets/images/microsoft-logo.svg', name: 'Microsoft'},
-    {logo: 'assets/images/nvidia-logo.svg', name: 'NVIDIA'},
+    {
+      logo: 'assets/images/IBM-logo.svg',
+      name: 'IBM',
+      link:'https://www.ibm.com/quantum/ecosystem'
+    },
+    {
+      logo: 'assets/images/microsoft-logo.svg',
+      name: 'Microsoft',
+      link: 'https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/'
+    },
+    // {logo: 'assets/images/nvidia-logo.svg', name: 'NVIDIA'},
   ]
 
   public activePlans: IPlan[] = []
