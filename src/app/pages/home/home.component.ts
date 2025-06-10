@@ -44,27 +44,27 @@ export class HomeComponent implements OnInit, OnDestroy {
   public sampleSlides = [
     {
       image: 'assets/images/sample-1.png',
-      title: 'Unified <br> Quantum <br> Development <br> Platform',
+      title: 'OpenQASM Code <br> In Disassemply View ',
       active: true
     },
     {
-      image: 'assets/images/sample-1.png',
-      title: 'Over 25 <br> different IDEs',
+      image: 'assets/images/sample-2.png',
+      title: 'Qiskit <br> Framework Support',
       active: false
     },
     {
-      image: 'assets/images/sample-1.png',
-      title: 'Support of <br> different <br> simulators',
+      image: 'assets/images/sample-3.png',
+      title: 'Quantum State <br> As Local Variables',
       active: false
     },
     {
-      image: 'assets/images/sample-1.png',
-      title: 'Support of <br> different <br> hardware',
+      image: 'assets/images/sample-4.png',
+      title: 'pyTKET Framework <br> Support',
       active: false
     },
     {
-      image: 'assets/images/sample-1.png',
-      title: 'Develop <br> quantum as <br> easy as classic <br> software',
+      image: 'assets/images/sample-5.png',
+      title: 'Circuit Rendering',
       active: false
     }
   ];
@@ -79,72 +79,72 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public monthlyPlans: IPlan[] = [
     {
-      title: 'Basic',
-      price: 75,
+      title: 'Individual',
+      price: 39,
       type: 'month',
       buttonText: 'Get 30 days free',
       features: [
-        '540',
-        '540',
-        '540'
+        '1 license',
+        'Software Based QVM (up to 20 qubits)',
+        '10 min Quantum Hardware time'
       ]
     },
     {
       title: 'University',
-      price: 125,
+      price: 149,
       type: 'month',
       buttonText: 'Get 30 days free',
       features: [
-        '540',
-        '540',
-        '540'
+        '5 licenses',
+        'Hardware Based QVM (up to 30 qubits)',
+        '60 min Quantum hardware time'
       ]
     },
     {
-      title: 'Pro',
+      title: 'Enterprise',
       type: 'month',
-      price: 200,
+      price: 499,
       buttonText: 'Get 30 days free',
       features: [
-        '540',
-        '540',
-        '540'
+        '25 licenses',
+        'Hardware Based QVM (up to 40 qubits)',
+        '400 min Quantum hardware time'
       ]
     }
   ];
 
   public yearlyPlans: IPlan[] = [
     {
-      title: 'Basic',
-      price: 750,
+      title: 'Individual',
+      price: 421, // 39 * 12 * 0.9 = 421.2 rounded to 421
       type: 'year',
       buttonText: 'Get 30 days free',
       features: [
-        '540',
-        '540',
-        '540'
+        '1 license',
+        'Software Based QVM (up to 20 qubits)',
+        '10 min Quantum Hardware time'
       ]
     },
     {
       title: 'University',
-      price: 1250,
+      price: 1609, // 149 * 12 * 0.9 = 1609.2 rounded to 1609
       type: 'year',
       buttonText: 'Get 30 days free',
       features: [
-        '540',
-        '540',
-        '540'
+        '5 licenses',
+        'Hardware Based QVM (up to 30 qubits)',
+        '60 min Quantum hardware time'
       ]
     },
     {
-      title: 'Pro',
+      title: 'Enterprise',
       type: 'year',
-      price: 2000,
+      price: 5389, // 499 * 12 * 0.9 = 5389.2 rounded to 5389
       buttonText: 'Get 30 days free',
       features: [
-        '540',
-        '540',
-        '540'
+        '25 licenses',
+        'Hardware Based QVM (up to 40 qubits)',
+        '400 min Quantum hardware time'
       ]
     }
   ];
