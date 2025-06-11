@@ -114,10 +114,10 @@
             z-index: 10;
             opacity: 0;
             transition: opacity 0.3s ease, background-color 0.3s ease;
-            pointer-events: none; // Initially don't capture events
             
             &:hover {
                 background-color: rgba(0, 0, 0, 0.7);
+                opacity: 1
             }
             
             &--left {
@@ -126,6 +126,32 @@
             
             &--right {
                 right: 20px;
+            }
+        }
+
+        &__hover-area {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 15%;
+            z-index: 4;
+            
+            &--left {
+                left: 0;
+                
+                &:hover ~ .slider__arrow--left {
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+            }
+            
+            &--right {
+                right: 0;
+                
+                &:hover ~ .slider__arrow--right {
+                    opacity: 1;
+                    pointer-events: auto;
+                }
             }
         }
 

@@ -259,7 +259,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.goToSampleSlide(nextIndex);
   }
 
-  public goToPreviousSampleSlide(): void {
+  goToPreviousSampleSlide(): void {
     const currentIndex = this.sampleSlides.findIndex(slide => slide.active);
     const previousIndex = (currentIndex - 1 + this.sampleSlides.length) % this.sampleSlides.length;
     this.goToSampleSlide(previousIndex);
