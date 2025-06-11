@@ -27,6 +27,8 @@ html {
   @include mat.color-variants-backwards-compatibility($theme);
   @include mat.button-overrides((
     outlined-outline-color: $white,
+    outlined-disabled-outline-color: $grey-400,
+    outlined-disabled-label-text-color: $grey-400,
   ));
 }
 

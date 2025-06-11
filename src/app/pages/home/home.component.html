@@ -162,34 +162,75 @@
         </div>
 
         <div class="contact-us__form">
-            <form>
+            <form [formGroup]="contactForm" (ngSubmit)="onSubmitContactForm()">
                 <div class="contact-us__form__row">
                     <div class="contact-us__form__field">
-                        <label for="name">First Name</label>
-                        <input type="text" id="name" name="name" required [placeholder]="'Type name here...'">
+                        <label for="firstName">First Name</label>
+                        <input 
+                          type="text" 
+                          id="firstName" 
+                          formControlName="firstName" 
+                          placeholder="Type name here..."
+                          [ngClass]="{'invalid': formSubmitted && f['firstName'].errors}"
+                        >
+                        <div class="contact-us__form__error" *ngIf="formSubmitted && f['firstName'].errors">
+                            <span *ngIf="f['firstName'].errors['required']">First name is required</span>
+                            <span *ngIf="f['firstName'].errors['minlength']">Must be at least 2 characters</span>
+                        </div>
                     </div>
 
                     <div class="contact-us__form__field">
-                        <label for="surname">Last Name</label>
-                        <input type="text" id="surname" name="surname" required [placeholder]="'Type surname here...'">
+                        <label for="lastName">Last Name</label>
+                        <input 
+                          type="text" 
+                          id="lastName" 
+                          formControlName="lastName" 
+                          placeholder="Type surname here..."
+                          [ngClass]="{'invalid': formSubmitted && f['lastName'].errors}"
+                        >
+                        <div class="contact-us__form__error" *ngIf="formSubmitted && f['lastName'].errors">
+                            <span *ngIf="f['lastName'].errors['required']">Last name is required</span>
+                            <span *ngIf="f['lastName'].errors['minlength']">Must be at least 2 characters</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="contact-us__form__field">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required [placeholder]="'Type email here...'">
+                    <input 
+                      type="email" 
+                      id="email" 
+                      formControlName="email" 
+                      placeholder="Type email here..."
+                      [ngClass]="{'invalid': formSubmitted && f['email'].errors}"
+                    >
+                    <div class="contact-us__form__error" *ngIf="formSubmitted && f['email'].errors">
+                        <span *ngIf="f['email'].errors['required']">Email is required</span>
+                        <span *ngIf="f['email'].errors['email']">Please enter a valid email address</span>
+                    </div>
                 </div>
+                
                 <div class="contact-us__form__field">
                     <label for="message">Message</label>
                     <textarea
                         id="message"
-                        name="message"
-                        [placeholder]="'Type message here...'"
-                        required
+                        formControlName="message"
+                        placeholder="Type message here..."
                         [rows]="3"
-                        ></textarea>
+                        [ngClass]="{'invalid': formSubmitted && f['message'].errors}"
+                    ></textarea>
+                    <div class="contact-us__form__error" *ngIf="formSubmitted && f['message'].errors">
+                        <span *ngIf="f['message'].errors['required']">Message is required</span>
+                        <span *ngIf="f['message'].errors['minlength']">Message must be at least 10 characters</span>
+                    </div>
                 </div>
-                <app-button [label]="'Submit'" [type]="'stroked'" [color]="'accent'"></app-button>
+                
+                <app-button 
+                    [label]="'Submit'" 
+                    [type]="'stroked'" 
+                    [color]="'accent'"
+                    [disabled]="formSubmitted && contactForm.invalid"
+                ></app-button>
             </form>
         </div>
     </div>

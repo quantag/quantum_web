@@ -4,10 +4,11 @@ import { ButtonComponent } from '../../components/button/button.component';
 import { PlanCardComponent } from '../../components/plan-card/plan-card.component';
 import { IPlan } from '../../interfaces/plan.interface';
 import { Router } from '@angular/router';
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, ButtonComponent, PlanCardComponent],
+  imports: [CommonModule, ButtonComponent, PlanCardComponent, ReactiveFormsModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -161,16 +162,35 @@ export class HomeComponent implements OnInit, OnDestroy {
   private timer: any;
   private readonly interval = 5000; // 5 seconds
   public samplesHighlightOpacity = 1; // Track opacity instead of just visibility
+  // Add contactForm property
+  contactForm: FormGroup;
+  formSubmitted = false;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.startAutoScroll();
     this.activePlans = this.monthlyPlans;
+
+    // Initialize the contact form
+    this.initContactForm();
   }
 
   ngOnDestroy(): void {
     this.stopAutoScroll();
+  }
+
+  // Initialize the reactive form with validation
+  private initContactForm(): void {
+    this.contactForm = this.fb.group({
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
+      message: ['', [Validators.required, Validators.minLength(10)]]
+    });
   }
 
   private startAutoScroll(): void {
@@ -243,5 +263,32 @@ export class HomeComponent implements OnInit, OnDestroy {
     const currentIndex = this.sampleSlides.findIndex(slide => slide.active);
     const previousIndex = (currentIndex - 1 + this.sampleSlides.length) % this.sampleSlides.length;
     this.goToSampleSlide(previousIndex);
+  }
+
+  // Get form controls for easy access in the template
+  get f() {
+    return this.contactForm.controls;
+  }
+
+  // Handle form submission
+  onSubmitContactForm(): void {
+    this.formSubmitted = true;
+    
+    // Stop if form is invalid
+    if (this.contactForm.invalid) {
+      return;
+    }
+    
+    // Process the form submission
+    console.log('Form submitted:', this.contactForm.value);
+    
+    // TODO: Add API call to send the form data
+    
+    // Reset form after successful submission
+    this.contactForm.reset();
+    this.formSubmitted = false;
+    
+    // Optionally show a success message to the user
+    alert('Thank you for your message! We will get back to you soon.');
   }
 }
