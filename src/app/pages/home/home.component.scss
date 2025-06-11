@@ -128,97 +128,6 @@
                 right: 20px;
             }
         }
-        
-        &-samples {
-            overflow: visible;
-            height: 469px;
-            width: 80%;
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative; // Ensure position relative for absolute arrows
-
-            .slider__content {
-                bottom: 50px;
-                left: 20px;
-
-                h2 {
-                    font-size: 32px;
-                }
-            }
-
-            .slider__item {
-                height: 469px;
-                transform: translateX(100%) !important; // Change from translateY to translateX
-                
-                &.active {
-                    transform: translateX(0) !important; // Change from translateY to translateX
-                }
-                
-                img {
-                    height: 469px;
-                    border-radius: 16px;
-                    object-position: top center; // Adjust image position for better visibility
-                }
-            }
-
-            .slider__indicators {
-                flex-direction: row; // Keep indicators in a row
-                right: auto; // Remove right positioning
-                left: 50%; // Center horizontally
-                top: calc(100% + 30px);
-                transform: translateX(-50%); // Center properly
-                gap: 16px; // Increase gap for horizontal indicators
-            }
-
-            .slider__arrow {
-                // Specific adjustments for slider-samples
-                width: 36px;
-                height: 36px;
-            }
-            
-            // Make arrows visible when hovering the entire slider area but only for larger screens
-            @media (min-width: 769px) {
-                &:hover {
-                    .slider__arrow {
-                        opacity: 0.7;
-                        pointer-events: auto;
-                        
-                        &:hover {
-                            opacity: 1;
-                        }
-                    }
-                }
-            }
-            
-            // For mobile devices, always show the arrows with higher opacity
-            @media (max-width: 768px) {
-                .slider__arrow {
-                    opacity: 0.9;
-                    pointer-events: auto;
-                }
-            }
-
-            @media screen and (max-width: 768px) {
-                width: 100%;
-                
-                .slider__content {
-                    left: 15px;
-                    bottom: 30px;
-                    
-                    h2 {
-                        font-size: 20px;
-                    }
-                }
-                
-                .slider__item {
-                    height: 350px;
-                    
-                    img {
-                        height: 350px;
-                    }
-                }
-            }
-        }
 
         @media (max-width: 992px) { 
             &__content {
@@ -262,6 +171,80 @@
                 
                 h2 {
                     font-size: 28px;
+                }
+            }
+        }
+
+        &-samples {
+            overflow: visible;
+            height: 469px;
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative; // Ensure position relative for absolute arrows
+
+            .slider__content {
+                bottom: 50px;
+                left: 20px;
+
+                h2 {
+                    font-size: 32px;
+                }
+            }
+
+            .slider__item {
+                height: 469px;
+                transform: translateX(100%) !important; // Change from translateY to translateX
+                
+                &.active {
+                    transform: translateX(0) !important; // Change from translateY to translateX
+                }
+                
+                img {
+                    height: 469px;
+                    border-radius: 16px;
+                    object-position: top center; // Adjust image position for better visibility
+                }
+            }
+
+            .slider__indicators {
+                flex-direction: row; // Keep indicators in a row
+                right: auto; // Remove right positioning
+                left: 50%; // Center horizontally
+                top: calc(100% + 30px);
+                transform: translateX(-50%); // Center properly
+                gap: 16px; // Increase gap for horizontal indicators
+            }
+
+            .slider__arrow {
+                width: 36px;
+                height: 36px;
+            }
+            
+            @media screen and (max-width: 768px) {
+                width: 100%;
+                height: 350px;
+                
+                .slider__content {
+                    left: 15px;
+                    bottom: 30px;
+                    
+                    h2 {
+                        font-size: 20px;
+                    }
+                }
+                
+                .slider__item {
+                    height: 350px;
+                    
+                    img {
+                        height: 350px;
+                    }
+                }
+
+                .slider__arrow {
+                    opacity: 0.9;
+                    pointer-events: auto;
                 }
             }
         }
