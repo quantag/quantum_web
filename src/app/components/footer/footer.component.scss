@@ -17,10 +17,11 @@
     }
 
     &__links {
-
         &__list {
             display: flex;
             color: $white;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         &__link {
@@ -40,5 +41,33 @@
         letter-spacing: 0%;
         text-align: center;
         color: $light-grey;
+    }
+
+    // Add responsive styles
+    @media (max-width: 992px) {
+        padding: 16px 40px 12px;
+    }
+
+    @media (max-width: 768px) {
+        padding: 16px 20px 12px;
+
+        &__content {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        &__links {
+            &__list {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            &__link {
+                padding: 8px 10px;
+            }
+        }
     }
 }

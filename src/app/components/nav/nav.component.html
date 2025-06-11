@@ -1,15 +1,29 @@
 <div class="navigation">
-    <ul class="navigation__list">
-        <li class="navigation__item">
-            <a class="navigation__link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
-        </li>
-        <li class="navigation__item">
-            <a class="navigation__link" routerLink="/for-investors" routerLinkActive="active">For Investors</a>
-        </li>
-        <li class="navigation__item">
-            <a class="navigation__link" routerLink="/docs" routerLinkActive="active">Docs</a>
-        </li>
-    </ul>
+    <div class="navigation__hamburger" (click)="toggleMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    
+    <div class="navigation__container" [class.active]="isMobileMenuOpen">
+        <ul class="navigation__list">
+            <li class="navigation__item">
+                <a class="navigation__link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">Home</a>
+            </li>
+            <li class="navigation__item">
+                <a class="navigation__link" routerLink="/for-investors" routerLinkActive="active" (click)="closeMobileMenu()">For Investors</a>
+            </li>
+            <li class="navigation__item">
+                <a class="navigation__link" href="https://quantum.quantag-it.com/docs" target="_blank" (click)="closeMobileMenu()">Docs</a>
+            </li>
+        </ul>
 
-    <app-button [label]="'Log In'" (clicked)="onLogin()"></app-button>
+        <div class="navigation__login-mobile">
+            <app-button [label]="'Log In'" (clicked)="onLogin()"></app-button>
+        </div>
+    </div>
+
+    <div class="navigation__login-desktop">
+        <app-button [label]="'Log In'" (clicked)="onLogin()"></app-button>
+    </div>
 </div>

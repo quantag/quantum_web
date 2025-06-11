@@ -55,4 +55,30 @@
 
         }
     }
+
+    @media screen and (max-width: 768px) {
+        border-radius: 13px;
+        
+        &__header {
+            align-items: center;
+        }
+
+        &__title {
+            font-size: 24px;
+            line-height: 28px;
+        }
+
+        &__price {
+            font-size: 10px;
+            line-height: 14px;
+        }
+
+        &__features {
+            &__item {
+                padding: 20px 12px;
+                font-size: 14px;
+                line-height: 20px;
+            }
+        }
+    }
 }

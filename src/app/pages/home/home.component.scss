@@ -99,15 +99,47 @@
             }
         }
 
+        &__arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease, background-color 0.3s ease;
+            pointer-events: none; // Initially don't capture events
+            
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.7);
+            }
+            
+            &--left {
+                left: 20px;
+            }
+            
+            &--right {
+                right: 20px;
+            }
+        }
+        
         &-samples {
             overflow: visible;
             height: 469px;
             width: 80%;
             max-width: 1200px;
             margin: 0 auto;
+            position: relative; // Ensure position relative for absolute arrows
 
             .slider__content {
                 bottom: 50px;
+                left: 20px;
 
                 h2 {
                     font-size: 32px;
@@ -116,7 +148,7 @@
 
             .slider__item {
                 height: 469px;
-                transform: translateX(100%) !important; // Change from translateY to translateX for horizontal scrolling
+                transform: translateX(100%) !important; // Change from translateY to translateX
                 
                 &.active {
                     transform: translateX(0) !important; // Change from translateY to translateX
@@ -136,6 +168,101 @@
                 top: calc(100% + 30px);
                 transform: translateX(-50%); // Center properly
                 gap: 16px; // Increase gap for horizontal indicators
+            }
+
+            .slider__arrow {
+                // Specific adjustments for slider-samples
+                width: 36px;
+                height: 36px;
+            }
+            
+            // Make arrows visible when hovering the entire slider area but only for larger screens
+            @media (min-width: 769px) {
+                &:hover {
+                    .slider__arrow {
+                        opacity: 0.7;
+                        pointer-events: auto;
+                        
+                        &:hover {
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+            
+            // For mobile devices, always show the arrows with higher opacity
+            @media (max-width: 768px) {
+                .slider__arrow {
+                    opacity: 0.9;
+                    pointer-events: auto;
+                }
+            }
+
+            @media screen and (max-width: 768px) {
+                width: 100%;
+                
+                .slider__content {
+                    left: 15px;
+                    bottom: 30px;
+                    
+                    h2 {
+                        font-size: 20px;
+                    }
+                }
+                
+                .slider__item {
+                    height: 350px;
+                    
+                    img {
+                        height: 350px;
+                    }
+                }
+            }
+        }
+
+        @media (max-width: 992px) { 
+            &__content {
+                h2 {
+                    font-size: 40px;
+                }
+            }
+        }
+
+        @media (max-width: 768px) {
+            height: 450px;
+            
+            &__item {
+                height: 450px;
+                
+                img {
+                    height: 450px;
+                }
+            }
+            
+            &__content {
+                left: 20px;
+                bottom: 50px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            height: 350px;
+            
+            &__item {
+                height: 350px;
+                
+                img {
+                    height: 350px;
+                }
+            }
+            
+            &__content {
+                left: 15px;
+                bottom: 30px;
+                
+                h2 {
+                    font-size: 28px;
+                }
             }
         }
     }
@@ -167,6 +294,30 @@
                 height: 50px;
                 object-fit: contain;
                 filter: brightness(0) invert(1);
+            }
+        }
+
+        @media (max-width: 992px) {
+            padding: 60px 40px;
+            gap: 50px;
+            
+            &__logos {
+                gap: 40px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            flex-direction: column;
+            gap: 30px;
+            padding: 40px 20px;
+            
+            &__logos {
+                width: 100%;
+                gap: 30px;
+                
+                img {
+                    height: 40px;
+                }
             }
         }
     }
@@ -223,6 +374,51 @@
                 width: 480px;
             }
         }
+
+        @media (max-width: 992px) {
+            height: auto;
+            padding: 60px 40px;
+            flex-direction: column;
+
+            &__content {
+                order: 1;
+            }
+
+            &__illustration {
+                order: 2;
+            }
+
+        }
+        
+        @media (max-width: 768px) {
+            padding: 40px 20px 0;
+            gap: 0;
+            
+            &__content {
+                &__title {
+                    font-size: 32px;
+                    line-height: 40px;
+                }
+                
+                &__text {
+                    width: 100%;
+                }
+            }
+            
+            &__illustration {
+                img {
+                    width: 150%;
+                }
+
+                &__highlight-area {
+                    background: radial-gradient(
+                        ellipse 350px 250px at center, 
+                        rgba(48, 199, 219, 0.4) 0%, 
+                        rgba(33, 41, 103, 0) 70%
+                    );
+                }
+            }
+        }
     }
 
     .samples {
@@ -251,30 +447,72 @@
             }
         }
 
+        &__highlight-area {
+            position: absolute;
+            height: 100%;
+            width: 150%;
+            background: radial-gradient(
+                ellipse 650px 350px at center, 
+                rgba(48, 199, 219, 1) 0%, 
+                rgba(33, 41, 103, 0) 70%
+            );
+            top: 38%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1;
+                            // Use a custom animation class for appearing only
+            &.fade-in {
+                animation: fadeIn 0.5s ease forwards;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+        }
+
+        @media screen and (max-width: 992px) {
+
+            &__header {
+                width: 80%;
+                text-align: center;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
             &__highlight-area {
-                position: absolute;
-                height: 100%;
-                width: 150%;
                 background: radial-gradient(
-                    ellipse 650px 350px at center, 
+                    ellipse 450px 350px at center, 
                     rgba(48, 199, 219, 1) 0%, 
                     rgba(33, 41, 103, 0) 70%
                 );
-                top: 38%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                pointer-events: none;
-                z-index: 1;
-                                // Use a custom animation class for appearing only
-                &.fade-in {
-                    animation: fadeIn 0.5s ease forwards;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            padding: 0 20px 100px;
+            
+            &__header {
+                &__title {
+                    font-size: 32px;
+                    line-height: 40px;
                 }
                 
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
+                &__text {
+                    width: 100%;
                 }
             }
+
+            &__highlight-area {
+                background: radial-gradient(
+                    ellipse 250px 100px at center, 
+                    rgba(48, 199, 219, 1) 0%, 
+                    rgba(33, 41, 103, 0) 70%
+                );
+            }
+            
+        }
     }
 
     .plans {
@@ -400,6 +638,44 @@
                 max-width: 300px;
             }
         }
+
+        @media (max-width: 992px) {
+            padding: 60px 40px;
+            
+            &__content {
+                flex-direction: column;
+            }
+            
+            &__features {
+                width: 100%;
+                padding-left: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            padding: 40px 20px;
+            
+            &__header {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+                
+                &__title {
+                    font-size: 32px;
+                    line-height: 40px;
+                }
+            }
+            
+            &__cards {
+                flex-direction: column;
+                gap: 12px;
+                width: 100%;
+                
+                app-plan-card {
+                    max-width: 100%;
+                }
+            }
+        }
     }
 
     .contact-us {
@@ -416,7 +692,6 @@
             flex-direction: column;
             gap: 12px;
             width: 405px;
-
             
             &__highlight-area {
                 position: absolute;
@@ -458,6 +733,7 @@
             display: flex;
             flex-direction: column;
             width: 50%;
+            z-index: 3;
 
             form {
                 display: flex;
@@ -482,7 +758,7 @@
                     line-height: 16px;
                 }
 
-                input {
+                input,textarea {
                     padding: 12px;
                     border-radius: 16px;
                     outline: none;
@@ -502,6 +778,46 @@
                         font-size: 14px;
                         line-height: 24px;
                     }
+                }
+
+                textarea {
+                    resize: none;
+                }
+            }
+        }
+
+        @media (max-width: 992px) {
+            padding: 60px 40px;
+            gap: 40px;
+
+            &__form__row {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            flex-direction: column;
+            padding: 40px 20px;
+            
+            &__content {
+                width: 100%;
+                
+                &__title {
+                    font-size: 32px;
+                    line-height: 40px;
+                }
+                
+                &__highlight-area {
+                    width: 100%;
+                    left: 50%;
+                }
+            }
+            
+            &__form {
+                width: 100%;
+                
+                &__row {
+                    flex-direction: column;
                 }
             }
         }

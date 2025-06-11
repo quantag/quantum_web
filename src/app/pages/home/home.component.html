@@ -11,7 +11,7 @@
                             [customIcon]="'assets/images/vs-code-icon.svg'"
                             (clicked)="gotToExtension()">
                         </app-button>
-                        <span class="slider__download__count"><img src="assets/images/download-icon.svg" alt=""download icon>2.3k installs</span>
+                        <!-- <span class="slider__download__count"><img src="assets/images/download-icon.svg" alt=""download icon>2.3k installs</span> -->
                     </div>
                 </div>
             </div>
@@ -31,13 +31,13 @@
 
     <div class="partners">
         <span>
-            Accepted by <a href="https://www.ibm.com/quantum/ecosystem">IBM</a> Qiskit ecosystem and 
-            <br>by <a href="https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/">Microsoft</a>
-            as Debugger Adapter Protocol OpenQASM implementation
+            Accepted by <a href="https://www.ibm.com/quantum/ecosystem" target="_blank">IBM Qiskit ecosystem</a>  and 
+            <br>by <a href="https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/" target="_blank">Microsoft
+            as Debugger Adapter Protocol OpenQASM implementation</a>
         </span>
         <div class="partners__logos">
             @for (partner of partners; track partner.name) {
-                <a [href]="partner.link">
+                <a [href]="partner.link" target="_blank">
                     <img [src]="partner.logo" [alt]="partner.name" />
                 </a>
                 
@@ -69,6 +69,18 @@
              [class.fade-in]="samplesHighlightOpacity === 1"></div>
 
         <div class="slider slider-samples">
+            <div class="slider__arrow slider__arrow--left" (click)="goToPreviousSampleSlide()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            
+            <div class="slider__arrow slider__arrow--right" (click)="goToNextSampleSlide()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 18L15 12L9 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            
             @for (slide of sampleSlides; track slide.title) {
                 <div class="slider__item" [ngClass]="{'active': slide.active}">
                     <img [src]="slide.image" alt="Slide Image" />
@@ -169,7 +181,13 @@
                 </div>
                 <div class="contact-us__form__field">
                     <label for="message">Message</label>
-                    <input type="email" id="email" name="email" [placeholder]="'Type message here...'" required>
+                    <textarea
+                        id="message"
+                        name="message"
+                        [placeholder]="'Type message here...'"
+                        required
+                        [rows]="3"
+                        ></textarea>
                 </div>
                 <app-button [label]="'Submit'" [type]="'stroked'" [color]="'accent'"></app-button>
             </form>

@@ -64,7 +64,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     },
     {
       image: 'assets/images/sample-5.png',
-      title: 'Circuit Rendering',
+      title: 'Circuit Visualization <br> In IDE',
       active: false
     }
   ];
@@ -73,12 +73,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       logo: 'assets/images/IBM-logo.svg',
       name: 'IBM',
-      link:'https://www.ibm.com/quantum/ecosystem'
+      link:'https://www.ibm.com'
     },
     {
       logo: 'assets/images/microsoft-logo.svg',
       name: 'Microsoft',
-      link: 'https://microsoft.github.io/debug-adapter-protocol/implementors/adapters/'
+      link: 'https://www.microsoft.com/'
     },
     // {logo: 'assets/images/nvidia-logo.svg', name: 'NVIDIA'},
   ]
@@ -231,5 +231,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   private nextSlide(): void {
     const nextIndex = (this.currentIndex + 1) % this.slides.length;
     this.goToSlide(nextIndex);
+  }
+
+  public goToNextSampleSlide(): void {
+    const currentIndex = this.sampleSlides.findIndex(slide => slide.active);
+    const nextIndex = (currentIndex + 1) % this.sampleSlides.length;
+    this.goToSampleSlide(nextIndex);
+  }
+
+  public goToPreviousSampleSlide(): void {
+    const currentIndex = this.sampleSlides.findIndex(slide => slide.active);
+    const previousIndex = (currentIndex - 1 + this.sampleSlides.length) % this.sampleSlides.length;
+    this.goToSampleSlide(previousIndex);
   }
 }
