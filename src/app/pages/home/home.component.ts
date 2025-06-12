@@ -4,7 +4,8 @@ import { ButtonComponent } from '../../components/button/button.component';
 import { PlanCardComponent } from '../../components/plan-card/plan-card.component';
 import { IPlan } from '../../interfaces/plan.interface';
 import { Router } from '@angular/router';
-import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { FormspreeService } from '../../services/formspree.service';
 
 @Component({
   selector: 'app-home',
@@ -125,7 +126,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public yearlyPlans: IPlan[] = [
     {
       title: 'Individual',
-      price: 421, // 39 * 12 * 0.9 = 421.2 rounded to 421
+      price: 399, // 39 * 12 * 0.9 = 421.2 rounded to 421
       type: 'year',
       buttonText: 'Get 30 days free',
       features: [
@@ -136,7 +137,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     },
     {
       title: 'University',
-      price: 1609, // 149 * 12 * 0.9 = 1609.2 rounded to 1609
+      price: 1599, // 149 * 12 * 0.9 = 1609.2 rounded to 1609
       type: 'year',
       buttonText: 'Get 30 days free',
       features: [
@@ -148,7 +149,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       title: 'Enterprise',
       type: 'year',
-      price: 5389, // 499 * 12 * 0.9 = 5389.2 rounded to 5389
+      price: 4999, // 499 * 12 * 0.9 = 5389.2 rounded to 5389
       buttonText: 'Get 30 days free',
       features: [
         '25 licenses',
@@ -168,7 +169,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private formspreeService: FormspreeService // Import HttpClient for future API calls
   ) {}
 
   ngOnInit(): void {
@@ -281,14 +283,18 @@ export class HomeComponent implements OnInit, OnDestroy {
     
     // Process the form submission
     console.log('Form submitted:', this.contactForm.value);
-    
-    // TODO: Add API call to send the form data
-    
-    // Reset form after successful submission
-    this.contactForm.reset();
-    this.formSubmitted = false;
-    
-    // Optionally show a success message to the user
-    alert('Thank you for your message! We will get back to you soon.');
+    this.formspreeService.sendMessage(this.contactForm.value).subscribe({
+      next: (response) => {
+        console.log('Form submission successful:', response);
+          alert('Thank you for your message! We will get back to you soon.');
+          this.contactForm.reset();
+          this.formSubmitted = false;
+      },
+      error: (error) => {
+        console.error('Form submission failed:', error);
+        alert('There was an error submitting your message. Please try again later.');
+        this.formSubmitted = false;
+      }
+    });
   }
 }
