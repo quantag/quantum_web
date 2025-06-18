@@ -1,10 +1,9 @@
 import { Component, HostListener } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ButtonComponent } from '../button/button.component';
 
 @Component({
   selector: 'app-nav',
-  imports: [RouterModule, ButtonComponent],
+  imports: [RouterModule],
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss']
 })

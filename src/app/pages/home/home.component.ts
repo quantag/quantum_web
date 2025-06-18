@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ButtonComponent } from '../../components/button/button.component';
-import { PlanCardComponent } from '../../components/plan-card/plan-card.component';
 import { IPlan } from '../../interfaces/plan.interface';
 import { Router } from '@angular/router';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -9,7 +8,7 @@ import { FormspreeService } from '../../services/formspree.service';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, ButtonComponent, PlanCardComponent, ReactiveFormsModule],
+  imports: [CommonModule, ButtonComponent, ReactiveFormsModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
