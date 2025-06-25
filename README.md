@@ -1,59 +1,70 @@
-# QuantumNew
+## Prerequisites
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.5.
+Before you begin, ensure you have the following installed:
+- Node.js (version 18 or higher)
+- npm (comes with Node.js)
+- Angular CLI (`npm install -g @angular/cli`)
 
-## Development server
+## Development Setup
 
-To start a local development server, run:
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-```bash
-ng serve
-```
+3. Start the development server:
+   ```bash
+   npm start
+   ```
+   
+   The application will be available at `http://localhost:4200`
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Building for Production
 
-## Code scaffolding
+To build the Angular application for production deployment:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+### Standard Production Build
 
 ```bash
-ng build
+npm run build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+or
 
 ```bash
-ng test
+ng build --configuration=production
 ```
 
-## Running end-to-end tests
+This command will:
+- Create an optimized build in the `dist/` folder
+- Enable ahead-of-time (AOT) compilation
+- Minify CSS and JavaScript files
+- Enable tree-shaking to remove unused code
+- Apply build optimizations for better performance
 
-For end-to-end (e2e) testing, run:
+### Build Output
 
-```bash
-ng e2e
-```
+The production build generates the following optimized files in `dist/`:
+- `index.html` - The main HTML file
+- `main.[hash].js` - Main application bundle
+- `polyfills.[hash].js` - Browser compatibility polyfills
+- `styles.[hash].css` - Compiled and minified styles
+- Static assets from the `src/assets/` folder
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Deployment
 
-## Additional Resources
+After building for production:
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+1. Upload the contents of the `dist/` folder to your web server
+2. Configure your web server to serve `index.html` for all routes (for Angular routing to work)
+3. Ensure your server supports HTTPS for production deployments
+
+## Project Structure
+
+- `src/app/components/` - Reusable UI components
+- `src/app/pages/` - Page components and routing
+- `src/app/services/` - Business logic and API services
+- `src/app/interfaces/` - TypeScript interfaces
+- `src/app/types/` - Type definitions
+- `src/assets/` - Static assets (images, styles)
