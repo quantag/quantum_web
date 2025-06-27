@@ -67,7 +67,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       image: 'assets/images/sample-5.png',
       title: 'Circuit Visualization <br> In IDE',
       active: false
-    }
+    },
+    {
+      image: 'assets/images/sample-6.png',
+      title: 'Convert OpenQASM to QIR ',
+      active: false
+    },
   ];
 
   public partners = [
@@ -81,6 +86,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       name: 'Microsoft',
       link: 'https://www.microsoft.com/'
     },
+    {
+      logo: 'assets/images/qir-logo.svg',
+      name: 'QIR',
+      link: 'https://github.com/qir-alliance'
+    }
     // {logo: 'assets/images/nvidia-logo.svg', name: 'NVIDIA'},
   ]
 
