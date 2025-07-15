@@ -18,12 +18,22 @@
             </li>
         </ul>
 
-        <!-- <div class="navigation__login-mobile">
-            <app-button [label]="'Log In'" (clicked)="onLogin()"></app-button>
-        </div> -->
+        <div class="navigation__login-mobile">
+            @if(isLogin) {
+                <a class="navigation__link" routerLink="/profile" routerLinkActive="active">My Profile</a>
+                <app-button [label]="'Log Out'" (clicked)="signOut()"></app-button>
+            } @else {
+                <app-button [label]="'Log In'" (clicked)="signIn()"></app-button>
+            }
+        </div>
     </div>
 
-    <!-- <div class="navigation__login-desktop">
-        <app-button [label]="'Log In'" (clicked)="onLogin()"></app-button>
-    </div> -->
+    <div class="navigation__login-desktop">
+            @if(isLogin) {
+            <a class="navigation__link" routerLink="/profile" routerLinkActive="active">My Profile</a>
+            <app-button [label]="'Log Out'" (clicked)="signOut()"></app-button>
+            } @else {
+                <app-button [label]="'Log In'" (clicked)="signIn()"></app-button>
+            }
+    </div>
 </div>

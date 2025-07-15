@@ -27,6 +27,12 @@
         }
     }
 
+    &__login-desktop {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
     &__container {
         display: flex;
         align-items: center;
@@ -118,8 +124,10 @@
         }
 
         &__login-mobile {
-            display: block;
-            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
         }
     }
 }

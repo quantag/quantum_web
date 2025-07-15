@@ -1,0 +1,155 @@
+<div class="profile">
+  <div class="container">
+    <div class="profile__header">
+      <h1>Profile</h1>
+    </div>
+
+    <div class="profile__content" *ngIf="googleUser; else notLoggedIn">
+      <div class="profile__cards">
+        <!-- Personal Info Card (Left) -->
+        <div class="profile__card profile__card--personal">
+          <div class="profile__info">
+            <div class="profile__section">
+              <h2>Personal Information</h2>
+                <div class="profile__avatar">
+                    <img 
+                    *ngIf="googleUser.picture" 
+                    [src]="googleUser.picture" 
+                    [alt]="getFullName()"
+                    class="profile__avatar-image"
+                    >
+                    <div *ngIf="!googleUser.picture" class="profile__avatar-placeholder">
+                    {{ googleUser.given_name.charAt(0) }}{{ googleUser.family_name.charAt(0) }}
+                    </div>
+                </div>
+
+              <div class="profile__field">
+                <label>Full Name:</label>
+                <span>{{ getFullName() }}</span>
+              </div>
+              <div class="profile__field">
+                <label>First Name:</label>
+                <span>{{ googleUser.given_name || 'N/A' }}</span>
+              </div>
+              <div class="profile__field">
+                <label>Last Name:</label>
+                <span>{{ googleUser.family_name || 'N/A' }}</span>
+              </div>
+              <div class="profile__field">
+                <label>Email:</label>
+                <span>{{ googleUser.email || 'N/A' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Info Card (Right) -->
+        <div class="profile__card profile__card--account">
+          <div class="profile__info">
+            <div class="profile__section" *ngIf="apiUser && !isLoadingApiUser">
+              <h2>Account Information</h2>
+              <div class="profile__field">
+                <label>Balance:</label>
+                <span class="profile__balance">{{ formatBalance() }}</span>
+              </div>
+              <div class="profile__field">
+                <label>Company:</label>
+                <span>{{ apiUser.company || 'N/A' }}</span>
+              </div>
+              <div class="profile__field">
+                <label>Subscription ID:</label>
+                <span>{{ apiUser.subscription_id || 'N/A' }}</span>
+              </div>
+              <div class="profile__field">
+                <label>Status:</label>
+                <span class="profile__status" [class.profile__status--active]="apiUser.status === 'active'">
+                  {{ apiUser.status || 'N/A' }}
+                </span>
+              </div>
+              <div class="profile__field">
+                <label>User ID:</label>
+                <span class="profile__uid">{{ apiUser.uid }}</span>
+              </div>
+            </div>
+
+            <div class="profile__section" *ngIf="isLoadingApiUser">
+              <h2>Account Information</h2>
+              <div class="profile__loading">
+                <p>Loading account information...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jobs Table Container -->
+      <div class="profile__jobs">
+        <div class="profile__jobs-header">
+          <h2>Jobs</h2>
+          <span class="profile__jobs-count" *ngIf="!isLoadingJobs">({{ jobs.length }} total)</span>
+        </div>
+        
+        <div class="profile__jobs-content">
+          <!-- Loading State -->
+          <div class="profile__jobs-loading" *ngIf="isLoadingJobs">
+            <p>Loading jobs...</p>
+          </div>
+
+          <!-- No Jobs State -->
+          <div class="profile__jobs-empty" *ngIf="!isLoadingJobs && jobs.length === 0">
+            <p>No jobs found.</p>
+          </div>
+
+          <!-- Jobs Table -->
+          <div class="profile__jobs-table-container" *ngIf="!isLoadingJobs && jobs.length > 0">
+            <table class="profile__jobs-table">
+              <thead>
+                <tr>
+                  <th>Job ID</th>
+                  <th>Status</th>
+                  <th>Provider</th>
+                  <th>QPU</th>
+                  <th>Mode</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                  <th>Input</th>
+                  <th>Results</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let job of jobs; trackBy: trackByJobId">
+                  <td class="profile__job-id">{{ job.job_id || 'N/A' }}</td>
+                  <td class="profile__job-status">
+                    <span class="status-badge" [ngClass]="getJobStatusClass(job.status)">
+                      {{ job.status_str || 'Unknown' }}
+                    </span>
+                  </td>
+                  <td>{{ getProviderName(job.provider_id) }}</td>
+                  <td>{{ job.qpu || 'N/A' }}</td>
+                  <td>{{ job.mode || 'N/A' }}</td>
+                  <td>{{ formatJobTime(job.start_time) }}</td>
+                  <td>{{ formatJobTime(job.end_time) }}</td>
+                  <td class="profile__job-input">
+                    <span [title]="job.input || 'N/A'">{{ truncateText(job.input, 30) }}</span>
+                  </td>
+                  <td class="profile__job-results">
+                    <span [title]="job.results || 'N/A'">{{ truncateText(job.results, 30) }}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #notLoggedIn>
+      <div class="profile__not-logged-in">
+        <div class="profile__message">
+          <h2>Please Sign In</h2>
+          <p>You need to sign in with Google to view your profile information.</p>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>
