@@ -2,9 +2,18 @@
   <div class="container">
     <div class="profile__header">
       <h1>Profile</h1>
+      <button 
+        type="button" 
+        class="theme-toggle-btn"
+        [class.dark-mode]="isDarkMode"
+        (click)="toggleDarkMode()"
+        [title]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+      >
+        {{ isDarkMode ? '&#9788;' : '&#9790;' }}
+      </button>
     </div>
 
-    <div class="profile__content" *ngIf="googleUser; else notLoggedIn">
+    <div class="profile__content" [class.profile__content--dark]="isDarkMode" *ngIf="googleUser; else notLoggedIn">
       <div class="profile__cards">
         <!-- Personal Info Card (Left) -->
         <div class="profile__card profile__card--personal">
@@ -54,16 +63,55 @@
               </div>
               <div class="profile__field">
                 <label>Company:</label>
-                <span>{{ apiUser.company || 'N/A' }}</span>
+                <div class="profile__field-editable" *ngIf="!isEditingCompany">
+                  <span>{{ apiUser.company || 'N/A' }}</span>
+                  <button 
+                    type="button" 
+                    class="edit-btn"
+                    (click)="startEditingCompany()"
+                    title="Edit company"
+                  >
+                    &#9998;
+                  </button>
+                </div>
+                <div class="profile__field-edit" *ngIf="isEditingCompany">
+                  <input 
+                    type="text" 
+                    [(ngModel)]="editCompanyValue"
+                    class="edit-input"
+                    placeholder="Enter company name"
+                    (keyup.enter)="saveCompany()"
+                    (keyup.escape)="cancelEditingCompany()"
+                  >
+                  <div class="edit-actions">
+                    <button 
+                      type="button" 
+                      class="save-btn"
+                      (click)="saveCompany()"
+                      [disabled]="!editCompanyValue.trim()"
+                      title="Save"
+                    >
+                      &#10004;
+                    </button>
+                    <button 
+                      type="button" 
+                      class="cancel-btn"
+                      (click)="cancelEditingCompany()"
+                      title="Cancel"
+                    >
+                      &#10006;
+                    </button>
+                  </div>
+                </div>
               </div>
               <div class="profile__field">
                 <label>Subscription ID:</label>
-                <span>{{ apiUser.subscription_id || 'N/A' }}</span>
+                <span>{{ getSubscriptionName(apiUser.subscription_id)}}</span>
               </div>
               <div class="profile__field">
                 <label>Status:</label>
-                <span class="profile__status" [class.profile__status--active]="apiUser.status === 'active'">
-                  {{ apiUser.status || 'N/A' }}
+                <span class="profile__status" [class.profile__status--active]="apiUser.status === 0">
+                  {{ apiUser.status }}
                 </span>
               </div>
               <div class="profile__field">
@@ -83,10 +131,82 @@
       </div>
 
       <!-- Jobs Table Container -->
-      <div class="profile__jobs">
+      <div class="profile__jobs" [class.profile__jobs--dark]="isDarkMode">
         <div class="profile__jobs-header">
           <h2>Jobs</h2>
-          <span class="profile__jobs-count" *ngIf="!isLoadingJobs">({{ jobs.length }} total)</span>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="profile__jobs-filters" *ngIf="!isLoadingJobs && jobs.length > 0">
+          <div class="filter-row">
+            <div class="filter-group">
+              <label for="search-filter">Search:</label>
+              <input 
+                id="search-filter"
+                type="text" 
+                [value]="filterText"
+                (input)="onFilterTextChange($event)"
+                placeholder="Search jobs, input, or results..."
+                class="filter-input"
+              >
+            </div>
+
+            <div class="filter-group">
+              <label for="status-filter">Status:</label>
+              <select 
+                id="status-filter"
+                [value]="statusFilter"
+                (change)="onStatusFilterChange($event)"
+                class="filter-select"
+              >
+                <option value="all">All Statuses</option>
+                <option *ngFor="let status of getUniqueJobStatuses()" [value]="status">
+                  {{ status | titlecase }}
+                </option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="provider-filter">Provider:</label>
+              <select 
+                id="provider-filter"
+                [value]="providerFilter"
+                (change)="onProviderFilterChange($event)"
+                class="filter-select"
+              >
+                <option value="all">All Providers</option>
+                <option *ngFor="let provider of getUniqueProviders()" [value]="provider">
+                  {{ getProviderName(provider) }}
+                </option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="mode-filter">Mode:</label>
+              <select 
+                id="mode-filter"
+                [value]="modeFilter"
+                (change)="onModeFilterChange($event)"
+                class="filter-select"
+              >
+                <option value="all">All Modes</option>
+                <option *ngFor="let mode of getUniqueModes()" [value]="mode">
+                  {{ mode | titlecase }}
+                </option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <button 
+                type="button" 
+                (click)="clearFilters()"
+                class="filter-clear-btn"
+                [disabled]="filterText === '' && statusFilter === 'all' && providerFilter === 'all' && modeFilter === 'all'"
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
         </div>
         
         <div class="profile__jobs-content">
@@ -96,48 +216,186 @@
           </div>
 
           <!-- No Jobs State -->
-          <div class="profile__jobs-empty" *ngIf="!isLoadingJobs && jobs.length === 0">
+          <div class="profile__jobs-empty" *ngIf="!isLoadingJobs && paginatedJobs.length === 0 && jobs.length === 0">
             <p>No jobs found.</p>
           </div>
 
+          <!-- No Results After Filter -->
+          <div class="profile__jobs-empty" *ngIf="!isLoadingJobs && paginatedJobs.length === 0 && jobs.length > 0">
+            <p>No jobs match the current filters.</p>
+          </div>
+
           <!-- Jobs Table -->
-          <div class="profile__jobs-table-container" *ngIf="!isLoadingJobs && jobs.length > 0">
+          <div class="profile__jobs-table-container" *ngIf="!isLoadingJobs && paginatedJobs.length > 0">
             <table class="profile__jobs-table">
               <thead>
                 <tr>
-                  <th>Job ID</th>
-                  <th>Status</th>
-                  <th>Provider</th>
-                  <th>QPU</th>
-                  <th>Mode</th>
-                  <th>Start Time</th>
-                  <th>End Time</th>
+                  <th class="sortable" [class.active]="isSortedColumn('job_id')" (click)="sortTable('job_id')">
+                    Job ID
+                    <span class="sort-icon" [class]="getSortIcon('job_id')">&#10140;</span>
+                  </th>
+                  <th class="sortable" [class.active]="isSortedColumn('status')" (click)="sortTable('status')">
+                    Status
+                    <span class="sort-icon" [class]="getSortIcon('status')">&#10140;</span>
+                  </th>
+                  <th class="sortable" [class.active]="isSortedColumn('instance')" (click)="sortTable('instance')">
+                    Instance
+                    <span class="sort-icon" [class]="getSortIcon('instance')">&#10140;</span>
+                  </th>
+                  <th class="sortable" [class.active]="isSortedColumn('provider_id')" (click)="sortTable('provider_id')">
+                    Provider
+                    <span class="sort-icon" [class]="getSortIcon('provider_id')">&#10140;</span>
+                  </th>
+                  <th class="sortable" [class.active]="isSortedColumn('qpu')" (click)="sortTable('qpu')">
+                    QPU
+                    <span class="sort-icon" [class]="getSortIcon('qpu')">&#10140;</span>
+                  </th>
+                  <th class="sortable" [class.active]="isSortedColumn('mode')" (click)="sortTable('mode')">
+                    Mode
+                    <span class="sort-icon" [class]="getSortIcon('mode')">&#10140;</span>
+                  </th>
+                  <th class="sortable" [class.active]="isSortedColumn('submitted_at')" (click)="sortTable('submitted_at')">
+                    Submitted At
+                    <span class="sort-icon" [class]="getSortIcon('submitted_at')">&#10140;</span>
+                  </th>
+                  <th class="sortable" [class.active]="isSortedColumn('end_time')" (click)="sortTable('end_time')">
+                    End Time
+                    <span class="sort-icon" [class]="getSortIcon('end_time')">&#10140;</span>
+                  </th>
                   <th>Input</th>
                   <th>Results</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let job of jobs; trackBy: trackByJobId">
-                  <td class="profile__job-id">{{ job.job_id || 'N/A' }}</td>
+                <tr *ngFor="let job of paginatedJobs; trackBy: trackByJobId">
+                  <td class="profile__job-id" title="{{ job.job_id || 'N/A' }}">{{ job.job_id || 'N/A' }}</td>
                   <td class="profile__job-status">
-                    <span class="status-badge" [ngClass]="getJobStatusClass(job.status)">
-                      {{ job.status_str || 'Unknown' }}
+                    <span class="status-badge" [ngClass]="job.status_str ? job.status_str.toLowerCase() : 'unknown'">
+                      {{ job.status_str || 'Unknown' | titlecase }}
                     </span>
                   </td>
+                  <td>{{ job.instance || 'N/A' }}</td>
                   <td>{{ getProviderName(job.provider_id) }}</td>
                   <td>{{ job.qpu || 'N/A' }}</td>
                   <td>{{ job.mode || 'N/A' }}</td>
-                  <td>{{ formatJobTime(job.start_time) }}</td>
+                  <td>{{ formatJobTime(job.submitted_at) }}</td>
                   <td>{{ formatJobTime(job.end_time) }}</td>
                   <td class="profile__job-input">
-                    <span [title]="job.input || 'N/A'">{{ truncateText(job.input, 30) }}</span>
+                    <button 
+                      type="button"
+                      class="download-btn"
+                      [title]="job.input || 'N/A'"
+                      (click)="downloadJobInput(job)"
+                      [disabled]="!job.input"
+                    >
+                      <img src="assets/images/download-icon.svg" alt="download-icon">
+                    </button>
                   </td>
                   <td class="profile__job-results">
-                    <span [title]="job.results || 'N/A'">{{ truncateText(job.results, 30) }}</span>
+                    <button 
+                      type="button"
+                      class="download-btn"
+                      [title]="job.results || 'N/A'"
+                      (click)="downloadJobResults(job)"
+                      [disabled]="!job.results"
+                    >
+                      <img src="assets/images/download-icon.svg" alt="download-icon">
+                    </button>
+                  </td>
+                  <td class="profile__job-actions">
+                    <button 
+                      type="button" 
+                      class="refresh-btn"
+                      [class.spinning]="refreshingJobIds === job.uid"
+                      (click)="refreshJob(job.uid || '')"
+                      [disabled]="!job.uid || refreshingJobIds !== null"
+                      title="Refresh job status"
+                    >
+                      &#8635;
+                    </button>
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+          
+          <!-- Pagination Controls -->
+          <div class="profile__pagination" *ngIf="!isLoadingJobs && totalItems > 0">
+            <div class="pagination-info">
+              <span>{{ getDisplayRange() }}</span>
+              
+              <div class="items-per-page">
+                <label for="items-per-page">Items per page:</label>
+                <select 
+                  id="items-per-page"
+                  [value]="itemsPerPage"
+                  (change)="onItemsPerPageChange($event)"
+                  class="pagination-select"
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="pagination-controls" *ngIf="getTotalPages() > 1">
+              <button 
+                type="button"
+                class="pagination-btn pagination-btn--nav"
+                [disabled]="currentPage === 1"
+                (click)="goToFirstPage()"
+                title="First page"
+              >
+                ⟨⟨
+              </button>
+              
+              <button 
+                type="button"
+                class="pagination-btn pagination-btn--nav"
+                [disabled]="currentPage === 1"
+                (click)="goToPreviousPage()"
+                title="Previous page"
+              >
+                ⟨
+              </button>
+              
+              <div class="pagination-numbers">
+                <button
+                  type="button"
+                  *ngFor="let page of getPageNumbers()"
+                  class="pagination-btn"
+                  [class.pagination-btn--active]="page === currentPage"
+                  [class.pagination-btn--ellipsis]="page === -1"
+                  [disabled]="page === -1"
+                  (click)="page !== -1 && onPageChange(page)"
+                >
+                  {{ page === -1 ? '...' : page }}
+                </button>
+              </div>
+              
+              <button 
+                type="button"
+                class="pagination-btn pagination-btn--nav"
+                [disabled]="currentPage === getTotalPages()"
+                (click)="goToNextPage()"
+                title="Next page"
+              >
+                ⟩
+              </button>
+              
+              <button 
+                type="button"
+                class="pagination-btn pagination-btn--nav"
+                [disabled]="currentPage === getTotalPages()"
+                (click)="goToLastPage()"
+                title="Last page"
+              >
+                ⟩⟩
+              </button>
+            </div>
           </div>
         </div>
       </div>

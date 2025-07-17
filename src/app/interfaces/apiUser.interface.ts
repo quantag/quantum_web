@@ -3,8 +3,8 @@ export interface IApiUser {
     company: string | null;
     firstname: string;
     lastname: string;
-    subscription_id: number | null;
+    subscription_id: string | null;
     uid: string;
-    status: string;
+    status: number;
     google_id: string;
 }

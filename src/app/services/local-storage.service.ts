@@ -87,7 +87,16 @@ export class LocalStorageService {
     this.setItem('googleUser', user);
   }
 
-    removeGoogleUser(): void {
-        this.removeItem('googleUser');
-    }
+  removeGoogleUser(): void {
+      this.removeItem('googleUser');
+  }
+
+  getDarkMode(): boolean {
+    const darkMode = this.getItem<boolean>('darkMode');
+    return darkMode !== null ? darkMode : false; // Default to false if not set
+  }
+
+  setDarkMode(enabled: boolean): void {
+    this.setItem('darkMode', enabled);
+  }
 }

@@ -19,7 +19,7 @@ export interface GoogleUser {
   providedIn: 'root'
 })
 export class GoogleAuthService {
-  private clientId = environment.clientId; // Use the client ID from environment
+  private clientId = '845732993158-84saq5d7sen58bfa6u5c65doa5c9fcug.apps.googleusercontent.com'; // Use the client ID from environment
   private userSubject = new BehaviorSubject<GoogleUser | null>(null);
   public user$ = this.userSubject.asObservable();
 
