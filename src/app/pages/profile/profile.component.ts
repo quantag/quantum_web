@@ -522,7 +522,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.refreshingJobIds = jobId;
 
     // Call the user service to refresh/reload specific job
-    this.userService.refreshJob(jobId, 'cde5e204-d172-4f0b-9e4d-7a43e3bd2d8c').subscribe({
+    this.userService.refreshJob(jobId, this.apiUser!.uid).subscribe({
       next: () => {
         // Find and update the job in the current jobs array
         this.loadUserJobs(this.apiUser!.uid);
