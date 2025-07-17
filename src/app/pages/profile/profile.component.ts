@@ -178,7 +178,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
     
     const content = job.input;
-    const filename = `job-${job.job_id || 'unknown'}-input.json`;
+    const filename = `job-${job.job_id || 'unknown'}-input.qasm`;
     this.downloadJsonFile(content, filename);
   }
 
