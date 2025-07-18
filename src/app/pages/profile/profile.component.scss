@@ -437,7 +437,13 @@
   }
 
   td.profile__job-actions {
-    text-align: center;
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+    }
 
     .refresh-btn {
       background: none;
@@ -475,6 +481,40 @@
       }
     }
 
+    .remove-btn {
+      background: none;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      img {
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        filter: invert(13%) sepia(60%) saturate(2073%) hue-rotate(226deg) brightness(95%) contrast(99%);
+      }
+
+      &:hover:not(:disabled) {
+        background-color: #dc3545;
+        
+        img {
+          filter: brightness(0) saturate(100%) invert(100%);
+        }
+      }
+
+      &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        color: $grey-300;
+      }
+    }
+
     .download-btn {
       background: none;
       border: none;
@@ -492,7 +532,6 @@
       &:hover:not(:disabled) {
         background-color: $primary;
         color: $white;
-        transform: scale(1.1);
       }
 
       &:disabled {
@@ -522,10 +561,6 @@
 
       img {
         border-radius: 50%;
-      }
-
-      &:hover:not(:disabled) {
-        transform: scale(1.1);
       }
 
       &:disabled {
@@ -817,6 +852,7 @@
   }
 
   &__uid {
+    cursor: pointer;
     font-family: 'Courier New', monospace;
     font-size: 0.9rem;
     background: #f8f9fa;

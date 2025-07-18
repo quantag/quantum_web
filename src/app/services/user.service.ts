@@ -31,6 +31,12 @@ export class UserService {
     return this.http.post<any>(`${this.apiBaseUrl}/update_user`, { uid, company });
   }
 
+  /**
+   * Refresh job status
+   * @param jobId Job ID
+   * @param userId User ID
+   * @returns Observable<void>
+   */
   refreshJob(jobId: string, userId: string): Observable<void> {
     return this.http.post<void>(`${this.apiBaseUrl}/check_job`, { job_id: jobId, user_id: userId });
   }
@@ -45,17 +51,13 @@ export class UserService {
     // return this.http.get<IJob[]>(`${this.apiBaseUrl}/users/cde5e204-d172-4f0b-9e4d-7a43e3bd2d8c/jobs`);
   }
 
-  // /**
-  //  * Update user data
-  //  * @param userId User ID
-  //  * @param userData Partial user data to update
-  //  * @returns Observable<IApiUser>
-  //  */
-  // updateUserData(userId: string, userData: Partial<IApiUser>): Observable<IApiUser> {
-  //   // TODO: Implement actual API call when backend is available
-  //   // return this.http.put<IApiUser>(`${this.apiBaseUrl}/users/${userId}`, userData);
-    
-  //   console.log('Update user data:', userData);
-  //   // return this.getUserData(userId, userData.email);
-  // }
+  /**
+   * Remove a job from the user's job list
+   * @param jobId Job ID
+   * @param userId User ID
+   * @returns Observable<void>
+   */
+  removeJob(jobId: string, userId: string): Observable<void> {
+    return this.http.post<void>(`${this.apiBaseUrl}/del_job`, { job_id: jobId, user_id: userId });
+  }
 }

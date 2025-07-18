@@ -537,4 +537,37 @@ export class ProfileComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  copyToClipboard(text: string): void {
+    if (!text) {
+      console.error('Text is required for copying');
+      return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+      console.log('Copied to clipboard:', text);
+    }).catch(err => {
+      console.error('Failed to copy text:', err);
+    });
+  }
+
+  // Remove job method
+  removeJob(jobId: string): void {
+    if (!jobId) {
+      console.error('Job ID is required for removal');
+      return;
+    }
+
+    // Show confirmation dialog
+    if (confirm(`Are you sure you want to remove ${jobId} job? This action cannot be undone.`)) {
+
+      this.userService.removeJob(jobId, this.apiUser!.uid).subscribe({
+        next: () => {
+          this.loadUserJobs(this.apiUser!.uid);
+        },
+        error: (error: any) => {
+          console.error('Error removing job from server:', error);
+        }
+      });
+    }
+  }
 }

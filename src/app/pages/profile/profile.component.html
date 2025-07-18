@@ -116,7 +116,7 @@
               </div>
               <div class="profile__field">
                 <label>User ID:</label>
-                <span class="profile__uid">{{ apiUser.uid }}</span>
+                <span class="profile__uid" (click)="copyToClipboard(apiUser.uid)" title="Copy User ID">{{ apiUser.uid }}</span>
               </div>
             </div>
 
@@ -304,16 +304,27 @@
                     </button>
                   </td>
                   <td class="profile__job-actions">
-                    <button 
-                      type="button" 
-                      class="refresh-btn"
-                      [class.spinning]="refreshingJobIds === job.uid"
-                      (click)="refreshJob(job.uid || '')"
-                      [disabled]="!job.uid || refreshingJobIds !== null"
-                      title="Refresh job status"
-                    >
-                      &#8635;
-                    </button>
+                    <div class="action-buttons">
+                      <button 
+                        type="button" 
+                        class="refresh-btn"
+                        [class.spinning]="refreshingJobIds === job.uid"
+                        (click)="refreshJob(job.uid || '')"
+                        [disabled]="!job.uid || refreshingJobIds !== null"
+                        title="Refresh job status"
+                      >
+                        &#8635;
+                      </button>
+                      <button 
+                        type="button" 
+                        class="remove-btn"
+                        (click)="removeJob(job.uid || '')"
+                        [disabled]="!job.uid"
+                        title="Remove job"
+                      >
+                        <img src="assets/images/trash-icon.svg" alt="trash-icon">
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
