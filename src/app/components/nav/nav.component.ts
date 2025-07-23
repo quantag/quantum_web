@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonComponent } from '../button/button.component';
 import { Observable } from 'rxjs';
-import { GoogleUser, GoogleAuthService } from '../../services/google-auth.service';
+import { GoogleAuthService } from '../../services/google-auth.service';
+import { IGoogleUser } from '../../interfaces/googleUser.interface';
 
 @Component({
   selector: 'app-nav',
@@ -10,11 +11,10 @@ import { GoogleUser, GoogleAuthService } from '../../services/google-auth.servic
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss']
 })
-export class NavComponent implements OnInit, AfterViewInit {
+export class NavComponent implements OnInit {
   // Add mobile menu state
   isMobileMenuOpen = false;
-  @ViewChild('googleButton', { static: false }) googleButton!: ElementRef;
-  user$: Observable<GoogleUser | null>;
+  user$: Observable<IGoogleUser | null>;
   isLogin: boolean = false;
 
   constructor(
@@ -29,12 +29,6 @@ export class NavComponent implements OnInit, AfterViewInit {
       this.isLogin = user !== null;
       console.log('User status:', this.isLogin ? 'Logged in' : 'Not logged in');
     });
-  }
-
-  ngAfterViewInit(): void {
-    if (this.googleButton) {
-      this.googleAuthService.renderButton(this.googleButton.nativeElement);
-    }
   }
 
   @HostListener('document:click', ['$event'])

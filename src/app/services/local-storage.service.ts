@@ -103,6 +103,30 @@ export class LocalStorageService {
     this.removeItem('token');
   }
 
+  getRefreshToken(): string | null {
+    return this.getItem<string>('refreshToken');
+  }
+
+  saveRefreshToken(refreshToken: string): void {
+    this.setItem('refreshToken', refreshToken);
+  }
+
+  removeRefreshToken(): void {
+    this.removeItem('refreshToken');
+  }
+
+  getTokenExpiry(): number | null {
+    return this.getItem<number>('tokenExpiry');
+  }
+
+  saveTokenExpiry(expiry: number): void {
+    this.setItem('tokenExpiry', expiry);
+  }
+
+  removeTokenExpiry(): void {
+    this.removeItem('tokenExpiry');
+  }
+
   getDarkMode(): boolean {
     const darkMode = this.getItem<boolean>('darkMode');
     return darkMode !== null ? darkMode : false; // Default to false if not set
