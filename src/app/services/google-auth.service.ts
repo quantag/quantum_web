@@ -21,7 +21,9 @@ export interface GoogleUser {
 export class GoogleAuthService {
   private clientId = '845732993158-84saq5d7sen58bfa6u5c65doa5c9fcug.apps.googleusercontent.com'; // Use the client ID from environment
   private userSubject = new BehaviorSubject<GoogleUser | null>(null);
+  private tokenSubject = new BehaviorSubject<string | null>(null);
   public user$ = this.userSubject.asObservable();
+  public token$ = this.tokenSubject.asObservable();
 
   constructor(private localStorageService: LocalStorageService) {
     this.loadUserFromStorage();
@@ -30,6 +32,10 @@ export class GoogleAuthService {
 
   private loadUserFromStorage(): void {
     const savedUser = this.localStorageService.getGoogleUser();
+    const savedToken = this.localStorageService.getToken();
+    if (savedToken) {
+      this.tokenSubject.next(savedToken);
+    }
     if (savedUser) {
       this.userSubject.next(savedUser);
     }
@@ -50,6 +56,7 @@ export class GoogleAuthService {
   }
 
   private handleCredentialResponse(response: any): void {
+    const token = response.credential;
     const payload = this.parseJwt(response.credential);
     const user: GoogleUser = {
       id: payload.sub,
@@ -62,8 +69,9 @@ export class GoogleAuthService {
     
     // Save user to localStorage
     this.localStorageService.saveGoogleUser(user);
+    this.localStorageService.saveToken(token);
+    this.tokenSubject.next(token);
     this.userSubject.next(user);
-    console.log('User signed in:', user);
   }
 
   private parseJwt(token: string): any {
@@ -83,6 +91,8 @@ export class GoogleAuthService {
     google.accounts.id.disableAutoSelect();
     // Clear user from localStorage
     this.localStorageService.removeGoogleUser();
+    this.localStorageService.removeToken();
+    this.tokenSubject.next(null);
     this.userSubject.next(null);
     console.log('User signed out');
   }

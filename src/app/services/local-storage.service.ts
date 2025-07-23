@@ -91,6 +91,18 @@ export class LocalStorageService {
       this.removeItem('googleUser');
   }
 
+  getToken(): string | null {
+    return this.getItem<string>('token');
+  }
+
+  saveToken(token: string): void {
+    this.setItem('token', token);
+  }
+
+  removeToken(): void {
+    this.removeItem('token');
+  }
+
   getDarkMode(): boolean {
     const darkMode = this.getItem<boolean>('darkMode');
     return darkMode !== null ? darkMode : false; // Default to false if not set
