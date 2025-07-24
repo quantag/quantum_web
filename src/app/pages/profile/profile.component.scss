@@ -900,6 +900,36 @@
       margin: 0;
     }
   }
+
+  &__file-manager {
+    background: $white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    width: calc(90% - 5rem);
+    margin-bottom: 2rem;
+
+    h2 {
+      color: $primary;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0 0 1rem 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid $primary;
+    }
+
+    &--dark {
+      background: #1a1a1a;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      color: #4a90e2;
+
+
+      h2 {
+        color: $white;
+        border-bottom-color: #4a90e2;
+      }
+    }
+  }
 }
 
 @media (max-width: 768px) {

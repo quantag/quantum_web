@@ -11,10 +11,11 @@ import { ProviderService } from '../../services/provider.service';
 import { IProvider } from '../../interfaces/provider.interface';
 import { ISubscription } from '../../interfaces/subscription.interface';
 import { LocalStorageService } from '../../services/local-storage.service';
+import { FileManagerComponent } from '../../components/file-manager/file-manager.component';
 
 @Component({
   selector: 'app-profile',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FileManagerComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })

@@ -47,8 +47,8 @@ export class UserService {
    * @returns Observable<IJob[]>
    */
   getUserJobs(uid: string): Observable<IJob[]> {
-    return this.http.get<IJob[]>(`${this.apiBaseUrl}/users/${uid}/jobs`);
-    // return this.http.get<IJob[]>(`${this.apiBaseUrl}/users/cde5e204-d172-4f0b-9e4d-7a43e3bd2d8c/jobs`);
+    // return this.http.get<IJob[]>(`${this.apiBaseUrl}/users/${uid}/jobs`);
+    return this.http.get<IJob[]>(`${this.apiBaseUrl}/users/cde5e204-d172-4f0b-9e4d-7a43e3bd2d8c/jobs`);
   }
 
   /**

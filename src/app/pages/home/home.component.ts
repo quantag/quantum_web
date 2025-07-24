@@ -295,10 +295,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
     
     // Process the form submission
-    console.log('Form submitted:', this.contactForm.value);
     this.formspreeService.sendMessage(this.contactForm.value).subscribe({
       next: (response) => {
-        console.log('Form submission successful:', response);
           alert('Thank you for your message! We will get back to you soon.');
           this.contactForm.reset();
           this.formSubmitted = false;
@@ -316,22 +314,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       const code = params['code'];
       const error = params['error'];
       
-      console.log('Auth Callback Params:', params);
-
       if (error) {
         console.error('Authentication error:', error);
         return;
       }
       
       if (code) {
-        this.googleAuthService.authenticateWithCode(code).subscribe({
-          next: (user) => {
-            console.log('Authentication successful:', user);
-          },
-          error: (error) => {
-            console.error('Authentication failed:', error);
-          }
-        });
+        this.googleAuthService.authenticateWithCode(code).subscribe();
       }
     });
   }

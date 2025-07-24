@@ -22,8 +22,8 @@ export interface GoogleTokenResponse {
 })
 export class GoogleAuthService {
   private clientId = environment.clientId;
-  private clientSecret = environment.clientSecret || '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'; // Add client secret to environment
-  private redirectUri = environment.redirectUri || 'http://localhost:4200';
+  private clientSecret = environment.clientSecret;
+  private redirectUri = environment.redirectUri;
   private userSubject = new BehaviorSubject<IGoogleUser | null>(null);
   private tokenSubject = new BehaviorSubject<string | null>(null);
   private refreshTokenSubject = new BehaviorSubject<string | null>(null);
@@ -174,12 +174,12 @@ export class GoogleAuthService {
     }
 
     // Check if token is expired (you might want to store expiry time)
-    const currentTime = Math.floor(Date.now() / 1000);
+    const currentTime = Math.floor(Date.now());
     const expiryTime = this.getExpiresIn();
-
     if (expiryTime && expiryTime < currentTime) {
       // Token is expired, try to refresh
       if (refreshToken) {
+        console.warn('Token expired, attempting to refresh...');
         return this.refreshAccessToken(refreshToken).pipe(
           map(tokenResponse => {
             this.handleTokenResponse(tokenResponse);

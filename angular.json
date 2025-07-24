@@ -61,7 +61,8 @@
                 "glob": "**/*",
                 "input": "src/assets/images",
                 "output": "assets/images"
-              }
+              },
+              "src/auth-callback.html"
             ],
             "styles": [
               "src/styles.scss"
@@ -142,7 +143,8 @@
                 "glob": "**/*",
                 "input": "src/assets/images",
                 "output": "assets/images"
-              }
+              },
+              "src/auth-callback.html"
             ],
             "styles": [
               "src/styles.scss"

@@ -6,7 +6,7 @@ import { IGoogleUser } from '../interfaces/googleUser.interface';
 })
 export class LocalStorageService {
   
-  constructor() { }
+  constructor() {}
 
   // Set item in localStorage
   setItem(key: string, value: any): void {
