@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MockCloudFilesService as CloudFilesService, FileItem, FileMetadata } from '../../services/mock-cloud-files.service';
+import { forkJoin, Observable } from 'rxjs';
+import { CloudFilesService } from '../../services/cloud-files.service';
+import { FileItem, FileMetadata, SuccessResponse } from '../../interfaces/cloud_files.interface';
 
 @Component({
   selector: 'app-file-manager',
@@ -11,7 +13,7 @@ import { MockCloudFilesService as CloudFilesService, FileItem, FileMetadata } fr
   styleUrl: './file-manager.component.scss'
 })
 export class FileManagerComponent implements OnInit {
-  currentPath = '/';
+  currentPath = '';
   fileItems: FileItem[] = [];
   loading = false;
   errorMessage = '';
@@ -74,17 +76,15 @@ export class FileManagerComponent implements OnInit {
 
   navigateToFolder(folderName: string) {
     this.currentPath = this.joinPaths(this.currentPath, folderName);
+    console.log(`Navigating to folder: ${this.currentPath}`);
     this.loadDirectory();
   }
 
   goUp() {
-    if (this.currentPath !== '/') {
+    if (this.currentPath !== '') {
       const pathParts = this.currentPath.split('/').filter(part => part);
       pathParts.pop();
-      this.currentPath = '/' + pathParts.join('/');
-      if (this.currentPath !== '/') {
-        this.currentPath += '/';
-      }
+      this.currentPath = pathParts.join('/');
       this.loadDirectory();
     }
   }
@@ -116,28 +116,35 @@ export class FileManagerComponent implements OnInit {
   uploadFiles() {
     if (!this.selectedFiles) return;
 
-    const uploadPromises: Promise<any>[] = [];
+    this.loading = true;
+    this.errorMessage = '';
+
+    const uploadObservables: Observable<SuccessResponse>[] = [];
 
     for (let i = 0; i < this.selectedFiles.length; i++) {
       const file = this.selectedFiles[i];
       const filePath = this.joinPaths(this.currentPath, file.name);
       
-      const uploadPromise = this.cloudFilesService.uploadFile(filePath, file).toPromise();
-      uploadPromises.push(uploadPromise);
+      // Ensure file is treated as binary data
+      const uploadObservable = this.cloudFilesService.uploadFile(filePath, file);
+      uploadObservables.push(uploadObservable);
     }
 
-    Promise.all(uploadPromises).then(
-      () => {
+    // Use forkJoin for better error handling and type safety
+    forkJoin(uploadObservables).subscribe({
+      next: () => {
         this.selectedFiles = null;
         // Clear the file input
         const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
+        this.loading = false;
         this.loadDirectory();
       },
-      (error) => {
+      error: (error) => {
         this.errorMessage = `Error uploading files: ${error.message}`;
+        this.loading = false;
       }
-    );
+    });
   }
 
   downloadFile(fileName: string) {
@@ -208,7 +215,8 @@ export class FileManagerComponent implements OnInit {
   }
 
   private joinPaths(...paths: string[]): string {
-    return paths
+    console.log('Joining paths:', paths);
+    return paths.filter(path => path !== '')
       .join('/')
       .replace(/\/+/g, '/')
       .replace(/\/$/, '') || '/';

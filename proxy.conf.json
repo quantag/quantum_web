@@ -4,5 +4,11 @@
     "secure": true,
     "changeOrigin": true,
     "logLevel": "debug"
+  },
+  "/api2/**": {
+    "target": "https://cryspprod3.quantag-it.com:444",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
   }
 }

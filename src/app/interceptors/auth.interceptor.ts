@@ -6,6 +6,8 @@ import { GoogleAuthService } from '../services/google-auth.service';
 // Define which URLs should include the auth token
 const protectedUrls = [
   'getuser_by_googleid',
+  'file-management-api',
+  'api2'
   // Add more protected endpoints as needed
 ];
 

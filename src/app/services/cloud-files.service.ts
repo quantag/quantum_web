@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { FileItem, FileMetadata, SuccessResponse, RenameRequest } from './mock-cloud-files.service';
+import { environment } from '../../environments/environment';
+import { FileItem, FileMetadata, RenameRequest, SuccessResponse } from '../interfaces/cloud_files.interface';
 
 
 
@@ -9,7 +10,7 @@ import { FileItem, FileMetadata, SuccessResponse, RenameRequest } from './mock-c
   providedIn: 'root'
 })
 export class CloudFilesService {
-  private baseUrl = '/api'; // This will be proxied to your backend
+  private baseUrl = environment.baseFileManagerUrl; // This will be proxied to your backend
 
   constructor(private http: HttpClient) {}
 
@@ -123,7 +124,12 @@ export class CloudFilesService {
    * @returns Observable<SuccessResponse>
    */
   uploadFile(path: string, file: File): Observable<SuccessResponse> {
-    return this.writeFile(path, file);
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+
+    return this.http.post<SuccessResponse>(`${this.baseUrl}/file`, formData, {
+      params: { path }
+    });
   }
 
   /**

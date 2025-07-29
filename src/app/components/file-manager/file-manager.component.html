@@ -1,14 +1,12 @@
 <div class="file-manager">
-  <h2>Cloud File Manager</h2>
-  
   <!-- Current Path -->
   <div class="current-path">
-    <strong>Current Path:</strong> {{ currentPath }}
+    <strong>Current Path:</strong> /{{ currentPath }}
   </div>
 
   <!-- Actions -->
   <div class="actions">
-    <button (click)="goUp()" [disabled]="currentPath === '/'">&#8593; Up</button>
+    <button (click)="goUp()" [disabled]="currentPath === ''">&#8593; Up</button>
     <button (click)="refresh()">&#8635; Refresh</button>
     <input type="text" [(ngModel)]="newFolderName" placeholder="New folder name">
     <button (click)="createNewFolder()" [disabled]="!newFolderName.trim()">📁 Create Folder</button>
