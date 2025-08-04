@@ -62,7 +62,9 @@
                 "input": "src/assets/images",
                 "output": "assets/images"
               },
-              "src/auth-callback.html"
+              "src/auth-callback.html",
+              "src/robots.txt",
+              "src/sitemap.xml"
             ],
             "styles": [
               "src/styles.scss"
@@ -144,7 +146,9 @@
                 "input": "src/assets/images",
                 "output": "assets/images"
               },
-              "src/auth-callback.html"
+              "src/auth-callback.html",
+              "src/robots.txt",
+              "src/sitemap.xml"
             ],
             "styles": [
               "src/styles.scss"
