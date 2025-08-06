@@ -1,15 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { IGoogleUser } from '../interfaces/googleUser.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocalStorageService {
+  private isBrowser: boolean;
   
-  constructor() {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   // Set item in localStorage
   setItem(key: string, value: any): void {
+    if (!this.isBrowser) return;
     try {
       const serializedValue = JSON.stringify(value);
       localStorage.setItem(key, serializedValue);
@@ -20,6 +25,7 @@ export class LocalStorageService {
 
   // Get item from localStorage
   getItem<T>(key: string): T | null {
+    if (!this.isBrowser) return null;
     try {
       const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : null;
@@ -31,6 +37,7 @@ export class LocalStorageService {
 
   // Remove item from localStorage
   removeItem(key: string): void {
+    if (!this.isBrowser) return;
     try {
       localStorage.removeItem(key);
     } catch (error) {
@@ -40,6 +47,7 @@ export class LocalStorageService {
 
   // Clear all localStorage
   clear(): void {
+    if (!this.isBrowser) return;
     try {
       localStorage.clear();
     } catch (error) {
@@ -49,11 +57,13 @@ export class LocalStorageService {
 
   // Check if key exists
   hasItem(key: string): boolean {
+    if (!this.isBrowser) return false;
     return localStorage.getItem(key) !== null;
   }
 
   // Get all keys
   getAllKeys(): string[] {
+    if (!this.isBrowser) return [];
     try {
       return Object.keys(localStorage);
     } catch (error) {
@@ -64,6 +74,7 @@ export class LocalStorageService {
 
   // Get localStorage size in bytes
   getStorageSize(): number {
+    if (!this.isBrowser) return 0;
     try {
       let total = 0;
       for (let key in localStorage) {

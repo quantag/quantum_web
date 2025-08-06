@@ -19,21 +19,15 @@
         </ul>
 
         <div class="navigation__login-mobile">
-            @if(isLogin) {
-                <a class="navigation__link" routerLink="/profile" routerLinkActive="active">My Profile</a>
-                <app-button [label]="'Log Out'" (clicked)="signOut()"></app-button>
-            } @else {
-                <app-button [label]="'Log In'" (clicked)="signIn()"></app-button>
-            }
+                <a [class.hidden]="!isLogin" class="navigation__link" routerLink="/profile" routerLinkActive="active">My Profile</a>
+                <app-button [class.hidden]="!isLogin" [label]="'Log Out'" (clicked)="signOut()"></app-button>
+                <app-button [class.hidden]="isLogin" [label]="'Log In'" (clicked)="signIn()"></app-button>
         </div>
     </div>
 
     <div class="navigation__login-desktop">
-            @if(isLogin) {
-            <a class="navigation__link" routerLink="/profile" routerLinkActive="active">My Profile</a>
-            <app-button [label]="'Log Out'" (clicked)="signOut()"></app-button>
-            } @else {
-                <app-button [label]="'Log In'" (clicked)="signIn()"></app-button>
-            }
+            <a [class.hidden]="!isLogin" class="navigation__link" routerLink="/profile" routerLinkActive="active">My Profile</a>
+            <app-button [class.hidden]="!isLogin" [label]="'Log Out'" (clicked)="signOut()"></app-button>
+            <app-button [class.hidden]="isLogin" [label]="'Log In'" (clicked)="signIn()"></app-button>
     </div>
 </div>

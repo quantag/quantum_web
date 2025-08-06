@@ -7,7 +7,7 @@
         const code = urlParams.get('code');
         
         if (code) {
-            window.location.href = `/#/?code=${code}`;
+            window.location.href = `/?code=${code}`;
         } else {
             console.log('No code parameter found in the URL.');
             window.location.href = '/';

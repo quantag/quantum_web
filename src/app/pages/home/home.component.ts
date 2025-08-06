@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ButtonComponent } from '../../components/button/button.component';
 import { IPlan } from '../../interfaces/plan.interface';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -176,14 +177,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Add contactForm property
   contactForm: FormGroup;
   formSubmitted = false;
+  private isBrowser: boolean;
 
   constructor(
     private router: Router,
     private fb: FormBuilder,
     private googleAuthService: GoogleAuthService,
     private route: ActivatedRoute,
-    private formspreeService: FormspreeService // Import HttpClient for future API calls
-  ) {}
+    private formspreeService: FormspreeService, // Import HttpClient for future API calls
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit(): void {
     this.handleAuthCallback();
@@ -209,9 +214,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private startAutoScroll(): void {
-    this.timer = setInterval(() => {
-      this.nextSlide();
-    }, this.interval);
+    if (this.isBrowser) {
+      this.timer = setInterval(() => {
+        this.nextSlide();
+      }, this.interval);
+    }
   }
 
   private stopAutoScroll(): void {
@@ -239,10 +246,15 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.sampleSlides.forEach(slide => slide.active = false);
     this.samplesHighlightOpacity = 0;
     this.sampleSlides[index].active = true;
-    
-    setTimeout(() => {
+
+    if (this.isBrowser) {
+      setTimeout(() => {
+        this.samplesHighlightOpacity = 1;
+      }, 500);
+    } else {
+      // For SSR, set opacity immediately
       this.samplesHighlightOpacity = 1;
-    }, 500);
+    }
   }
   
   public getIndicatorScale(index: number): number {
@@ -259,6 +271,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   public gotToExtension() {
+    if (!this.isBrowser) return; // Don't use window during SSR
     const link = 'https://marketplace.visualstudio.com/items?itemName=QuantagITSolutionsGmbH.openqasm-debug';
     window.open(link, '_blank');
   }

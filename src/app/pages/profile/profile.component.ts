@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { GoogleAuthService } from '../../services/google-auth.service';
@@ -56,25 +56,30 @@ export class ProfileComponent implements OnInit, OnDestroy {
   refreshingJobIds: string | null = null;
 
   private userSubscription: Subscription = new Subscription();
+  private isBrowser: boolean;
 
   constructor(
     private googleAuthService: GoogleAuthService,
     private userService: UserService,
     private providerService: ProviderService,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
     this.isDarkMode = this.localStorageService.getDarkMode();
   }
 
   ngOnInit(): void {
-    // Load providers once on initialization
-    this.loadProviders();
-    this.loadSubscriptions();
+    // Only load providers and subscriptions in browser environment
+    if (this.isBrowser) {
+      this.loadProviders();
+      this.loadSubscriptions();
+    }
     
     // Subscribe to Google user changes
     this.userSubscription = this.googleAuthService.user$.subscribe(async user => {
       this.googleUser = user;
-      if (user) {
+      if (user && this.isBrowser) {
         this.isLoadingApiUser = true;
         this.apiUser = await this.loadApiUserData(user.id, user.email);
         this.isLoadingApiUser = false;
@@ -173,6 +178,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   // Download methods for job input and results
   downloadJobInput(job: IJob): void {
+    if (!this.isBrowser) return; // Don't run during SSR
     if (!job.input) {
       console.warn('No input data available for download');
       return;
@@ -184,6 +190,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   downloadJobResults(job: IJob): void {
+    if (!this.isBrowser) return; // Don't run during SSR
     if (!job.results) {
       console.warn('No results data available for download');
       return;
@@ -195,6 +202,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   private downloadJsonFile(content: string, filename: string): void {
+    if (!this.isBrowser) return; // Don't run during SSR
     try {
       // Parse the content to validate it's valid JSON, then stringify it nicely
       const jsonData = JSON.parse(content);
@@ -540,6 +548,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   copyToClipboard(text: string): void {
+    if (!this.isBrowser) return; // Don't run during SSR
     if (!text) {
       console.error('Text is required for copying');
       return;
@@ -553,6 +562,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   // Remove job method
   removeJob(jobId: string): void {
+    if (!this.isBrowser) return; // Don't run during SSR
     if (!jobId) {
       console.error('Job ID is required for removal');
       return;

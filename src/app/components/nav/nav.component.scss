@@ -61,6 +61,10 @@
         border-color: $border-color;
     }
 
+    .hidden {
+        display: none;
+    }
+
     // Responsive styles for devices less than 992px
     @media (max-width: 992px) {
         &__hamburger {
