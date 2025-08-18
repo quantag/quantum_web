@@ -46,9 +46,24 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public sampleSlides = [
     {
+      image: 'assets/images/sample-7.png',
+      title: '3D circuit visualization',
+      active: true
+    },
+    {
       image: 'assets/images/sample-1.png',
       title: 'OpenQASM Code <br> In Disassemply View ',
-      active: true
+      active: false
+    },
+    {
+      image: 'assets/images/sample-5.png',
+      title: 'Circuit Visualization <br> In IDE',
+      active: false
+    },
+    {
+      image: 'assets/images/sample-6.png',
+      title: 'Convert OpenQASM to QIR',
+      active: false
     },
     {
       image: 'assets/images/sample-2.png',
@@ -63,21 +78,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       image: 'assets/images/sample-4.png',
       title: 'pyTKET Framework <br> Support',
-      active: false
-    },
-    {
-      image: 'assets/images/sample-5.png',
-      title: 'Circuit Visualization <br> In IDE',
-      active: false
-    },
-    {
-      image: 'assets/images/sample-6.png',
-      title: 'Convert OpenQASM to QIR',
-      active: false
-    },
-    {
-      image: 'assets/images/sample-7.png',
-      title: '3D circuit visualization',
       active: false
     },
   ];
