@@ -72,7 +72,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     },
     {
       image: 'assets/images/sample-6.png',
-      title: 'Convert OpenQASM to QIR ',
+      title: 'Convert OpenQASM to QIR',
+      active: false
+    },
+    {
+      image: 'assets/images/sample-7.png',
+      title: '3D circuit visualization',
       active: false
     },
   ];
