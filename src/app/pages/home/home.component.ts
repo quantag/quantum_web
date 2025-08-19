@@ -51,6 +51,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       active: true
     },
     {
+      image: 'assets/images/sample-8.png',
+      title: 'ZX Calculus Support',
+      active: false
+    },
+    {
       image: 'assets/images/sample-1.png',
       title: 'OpenQASM Code <br> In Disassemply View ',
       active: false
