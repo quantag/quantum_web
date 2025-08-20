@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { SeoService } from '../../../../services/seo.service';
 
 @Component({
   selector: 'app-qir',
@@ -17,9 +18,10 @@ export class QirComponent implements OnInit {
   isConverting: boolean = false;
   errorMessage: string = '';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private seoService: SeoService) { }
 
   ngOnInit(): void {
+    this.seoService.updateSeoTags(this.seoService.getSeoData('qir'));
   }
 
   convertToQir(): void {

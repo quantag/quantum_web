@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
+import { SeoService } from '../../../../services/seo.service';
 
 declare var QuantumCircuit: any;
 
@@ -46,9 +47,10 @@ export class QeditComponent implements OnInit {
         }
         return 'Unexpected error, please try later';
     }
-  constructor(private httpService: HttpService) {}
+  constructor(private httpService: HttpService, private seoService: SeoService) {}
 
     ngOnInit(): void {
+        this.seoService.updateSeoTags(this.seoService.getSeoData('qedit'));
         this.httpService.getAlgoritms().subscribe((data: any) => {
             this.algorithms = data.algos;
         });

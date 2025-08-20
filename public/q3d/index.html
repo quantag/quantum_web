@@ -2,22 +2,80 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>QPU Visualizer</title>
+  <meta name="description"
+    content="QPU Visualizer - Interactive 3D quantum circuit visualization tool for QASM files. Visualize quantum algorithms, gates, and circuits in real-time 3D with support for multiple quantum backends including IBM Quantum. Transpile, optimize, and render quantum circuits with comprehensive gate libraries and hardware simulation.">
+  <meta name="keywords"
+    content="quantum,3d,circuit,visualizer,QPU,QASM,quantum processing unit,quantum visualization,3D quantum circuits,quantum gates,quantum algorithms,quantum transpiler,IBM quantum,quantum backends,quantum hardware,quantum simulation,quantum compiler,circuit visualization,quantum programming,qubits,quantum computing,Three.js,interactive visualization,quantum development,quantum debugging,gate libraries,quantum optimization,quantum depth,circuit analysis">
+  <title>QPU Visualizer - Interactive 3D Quantum Circuit Visualization Tool</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" sizes="any">
   <style>
-    body { margin:0; overflow:hidden; background:#0b0d10; color:#e5e7eb; font-family:sans-serif; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #0b0d10;
+      color: #e5e7eb;
+      font-family: sans-serif;
+    }
+  
     #toolbar {
-      position:fixed; top:10px; left:10px; z-index:10;
-      background:rgba(0,0,0,0.55); border:1px solid #334155; border-radius:8px; padding:10px;
-      display:grid; grid-auto-flow:column; grid-auto-columns:max-content; gap:8px; align-items:center; font-size:13px;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+      max-width: calc(100vw - 20px);
+      box-sizing: border-box;
     }
-    #file { display:none; }
-    button, select {
-      background:#1f2937; color:#e5e7eb; border:1px solid #374151; border-radius:6px; padding:6px 10px; cursor:pointer;
+  
+    #file {
+      display: none;
     }
-    button:hover, select:hover { background:#374151; }
-    #status { font-size:12px; color:#9ca3af; margin-left:6px; }
-    .sep { width:1px; height:22px; background:#334155; margin:0 4px; }
+  
+    button,
+    select {
+      background: #1f2937;
+      color: #e5e7eb;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+  
+    button:hover,
+    select:hover {
+      background: #374151;
+    }
+  
+    #status {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-left: 6px;
+    }
+  
+    .sep {
+      width: 1px;
+      height: 22px;
+      background: #334155;
+      margin: 0 4px;
+    }
   </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VYP9175ZBC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-VYP9175ZBC');
+  </script>
 </head>
 <body>
   <div id="toolbar">

@@ -1,4 +1,6 @@
 // qpu_viewer.js
+import { VRButton } from "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/webxr/VRButton.js";
+
 export function initViewer(THREE, OrbitControls, renderQPU) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0b0d10);
@@ -12,14 +14,18 @@ export function initViewer(THREE, OrbitControls, renderQPU) {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(w, h);
+  renderer.xr.enabled = true; // Enable WebXR
   document.body.appendChild(renderer.domElement);
+
+  // Add VR button
+  document.body.appendChild(VRButton.createButton(renderer));
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
   controls.zoomSpeed = 1.0;
-  controls.minDistance = 10;     // prevent zooming inside the scene
-  controls.maxDistance = 2000;   // prevent zooming too far out
+  controls.minDistance = 10;
+  controls.maxDistance = 2000;
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.6));
   const dir = new THREE.DirectionalLight(0xffffff, 0.7);
@@ -34,12 +40,10 @@ export function initViewer(THREE, OrbitControls, renderQPU) {
     renderer.setSize(w, h);
   });
 
-  function animate() {
-    requestAnimationFrame(animate);
+  renderer.setAnimationLoop(() => {
     controls.update();
     renderer.render(scene, camera);
-  }
-  animate();
+  });
 
   const ctx = {
     THREE,
@@ -54,16 +58,19 @@ export function initViewer(THREE, OrbitControls, renderQPU) {
   return ctx;
 }
 
-
 export async function setGateLibrary(modulePath, ctx) {
-  if (ctx.gateLib?.dispose) { try { ctx.gateLib.dispose(); } catch {} }
-  const mod = await import(modulePath + `?v=${Date.now()}`); // cache-bust while iterating
-  if (!mod.getMeshForGate) throw new Error('Gate library missing getMeshForGate()');
+  if (ctx.gateLib?.dispose) {
+    try {
+      ctx.gateLib.dispose();
+    } catch {}
+  }
+  const mod = await import(modulePath + `?v=${Date.now()}`);
+  if (!mod.getMeshForGate) throw new Error("Gate library missing getMeshForGate()");
   ctx.gateLib = mod;
 }
 
 export function renderFromData(ctx, data) {
   const { scene, THREE, renderQPU, gateLib } = ctx;
-  if (!gateLib) throw new Error('Gate library not set');
+  if (!gateLib) throw new Error("Gate library not set");
   renderQPU(data, scene, THREE, gateLib);
 }

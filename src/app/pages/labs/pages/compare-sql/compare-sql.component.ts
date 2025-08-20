@@ -1,8 +1,9 @@
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ITableDiff } from '../../../../interfaces/table_diff.interface';
 import { RouterLink } from '@angular/router';
+import { SeoService } from '../../../../services/seo.service';
 
 @Component({
   selector: 'app-compare-sql',
@@ -11,7 +12,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterLink]
 })
-export class CompareSqlComponent {
+export class CompareSqlComponent implements OnInit{
   file1: File | null = null;
   file2: File | null = null;
   isDragOver1: boolean = false;
@@ -34,8 +35,16 @@ export class CompareSqlComponent {
   private apiUrl = 'https://quantum.quantag-it.com/sql-compare-api/compare';
 
 
-  constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private seoService: SeoService
+  ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
+  }
+
+  ngOnInit(): void {
+    this.seoService.updateSeoTags(this.seoService.getSeoData('compare-sql'));
   }
 
   onDragOver(event: DragEvent, containerNumber: number): void {

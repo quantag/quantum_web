@@ -2,6 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { SeoService } from '../../../../services/seo.service';
 
 @Component({
   selector: 'app-base64',
@@ -24,11 +25,12 @@ export class Base64Component implements OnInit, AfterViewInit {
   isDragOver: boolean = false;
   private isBrowser: boolean;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private seoService: SeoService) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
   ngOnInit(): void {
+    this.seoService.updateSeoTags(this.seoService.getSeoData('base64'));
   }
 
   ngAfterViewInit(): void {

@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import JSZip from 'jszip';
 import { ProcessImgResponse } from '../../../../interfaces/proccessImgResponse.interface';
 import { RouterLink } from '@angular/router';
+import { SeoService } from '../../../../services/seo.service';
 
 interface CompressedImage {
   src: string;
@@ -35,11 +36,12 @@ export class QicComponent implements OnInit {
   isCreatingZip: boolean = false;
   errorMessage: string = '';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private seoService: SeoService) { }
 
   private apiUrl = 'https://quantum.quantag-it.com/image-handling-api/process';
 
   ngOnInit(): void {
+    this.seoService.updateSeoTags(this.seoService.getSeoData('qic'));
   }
 
   onDragOver(event: DragEvent): void {

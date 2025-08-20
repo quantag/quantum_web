@@ -6,6 +6,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { SeoService } from '../../../../services/seo.service';
 
 
 @Component({
@@ -34,11 +35,17 @@ export class XyzComponent implements OnInit, OnDestroy, AfterViewInit {
   availableFiles: Array<{name: string, size: string, date: string, url: string}> = [];
   currentFileName: string = '';
 
-  constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    private http: HttpClient, 
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private seoService: SeoService
+  ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
   ngOnInit(): void {
+    // Update SEO tags for this page
+    this.seoService.updateSeoTags(this.seoService.getSeoData('xyz'));
     this.initThree();
   }
 
