@@ -1,0 +1,209 @@
+<div class="base64-container">
+    <header class="base64-header">
+        <button class="back-btn" routerLink="/labs">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19L5 12L12 5"/>
+            </svg>
+            Back to Labs
+        </button>
+        <h2>Base64 Converter</h2>
+    </header>
+
+    <div class="base64-content-container">
+        <div class="converter-content">
+            <div class="converter-grid">
+                <!-- Text Input Section -->
+                <div class="input-section">
+                    <div class="section-header">
+                        <h3>
+                            <svg *ngIf="inputMode === 'text'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 7V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10,9 9,9 8,9"/>
+                            </svg>
+                            <svg *ngIf="inputMode === 'image'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="9" cy="9" r="2"/>
+                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                            </svg>
+
+                            <select [(ngModel)]="inputMode" class="input-mode-select">
+                                <option value="text">Plain Text</option>
+                                <option value="image">Image (PNG)</option>
+                            </select>
+                        </h3>
+                        <div class="section-actions">
+                            <button 
+                                type="button" 
+                                (click)="copyPlainText()" 
+                                class="copy-btn"
+                                [disabled]="!plainText"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                </svg>
+                                Copy
+                            </button>
+                            <button 
+                                type="button" 
+                                (click)="clearPlainText()" 
+                                class="clear-btn"
+                                [disabled]="isConverting || !plainText"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div *ngIf="inputMode === 'text'" class="text-input-container">
+                        <textarea
+                            #plainTextArea
+                            [(ngModel)]="plainText"
+                            placeholder="Enter your text here to encode to Base64..."
+                            class="code-textarea text-input"
+                            [disabled]="isConverting"
+                        ></textarea>
+                    </div>
+                    
+                    <div *ngIf="inputMode === 'image'" class="image-input-container" 
+                         [class.drag-over]="isDragOver"
+                         (dragover)="onDragOver($event)" 
+                         (dragleave)="onDragLeave($event)" 
+                         (drop)="onDrop($event)">
+                        <input type="file" accept="image/png" (change)="onImageFileSelected($event)" [disabled]="isConverting" />
+                        
+                        <div *ngIf="!isImagePreview" class="drag-drop-content">
+                            <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            <div class="drag-drop-text">
+                                <span class="highlight">Click to select</span> or drag and drop your PNG image here
+                                <br>
+                                <small>Only PNG files are supported</small>
+                            </div>
+                        </div>
+                        
+                        <div *ngIf="isImagePreview" class="image-preview-container">
+                            <img 
+                                [src]="imagePreviewSrc" 
+                                alt="Base64 Image Preview"
+                                class="image-preview"
+                                (error)="isImagePreview = false; plainText = 'Error: Invalid image data'"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Convert Buttons -->
+                <div class="convert-section">
+                    <button 
+                        type="button" 
+                        (click)="encodeToBase64()" 
+                        class="convert-btn encode-btn"
+                        [disabled]="!plainText.trim() || isConverting"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M7 17L17 7"/>
+                            <path d="M7 7h10v10"/>
+                        </svg>
+                        Encode to Base64
+                    </button>
+
+                    <button 
+                        type="button" 
+                        (click)="decodeFromBase64()" 
+                        class="convert-btn decode-btn"
+                        [disabled]="!base64Text.trim() || isConverting"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 7L7 17"/>
+                            <path d="M17 17H7V7"/>
+                        </svg>
+                        Decode from Base64
+                    </button>
+
+                    <!-- Error Message -->
+                    <div *ngIf="errorMessage" class="error-message">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                        </svg>
+                        {{ errorMessage }}
+                    </div>
+                </div>
+
+                <!-- Base64 Output Section -->
+                <div class="output-section">
+                    <div class="section-header">
+                        <h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="16" rx="2"/>
+                                <path d="M7 8h10"/>
+                                <path d="M7 12h10"/>
+                                <path d="M7 16h6"/>
+                            </svg>
+                            Base64
+                        </h3>
+                        <div class="section-actions">
+                            <button 
+                                type="button" 
+                                (click)="copyBase64Text()" 
+                                class="copy-btn"
+                                [disabled]="!base64Text"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                </svg>
+                                Copy
+                            </button>
+                            <button 
+                                type="button" 
+                                (click)="clearBase64Text()" 
+                                class="clear-btn"
+                                [disabled]="isConverting || !base64Text"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <textarea
+                        #base64TextArea
+                        [(ngModel)]="base64Text"
+                        placeholder="Base64 encoded/decoded text will appear here..."
+                        class="code-textarea base64-output"
+                    ></textarea>
+                </div>
+            </div>
+
+            <div *ngIf="plainText && base64Text" class="decoded-download-section">
+                <button 
+                    type="button" 
+                    (click)="downloadDecodedContent()" 
+                    class="copy-btn"
+                    [disabled]="!plainText"
+                    [title]="isDecodedImage() ? 'Download decoded image' : 'Download decoded text'"
+                >
+                    <svg *ngIf="!isDecodedImage()" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <svg *ngIf="isDecodedImage()" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="9" cy="9" r="2"/>
+                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                    </svg>
+                    Download {{ isDecodedImage() ? 'Image' : 'Text' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

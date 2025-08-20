@@ -4,25 +4,81 @@
   <!-- Home Page -->
   <url>
     <loc>https://quantum.quantag-it.com/</loc>
-    <lastmod>2025-08-18</lastmod>
+    <lastmod>2025-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <!-- Profile Page -->
   <url>
-    <loc>https://quantum.quantag-it.com/profile/</loc>
-    <lastmod>2025-08-18</lastmod>
+    <loc>https://quantum.quantag-it.com/profile</loc>
+    <lastmod>2025-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Privacy Policy Page -->
   <url>
-    <loc>https://quantum.quantag-it.com/privacy-policy/</loc>
-    <lastmod>2025-08-18</lastmod>
+    <loc>https://quantum.quantag-it.com/privacy-policy</loc>
+    <lastmod>2025-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Labs Main Page -->
+  <url>
+    <loc>https://quantum.quantag-it.com/labs</loc>
+    <lastmod>2025-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- XYZ Molecular Viewer Lab -->
+  <url>
+    <loc>https://quantum.quantag-it.com/labs/xyz</loc>
+    <lastmod>2025-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+
+  <!-- OpenQASM to QIR Converter Lab -->
+  <url>
+    <loc>https://quantum.quantag-it.com/labs/qir</loc>
+    <lastmod>2025-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Quantum Image Compression Lab -->
+  <url>
+    <loc>https://quantum.quantag-it.com/labs/qic</loc>
+    <lastmod>2025-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Quantum Circuit Playground Lab -->
+  <url>
+    <loc>https://quantum.quantag-it.com/labs/qedit</loc>
+    <lastmod>2025-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Base64 Converter Lab -->
+  <url>
+    <loc>https://quantum.quantag-it.com/labs/base64</loc>
+    <lastmod>2025-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- SQL Schema Comparison Lab -->
+  <url>
+    <loc>https://quantum.quantag-it.com/labs/compare-sql</loc>
+    <lastmod>2025-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
 
 </urlset>

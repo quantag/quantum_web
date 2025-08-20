@@ -28,6 +28,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       active: false
     },
     {
+      image: 'assets/images/header-6.jpg',
+      title: 'Support of <br> VR',
+      active: false
+    },
+    {
       image: 'assets/images/header-3.jpg',
       title: 'Support of <br> different <br> simulators',
       active: false
@@ -182,7 +187,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private currentIndex = 0;
   private timer: any;
-  private readonly interval = 5000; // 5 seconds
+  private readonly interval = 7000; // 7 seconds
   public samplesHighlightOpacity = 1; // Track opacity instead of just visibility
   // Add contactForm property
   contactForm: FormGroup;
@@ -283,6 +288,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   public gotToExtension() {
     if (!this.isBrowser) return; // Don't use window during SSR
     const link = 'https://marketplace.visualstudio.com/items?itemName=QuantagITSolutionsGmbH.openqasm-debug';
+    window.open(link, '_blank');
+  }
+
+  public gotToQ3D() {
+    if (!this.isBrowser) return; // Don't use window during SSR
+    const link = 'https://quantum.quantag-it.com/labs/q3d/index.html';
     window.open(link, '_blank');
   }
 

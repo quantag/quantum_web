@@ -1,0 +1,74 @@
+<div class="container">
+    <header class="qedit-header">
+        <button class="back-btn" routerLink="/labs">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19L5 12L12 5"/>
+            </svg>
+            Back to Labs
+        </button>
+        <h2>Quantum Circuit Playground</h2>
+    </header>
+    <div class="wrapper">
+        <mat-form-field class="version-select">
+            <mat-label>OPENQASM Version</mat-label>
+            <mat-select [(ngModel)]="version">
+                <mat-option [value]="'2'">{{'2'}}</mat-option>
+                <mat-option [value]="'3'">{{'3'}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <div class="code-edtior">
+            <ngx-monaco-editor
+                [ngStyle]="{height: '450px'}"
+                [options]="editorOptions"
+                [(ngModel)]="code"
+            >
+            </ngx-monaco-editor>
+        </div>
+        <div
+            matTooltip="Select OPENQASM Version"
+            [matTooltipDisabled]="!!version"
+            class="button-wrapper"
+        >
+            <button
+                mat-raised-button
+                (click)="sendCode()"
+                [disabled]="!version"
+
+            >
+                <mat-icon>play_arrow</mat-icon>
+            </button>
+        </div>
+
+        <h2>Algorithm Library</h2>
+
+        <mat-list class="algorithm-list mat-elevation-z5">
+            <mat-list-item
+                class="algorithm-list__item"
+                *ngFor="let algorithm of algorithms"
+                [matTooltip]="algorithm.description"
+                (click)="selectAlgorithm(algorithm)"
+            >
+                <span mat-line>{{algorithm.name}}</span>
+            </mat-list-item>
+        </mat-list>
+
+        <h2>Result</h2>
+
+        <ng-container *ngIf="loading">
+                <mat-spinner style="margin: 0 auto;"></mat-spinner>
+        </ng-container>
+
+        <div class="result" *ngIf="!loading">
+            <h3 *ngIf="status">Status: <b>{{statusText}}</b></h3>
+            <ng-container *ngIf="image">
+                    <img
+                        [src]="'data:image/jpeg;base64,'+image"
+                        alt=""
+                        class="mat-elevation-z5"
+
+                    >
+            </ng-container>
+        </div>
+    </div>
+</div>

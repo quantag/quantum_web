@@ -11,6 +11,11 @@ const protectedUrls = [
   // Add more protected endpoints as needed
 ];
 
+// Define URLs that should be excluded from auth even if they match protected patterns
+const excludedUrls = [
+  'api2/render_base64'
+];
+
 // Keep track of requests being retried to avoid infinite loops
 const retryingRequests = new Set<string>();
 
@@ -22,8 +27,11 @@ const getRequestKey = (req: any): string => {
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const googleAuthService = inject(GoogleAuthService);
   
+  // Check if the request URL should be excluded from auth
+  const isExcluded = excludedUrls.some(url => req.url.includes(url));
+  
   // Check if the request URL matches any protected URLs
-  const shouldAddToken = protectedUrls.some(url => req.url.includes(url));
+  const shouldAddToken = !isExcluded && protectedUrls.some(url => req.url.includes(url));
   
   if (!shouldAddToken) {
     // If not a protected URL, proceed without adding token

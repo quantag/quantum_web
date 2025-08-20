@@ -1,12 +1,19 @@
 <div class="home">
     <div class="slider">
-        @for (slide of slides; track slide.title) {
+        @for (slide of slides; track slide.title; let i = $index) {
             <div class="slider__item" [ngClass]="{'active': slide.active}">
                 <img [src]="slide.image" alt="Slide Image" />
                 <div class="slider__content">
                     <h2 [innerHTML]="slide.title"></h2>
                     <div class="slider__download">
+
                         <app-button
+                            *ngIf="i === 2"
+                            [label]="'Try It now'"
+                            (clicked)="gotToQ3D()">
+                        </app-button>
+                        <app-button
+                            *ngIf="i !== 2"
                             [label]="'Try In VS Code'"
                             [customIcon]="'assets/images/vs-code-icon.svg'"
                             (clicked)="gotToExtension()">

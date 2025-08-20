@@ -64,7 +64,8 @@
               },
               "src/auth-callback.html",
               "src/robots.txt",
-              "src/sitemap.xml"
+              "src/sitemap.xml",
+              { "glob": "**/*", "input": "node_modules/monaco-editor", "output": "/assets/monaco/" }
             ],
             "styles": [
               "src/styles.scss"
@@ -86,8 +87,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1000kB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -153,7 +154,8 @@
               },
               "src/auth-callback.html",
               "src/robots.txt",
-              "src/sitemap.xml"
+              "src/sitemap.xml",
+              { "glob": "**/*", "input": "node_modules/monaco-editor", "output": "/assets/monaco/" }
             ],
             "styles": [
               "src/styles.scss"

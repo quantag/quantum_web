@@ -33,6 +33,10 @@ html {
 }
 
 
+* {
+  box-sizing: border-box;
+}
+
 /* Set default font styles */
 body {
   margin: 0;
@@ -61,4 +65,8 @@ ul, li {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+.cdk-overlay-pane div.mat-mdc-select-panel {
+    background-color: $white;
 }

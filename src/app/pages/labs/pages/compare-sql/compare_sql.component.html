@@ -1,0 +1,197 @@
+<div class="compare-sql-container">
+    <header class="compare-sql-header">
+        <button class="back-btn" routerLink="/labs">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19L5 12L12 5"/>
+            </svg>
+            Back to Labs
+        </button>
+        <h2>Compare SQL Schemas</h2>
+    </header>
+
+    <div class="compare-sql-content-container">
+        <div class="comparison-content">
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="section-header">
+                    <h3>
+                        <img class="card_icon card_icon-color" src="assets/images/compare.svg" alt="card icon" />
+                        Upload SQL Files
+                    </h3>
+                </div>
+                
+                <!-- File 1 Upload -->
+                <div class="file-input-container" 
+                     [class.drag-over]="isDragOver1"
+                     (dragover)="onDragOver($event, 1)" 
+                     (dragleave)="onDragLeave($event, 1)" 
+                     (drop)="onDrop($event, 1)">
+                    <input id="file1" type="file" accept=".sql" (change)="onFileSelected($event, 1)" [disabled]="isComparing" />
+                    
+                    <div *ngIf="!file1" class="drag-drop-content">
+                        <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        <div class="drag-drop-text">
+                            <span class="highlight">Click to select</span> or drag and drop your first SQL file here
+                            <br>
+                            <small>Supports .sql files</small>
+                        </div>
+                    </div>
+                    
+                    <div *ngIf="file1" class="file-preview">
+                        <div class="file-info">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            <span class="file-name">{{ file1.name }}</span>
+                            <span class="file-size">({{ file1 ? (file1.size / 1024).toFixed(1) : '0' }} KB)</span>
+                        </div>
+                        <button class="remove-btn" (click)="removeFile(1)" [disabled]="isComparing">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- File 2 Upload -->
+                <div class="file-input-container" 
+                     [class.drag-over]="isDragOver2"
+                     (dragover)="onDragOver($event, 2)" 
+                     (dragleave)="onDragLeave($event, 2)" 
+                     (drop)="onDrop($event, 2)">
+                    <input id="file2" type="file" accept=".sql" (change)="onFileSelected($event, 2)" [disabled]="isComparing" />
+                    
+                    <div *ngIf="!file2" class="drag-drop-content">
+                        <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        <div class="drag-drop-text">
+                            <span class="highlight">Click to select</span> or drag and drop your second SQL file here
+                            <br>
+                            <small>Supports .sql files</small>
+                        </div>
+                    </div>
+                    
+                    <div *ngIf="file2" class="file-preview">
+                        <div class="file-info">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            <span class="file-name">{{ file2.name }}</span>
+                            <span class="file-size">({{ (file2.size / 1024).toFixed(1) }} KB)</span>
+                        </div>
+                        <button class="remove-btn" (click)="removeFile(2)" [disabled]="isComparing">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Compare Button -->
+                <div class="compare-section">
+                    <button class="compare-btn" 
+                            (click)="compareFiles()" 
+                            [disabled]="!file1 || !file2 || isComparing">
+
+                        <img *ngIf="!isComparing" class="card_icon" src="assets/images/compare.svg" alt="card icon" />
+                        <div *ngIf="isComparing" class="spinner"></div>
+                        {{ isComparing ? 'Comparing...' : 'Compare SQL Files' }}
+                    </button>
+                </div>
+
+                <!-- Error Message -->
+                <div *ngIf="errorMessage" class="error-message">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                    {{ errorMessage }}
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div *ngIf="result" class="results-section">
+                <div class="section-header">
+                    <div class="results-header-content">
+                        <h3>
+                            Comparison Results
+                        </h3>
+                        <button class="download-btn" (click)="downloadResults()" title="Download JSON Results">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Download JSON
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tables only in DB1 -->
+                <div *ngIf="result.tables_only_in_db1 && result.tables_only_in_db1.length > 0" class="result-category">
+                    <h4>Tables only in Database 1</h4>
+                    <div class="table-list">
+                        <div *ngFor="let table of result.tables_only_in_db1" class="table-item db1-only">
+                            {{ table }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tables only in DB2 -->
+                <div *ngIf="result.tables_only_in_db2 && result.tables_only_in_db2.length > 0" class="result-category">
+                    <h4>Tables only in Database 2</h4>
+                    <div class="table-list">
+                        <div *ngFor="let table of result.tables_only_in_db2" class="table-item db2-only">
+                            {{ table }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Differences -->
+                <div *ngIf="tableDifferenceKeys.length > 0" class="result-category">
+                    <div *ngFor="let tableName of tableDifferenceKeys" class="table-diff">
+                        <h4>{{ tableName }} Table Differences</h4>
+                        
+                        <!-- Fields with differences -->
+                        <div *ngIf="tableFieldData[tableName] && tableFieldData[tableName].fieldsWithDifferences.length > 0" class="field-category">
+                            <h6>Fields with different data types</h6>
+                            <div *ngFor="let field of tableFieldData[tableName].fieldsWithDifferences" class="field-diff">
+                                <strong>{{ field.key }}:</strong>
+                                <div class="data-type-comparison">
+                                    <span class="db1-type">DB1: {{ field.db1Type }}</span>
+                                    <span class="db2-type">DB2: {{ field.db2Type }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fields only in DB1 -->
+                        <div *ngIf="tableFieldData[tableName] && tableFieldData[tableName].fieldsOnlyInDb1.length > 0" class="field-category">
+                            <h6>Fields only in Database 1</h6>
+                            <div *ngFor="let field of tableFieldData[tableName].fieldsOnlyInDb1" class="field-item db1-only">
+                                <strong>{{ field.key }}:</strong> {{ field.value }}
+                            </div>
+                        </div>
+
+                        <!-- Fields only in DB2 -->
+                        <div *ngIf="tableFieldData[tableName] && tableFieldData[tableName].fieldsOnlyInDb2.length > 0" class="field-category">
+                            <h6>Fields only in Database 2</h6>
+                            <div *ngFor="let field of tableFieldData[tableName].fieldsOnlyInDb2" class="field-item db2-only">
+                                <strong>{{ field.key }}:</strong> {{ field.value }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

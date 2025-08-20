@@ -1,0 +1,84 @@
+<div class="circuit">
+    <header class="circuit-header">
+        <button class="back-btn" routerLink="/labs">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19L5 12L12 5"/>
+            </svg>
+            Back to Labs
+        </button>
+        <div class="header-content">
+            <h2>3D Quantum Circuit Viewer</h2>
+            <div *ngIf="hasLoadedCircuit && currentCircuitName" class="current-circuit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="2"/>
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                <span>{{ currentCircuitName }}</span>
+            </div>
+        </div>
+    </header>
+    
+    <div class="circuit-controls" [class.centered]="!hasLoadedCircuit">
+        <div class="control-section">
+            <h3>Quantum Circuit Visualization</h3>
+            <p class="description">
+                Experience quantum circuits in 3D! Currently displaying a sample Bell state preparation 
+                and Toffoli gate circuit with 4 qubits and various quantum gates.
+            </p>
+            
+            <div class="circuit-info" *ngIf="hasLoadedCircuit">
+                <div class="info-item">
+                    <strong>Qubits:</strong> {{ sampleCircuit.qubits }}
+                </div>
+                <div class="info-item">
+                    <strong>Gates:</strong> {{ sampleCircuit.gates.length }}
+                </div>
+                <div class="info-item">
+                    <strong>Steps:</strong> {{ sampleCircuit.gates.length }}
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button 
+                    type="button" 
+                    (click)="loadSampleCircuit()" 
+                    [disabled]="isLoading"
+                    class="load-btn"
+                >
+                    <svg *ngIf="!isLoading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                    <svg *ngIf="isLoading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    {{ isLoading ? 'Loading...' : 'Load Sample Circuit' }}
+                </button>
+            </div>
+
+            <div class="gate-legend" *ngIf="hasLoadedCircuit">
+                <h4>Gate Legend</h4>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f093fb;"></div>
+                        <span>H - Hadamard Gate</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #22c55e;"></div>
+                        <span>CX - CNOT Gate</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f59e0b;"></div>
+                        <span>CCX - Toffoli Gate</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ef4444;"></div>
+                        <span>CZ - Controlled-Z Gate</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <canvas #canvas></canvas>
+</div>

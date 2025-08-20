@@ -1,0 +1,141 @@
+@use 'colors' as *;
+
+.labs-container {
+  min-height: calc(100vh - 64px - 90px);
+  background-color: $primary-900;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 3rem;
+  
+  h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    font-weight: 300;
+  }
+}
+
+.navigation {
+  max-width: 1200px;
+  width: 100%;
+}
+
+.nav-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.nav-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  
+  &:not(.disabled):hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+  
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    
+    .card-icon {
+      opacity: 0.5;
+    }
+  }
+}
+
+a.nav-card {
+  text-decoration: none;
+}
+
+.card-icon {
+  color: #667eea;
+  margin-bottom: 1.5rem;
+  
+  svg, .card_icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .card_icon {
+    filter: brightness(0) saturate(100%) invert(64%) sepia(64%) saturate(6294%) hue-rotate(213deg) brightness(103%) contrast(84%);
+  }
+}
+
+.nav-card h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.nav-card p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  
+  &.available {
+    background: #e6f7e6;
+    color: #2d7d2d;
+  }
+  
+  &.coming-soon {
+    background: #fff3cd;
+    color: #856404;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .labs-container {
+    padding: 1rem;
+  }
+  
+  .header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .nav-cards {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .nav-card {
+    padding: 1.5rem;
+  }
+}
