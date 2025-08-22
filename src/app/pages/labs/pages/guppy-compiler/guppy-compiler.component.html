@@ -1,0 +1,140 @@
+<div class="compiler-container">
+    <header class="compiler-header">
+        <button class="back-btn" routerLink="/labs">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19L5 12L12 5"/>
+            </svg>
+            Back to Labs
+        </button>
+        <h2>Guppy Compiler</h2>
+    </header>
+
+    <div class="compiler-content-container">
+        <!-- File Upload Section -->
+        <div class="upload-section">
+            <div class="upload-controls">
+                <input #fileInput type="file" accept=".py" (change)="onFileChange($event)" style="display: none;">
+                <button mat-raised-button class="upload-btn" (click)="onFileSelect()">
+                    <mat-icon>upload_file</mat-icon>
+                    Upload Python Script
+                </button>
+                <button *ngIf="pythonCode.length > 0" mat-raised-button class="clear-btn" (click)="clearCode()">
+                    <mat-icon>clear</mat-icon>
+                    Clear Code
+                </button>
+            </div>
+        </div>
+
+        <!-- Code Editor Section -->
+        <div class="editor-section">
+            <div class="section-header">
+                <h3>Code Editor</h3>
+            </div>
+            <div class="editor-container">
+                <ngx-monaco-editor
+                    class="monaco-editor"
+                    [options]="editorOptions"
+                    [(ngModel)]="pythonCode">
+                </ngx-monaco-editor>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-section">
+            <button mat-raised-button 
+                    class="action-btn analyze-btn"
+                    (click)="analyzePythonCode()"
+                    [disabled]="isAnalyzing || !pythonCode.trim()">
+                    
+                <mat-spinner *ngIf="isAnalyzing" diameter="20"></mat-spinner>
+                <mat-icon *ngIf="!isAnalyzing">search</mat-icon>
+                <span *ngIf="!isAnalyzing">Analyze</span>
+            </button>
+
+            <button mat-raised-button 
+                    color="primary" 
+                    class="action-btn compile-btn"
+                    (click)="compileSelectedFunctions()"
+                    [disabled]="isCompiling || !hasSelectedFunctions()">
+                <mat-spinner *ngIf="isCompiling" diameter="20"></mat-spinner>
+                <mat-icon *ngIf="!isCompiling">build</mat-icon>
+                <span *ngIf="!isCompiling">Compile</span>
+            </button>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" *ngIf="errorMessage">
+            <mat-icon>error</mat-icon>
+            {{ errorMessage }}
+        </div>
+
+        <!-- Analysis Results -->
+        <div class="results-section" [class.results-section--light]="!isDarkMode" *ngIf="analysisResult">
+            <div class="section-header">
+                <h3>Analysis Results</h3>
+                <span class="results-info">Found {{ analysisResult.count }} compilable functions</span>
+            </div>
+
+            <div class="functions-list" *ngIf="analysisResult.functions.length > 0">
+                <div class="function-item" [class.function-item--light]="!isDarkMode" *ngFor="let func of analysisResult.functions">
+                    <div class="function-info">
+                        <mat-checkbox 
+                            [color]="'accent'"
+                            [checked]="selectedFunctions.has(func.name)"
+                            (change)="onFunctionSelect(func.name, $event.checked)"
+                            class="function-checkbox">
+                            <div class="function-details">
+                                <div class="function-name">{{ func.name }}</div>
+                                <div class="function-meta">
+                                    <span class="line-info">Lines {{ func.lineno }}-{{ func.end_lineno }}</span>
+                                    <span class="compile-sig">{{ func.compile_sig }}</span>
+                                </div>
+                            </div>
+                        </mat-checkbox>
+                    </div>
+
+                    <!-- Compile Results for this function -->
+                    <div class="compile-results" [class.compile-results--light]="!isDarkMode" *ngIf="compileResults[func.name]">
+                        <div class="compile-status" 
+                             [class.success]="isCompileSuccessful(func.name)"
+                             [class.error]="!isCompileSuccessful(func.name)">
+                            <mat-icon>{{ isCompileSuccessful(func.name) ? 'check_circle' : 'error' }}</mat-icon>
+                            <span>{{ isCompileSuccessful(func.name) ? 'Compilation successful' : 'Compilation failed' }}</span>
+                        </div>
+
+                        <div class="download-buttons" *ngIf="isCompileSuccessful(func.name)">
+                            <button mat-stroked-button 
+                                    class="download-btn"
+                                    *ngIf="hasCompileResult(func.name, 'hugr')"
+                                    (click)="downloadFile(func.name, 'hugr')">
+                                <mat-icon>get_app</mat-icon>
+                                Download Hugr
+                            </button>
+                            
+                            <button mat-stroked-button 
+                                    class="download-btn"
+                                    *ngIf="hasCompileResult(func.name, 'json')"
+                                    (click)="downloadFile(func.name, 'json')">
+                                <mat-icon>get_app</mat-icon>
+                                Download JSON
+                            </button>
+                            
+                            <button mat-stroked-button 
+                                    class="download-btn"
+                                    *ngIf="hasCompileResult(func.name, 'str')"
+                                    (click)="downloadFile(func.name, 'str')">
+                                <mat-icon>get_app</mat-icon>
+                                Download String
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-functions" *ngIf="analysisResult.functions.length === 0">
+                <mat-icon>info</mat-icon>
+                <p>No compilable functions found in the provided code.</p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -64,6 +64,50 @@
       opacity: 0.5;
     }
   }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  &--dark {
+    background: #21262d;
+    border: 1px solid #30363d;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+
+    &:not(.disabled):hover {
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      border-color: #484f58;
+    }
+
+    h3 {
+      color: #e6edf3;
+    }
+
+    p {
+      color: #e6edf3;
+    }
+
+    .status {
+      &.available {
+        background: rgba(46, 160, 67, 0.15);
+        color: #3fb950;
+      }
+      
+      &.coming-soon {
+        background: rgba(187, 128, 9, 0.15);
+        color: #e3b341;
+      }
+    }
+  }
 }
 
 a.nav-card {
@@ -82,19 +126,6 @@ a.nav-card {
   .card_icon {
     filter: brightness(0) saturate(100%) invert(64%) sepia(64%) saturate(6294%) hue-rotate(213deg) brightness(103%) contrast(84%);
   }
-}
-
-.nav-card h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.nav-card p {
-  color: #666;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
 }
 
 .card-footer {

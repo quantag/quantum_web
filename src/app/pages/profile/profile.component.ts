@@ -11,6 +11,7 @@ import { ProviderService } from '../../services/provider.service';
 import { IProvider } from '../../interfaces/provider.interface';
 import { ISubscription } from '../../interfaces/subscription.interface';
 import { LocalStorageService } from '../../services/local-storage.service';
+import { ThemeService } from '../../services/theme.service';
 import { FileManagerComponent } from '../../components/file-manager/file-manager.component';
 
 @Component({
@@ -47,6 +48,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   
   // Theme properties
   isDarkMode: boolean = false;
+  private themeSubscription?: Subscription;
   
   // Edit properties
   isEditingCompany: boolean = false;
@@ -62,11 +64,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private googleAuthService: GoogleAuthService,
     private userService: UserService,
     private providerService: ProviderService,
-    private localStorageService: LocalStorageService,
+    private themeService: ThemeService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
-    this.isDarkMode = this.localStorageService.getDarkMode();
+    
+    // Subscribe to theme changes
+    this.themeSubscription = this.themeService.isDarkMode$.subscribe(isDark => {
+      this.isDarkMode = isDark;
+    });
   }
 
   ngOnInit(): void {
@@ -94,6 +100,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.userSubscription.unsubscribe();
+    this.themeSubscription?.unsubscribe();
   }
 
   private async loadApiUserData(googleId: string, email: string): Promise<IApiUser> {
@@ -473,12 +480,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     const start = (this.currentPage - 1) * this.itemsPerPage + 1;
     const end = Math.min(this.currentPage * this.itemsPerPage, this.totalItems);
     return `${start}-${end} of ${this.totalItems}`;
-  }
-
-  // Theme methods
-  toggleDarkMode(): void {
-    this.isDarkMode = !this.isDarkMode;
-    this.localStorageService.setDarkMode(this.isDarkMode);
   }
 
   // Edit methods

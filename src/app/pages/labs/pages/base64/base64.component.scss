@@ -247,7 +247,8 @@
 }
 
 .image-input-container {
-  height: 254px;
+  min-height: 254px;
+  height: auto;
   padding: 16px;
   border: 2px dashed #e2e8f0;
   border-radius: 8px;

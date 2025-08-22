@@ -70,3 +70,7 @@ ul, li {
 .cdk-overlay-pane div.mat-mdc-select-panel {
     background-color: $white;
 }
+
+.mdc-checkbox .mdc-checkbox__checkmark {
+  color: $primary-900;
+}

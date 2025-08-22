@@ -1,9 +1,20 @@
-<div class="header">
+<div class="header" [class.header--dark]="isDarkMode">
     <div class="header__logo">
         <a routerLink="/home">
             <img src="assets/images/logo.svg" alt="Logo" />
             <span>Quantag Studio</span>
         </a>
     </div>
-    <app-nav></app-nav>
+    <div class="header__actions">
+        <app-nav></app-nav>
+        <button 
+            type="button" 
+            class="theme-toggle-btn"
+            [class.dark-mode]="isDarkMode"
+            (click)="toggleTheme()"
+            [title]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+        >
+            {{ isDarkMode ? '&#9788;' : '&#9790;' }}
+        </button>
+    </div>
 </div>

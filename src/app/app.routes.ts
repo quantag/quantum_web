@@ -9,6 +9,7 @@ import { QicComponent } from './pages/labs/pages/qic/qic.component';
 import { QeditComponent } from './pages/labs/pages/qedit/qedit.component';
 import { Base64Component } from './pages/labs/pages/base64/base64.component';
 import { CompareSqlComponent } from './pages/labs/pages/compare-sql/compare-sql.component';
+import { GuppyCompilerComponent } from './pages/labs/pages/guppy-compiler/guppy-compiler.component';
 
 export const routes: Routes = [
     {
@@ -51,6 +52,10 @@ export const routes: Routes = [
     {
         path: 'labs/compare-sql',
         component: CompareSqlComponent
+    },
+    {
+        path: 'labs/guppy-compiler',
+        component: GuppyCompilerComponent
     },
     {
         path: '**',

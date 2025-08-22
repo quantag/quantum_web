@@ -74,6 +74,11 @@ export class SeoService {
       title: '3D Circuit Visualizer',
       description: 'Interactive 3D quantum circuit visualization tool for rendering quantum algorithms and gate sequences in three-dimensional space. Explore quantum circuits with real-time manipulation and detailed gate analysis.',
       keywords: '3D quantum circuits, quantum visualization, circuit visualization, quantum gates 3D, quantum algorithms visualization, interactive circuits, quantum development, circuit analysis, Three.js quantum'
+    },
+    'guppy-compiler': {
+      title: 'Guppy Compiler',
+      description: 'Advanced Guppy Python compiler for quantum computing. Analyze Python functions, extract compilable quantum operations, and generate optimized quantum circuits in binary, JSON, and string formats for quantum development.',
+      keywords: 'Guppy compiler, Python quantum compiler, quantum Python, quantum circuit generation, Guppy language, quantum programming, Python to Guppy, quantum development tools, HUGR packages, quantum functions'
     }
   };
 

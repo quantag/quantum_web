@@ -25,53 +25,6 @@
     }
   }
 
-  .theme-toggle-btn {
-    position: absolute;
-    top: 12px;
-    right: 30px;
-    background: none;
-    border: 2px solid $white;
-    border-radius: 12px;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 1.6rem;
-    margin-bottom: 5px;
-    padding-bottom: 5px;
-    color: #e0e0e0;
-
-    &:hover {
-      background-color: $primary;
-      color: $white;
-    }
-
-    &.dark-mode {
-      border-color: #5C6DF7;
-      color: #5C6DF7;
-      padding-bottom: 0;
-      
-      &:hover {
-        background-color: #5C6DF7;
-        color: $white;
-      }
-    }
-
-    @media (max-width: 992px) {
-      top: 20px;
-      right: 60px;
-      width: 27px;
-      height: 27px;
-      border-radius: 8px;
-      font-size: 1.2rem;
-    }
-  }
-
-
-
   &__content {
     display: flex;
     flex-direction: column;

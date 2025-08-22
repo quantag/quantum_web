@@ -2,15 +2,6 @@
   <div class="container">
     <div class="profile__header">
       <h1>Profile</h1>
-      <button 
-        type="button" 
-        class="theme-toggle-btn"
-        [class.dark-mode]="isDarkMode"
-        (click)="toggleDarkMode()"
-        [title]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
-      >
-        {{ isDarkMode ? '&#9788;' : '&#9790;' }}
-      </button>
     </div>
 
     <div class="profile__content" [class.profile__content--dark]="isDarkMode" *ngIf="googleUser; else notLoggedIn">

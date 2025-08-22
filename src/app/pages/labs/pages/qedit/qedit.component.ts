@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { catchError } from 'rxjs';
+import { catchError, Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { IAlgorithmInterface } from '../../../../interfaces/IAlgoritm.interface';
@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
 import { SeoService } from '../../../../services/seo.service';
+import { ThemeService } from '../../../../services/theme.service';
 
 declare var QuantumCircuit: any;
 
@@ -23,8 +24,8 @@ declare var QuantumCircuit: any;
     standalone: true,
     imports: [CommonModule, FormsModule, MonacoEditorModule, MatFormField, MatListModule, MatIconModule, MatTooltipModule, MatProgressSpinnerModule, MatSelectModule, RouterLink]
 })
-export class QeditComponent implements OnInit {
-    public editorOptions = {language: 'qasm3', minimap: {enabled: false}};
+export class QeditComponent implements OnInit, OnDestroy {
+    public editorOptions = {language: 'qasm3', theme: 'vs', minimap: {enabled: false}};
     public loading: boolean = false;
     public algorithms: IAlgorithmInterface[] = [];
     public code: string = '';
@@ -34,6 +35,8 @@ export class QeditComponent implements OnInit {
     public status: string | null = null;
     public errorMsg: string | null = null;
     public image: any;
+    private themeSubscription?: Subscription;
+    
     get statusText(): string {
         if (this.status === '0') {
             return 'Successfully parsed';
@@ -47,13 +50,29 @@ export class QeditComponent implements OnInit {
         }
         return 'Unexpected error, please try later';
     }
-  constructor(private httpService: HttpService, private seoService: SeoService) {}
+
+    constructor(
+        private httpService: HttpService,
+        private seoService: SeoService,
+        private themeService: ThemeService
+    ) {}
 
     ngOnInit(): void {
         this.seoService.updateSeoTags(this.seoService.getSeoData('qedit'));
         this.httpService.getAlgoritms().subscribe((data: any) => {
             this.algorithms = data.algos;
         });
+
+        this.themeSubscription = this.themeService.isDarkMode$.subscribe(isDark => {
+            this.editorOptions = {
+                ...this.editorOptions,
+                theme: isDark ? 'vs-dark' : 'vs'
+            };
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.themeSubscription?.unsubscribe();
     }
 
     public sendCode(): void {

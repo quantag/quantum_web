@@ -6,7 +6,7 @@
 
   <nav class="navigation">
     <div class="nav-cards">
-      <div class="nav-card" routerLink="/labs/xyz">
+      <div class="nav-card" [class.nav-card--dark]="isDarkMode" routerLink="/labs/xyz">
         <div class="card-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"/>
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <a class="nav-card" href="https://quantum.quantag-it.com/labs/q3d/index.html">
+      <a class="nav-card" [class.nav-card--dark]="isDarkMode" href="https://quantum.quantag-it.com/labs/q3d/index.html">
         <div class="card-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="2" y1="6" x2="22" y2="6"/>
@@ -49,7 +49,7 @@
         </div>
       </a>
 
-      <div class="nav-card" routerLink="/labs/qir">
+      <div class="nav-card" [class.nav-card--dark]="isDarkMode" routerLink="/labs/qir">
         <div class="card-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7" rx="1"/>
@@ -70,7 +70,7 @@
         </div>
       </div>
 
-      <div class="nav-card" routerLink="/labs/qedit">
+      <div class="nav-card" [class.nav-card--dark]="isDarkMode" routerLink="/labs/qedit">
         <div class="card-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="2" y1="6" x2="22" y2="6"/>
@@ -92,7 +92,7 @@
         </div>
       </div>
 
-      <div class="nav-card" routerLink="/labs/base64">
+      <div class="nav-card" [class.nav-card--dark]="isDarkMode" routerLink="/labs/base64">
         <div class="card-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="4" width="18" height="16" rx="2"/>
@@ -110,7 +110,7 @@
         </div>
       </div>
 
-      <div class="nav-card" routerLink="/labs/qic">
+      <div class="nav-card" [class.nav-card--dark]="isDarkMode" routerLink="/labs/qic">
         <div class="card-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -125,12 +125,23 @@
         </div>
       </div>
 
-      <div class="nav-card" routerLink="/labs/compare-sql">
+      <div class="nav-card" [class.nav-card--dark]="isDarkMode" routerLink="/labs/compare-sql">
         <div class="card-icon">
           <img class="card_icon card_icon-color" src="assets/images/compare.svg" alt="card icon" />
         </div>
         <h3>Compare SQL Schemas</h3>
         <p>Compare two SQL schema files and view differences</p>
+        <div class="card-footer">
+          <span class="status available">Available</span>
+        </div>
+      </div>
+
+      <div class="nav-card" [class.nav-card--dark]="isDarkMode" routerLink="/labs/guppy-compiler">
+        <div class="card-icon">
+          <img class="card_icon card_icon-color" src="assets/images/compile.svg" alt="card icon" />
+        </div>
+        <h3>Guppy Compiler</h3>
+        <p>Detect and compile guppy functions</p>
         <div class="card-footer">
           <span class="status available">Available</span>
         </div>
