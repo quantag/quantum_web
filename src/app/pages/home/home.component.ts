@@ -53,47 +53,56 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       image: 'assets/images/sample-7.png',
       title: '3D circuit visualization',
-      active: true
+      active: true,
+      positionForMobile: 'right'
     },
     {
       image: 'assets/images/sample-8.png',
       title: 'ZX Calculus Support',
-      active: false
+      active: false,
+      positionForMobile: 'right'
     },
     {
       image: 'assets/images/sample-1.png',
       title: 'OpenQASM Code <br> In Disassemply View ',
-      active: false
+      active: false,
+      positionForMobile: 'center'
     },
     {
       image: 'assets/images/sample-5.png',
       title: 'Circuit Visualization <br> In IDE',
-      active: false
+      active: false,
+      positionForMobile: 'center'
     },
     {
       image: 'assets/images/sample-6.png',
       title: 'Convert OpenQASM to QIR',
-      active: false
+      active: false,
+      positionForMobile: 'center'
     },
     {
       image: 'assets/images/sample-9.png',
       title: 'Quantinuum Guppy Support',
-      active: false
+      active: false,
+      positionForMobile: 'left'
     },
     {
       image: 'assets/images/sample-2.png',
       title: 'Qiskit <br> Framework Support',
-      active: false
+      active: false,
+      positionForMobile: 'center'
     },
     {
       image: 'assets/images/sample-3.png',
       title: 'Quantum State <br> As Local Variables',
-      active: false
+      active: false,
+      positionForMobile: 'left'
     },
     {
       image: 'assets/images/sample-4.png',
       title: 'pyTKET Framework <br> Support',
-      active: false
+      active: false,
+      positionForMobile: 'center'
     },
   ];
 
