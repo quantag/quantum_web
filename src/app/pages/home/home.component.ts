@@ -76,6 +76,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       active: false
     },
     {
+      image: 'assets/images/sample-9.png',
+      title: 'Quantinuum Guppy Support',
+      active: false
+    },
+    {
       image: 'assets/images/sample-2.png',
       title: 'Qiskit <br> Framework Support',
       active: false

@@ -36,7 +36,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
-    width: 90%;
+    width: calc(90% - 5rem);
 
     @media (max-width: 968px) {
       grid-template-columns: 1fr;
@@ -111,7 +111,6 @@
     padding: 2.5rem;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     width: calc(90% - 5rem);
-    margin-bottom: 2rem;
 
     &--dark {
       background: #1a1a1a;

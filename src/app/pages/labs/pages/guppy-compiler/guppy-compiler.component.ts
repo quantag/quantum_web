@@ -13,7 +13,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { SeoService } from '../../../../services/seo.service';
 import { ThemeService } from '../../../../services/theme.service';
-import { GuppyAnalysisResponse, GuppyCompileResponse, GuppyCompileFunctionResult } from '../../../../interfaces/guppy.interface';
+import { GuppyAnalysisResponse, GuppyFunction, GuppyCompileResponse, GuppyCompileFunctionResult } from '../../../../interfaces/guppy.interface';
 
 @Component({
   selector: 'app-guppy-compiler',
@@ -55,6 +55,17 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
   public isDarkMode: boolean = false;
   private isBrowser: boolean;
   private themeSubscription?: Subscription;
+  
+  // URL and sample upload properties
+  public urlValue: string = '';
+  public isDownloading: boolean = false;
+  public isBrowsing: boolean = false;
+  public showSampleBrowser: boolean = false;
+  public availableSamples: Array<{name: string, description: string, content: string}> = [];
+  
+  // Monaco editor properties
+  private monacoEditor: any;
+  private decorations: string[] = [];
 
   // API endpoints (to be updated with actual endpoints)
   private apiEndpoint = 'https://quantum.quantag-it.com/guppy-compile-api';
@@ -80,6 +91,9 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
         theme: isDark ? 'vs-dark' : 'vs'
       };
     });
+
+    // Initialize sample scripts
+    this.initializeSampleScripts();
   }
 
   ngOnDestroy(): void {
@@ -124,6 +138,10 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
       next: (response) => {
         if (response && response.ok) {
           this.analysisResult = response;
+          // Highlight the detected functions after a short delay to ensure editor is ready
+          setTimeout(() => {
+            this.highlightGuppyFunctions();
+          }, 100);
         } else {
           this.errorMessage = 'Analysis failed. Please check your Python code.';
         }
@@ -244,10 +262,107 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
     return result && !!result[type];
   }
 
+  // Monaco editor methods
+  onEditorInit(editor: any): void {
+    this.monacoEditor = editor;
+  }
+
+  highlightGuppyFunctions(): void {
+    if (!this.monacoEditor || !this.analysisResult) return;
+
+    // Clear existing decorations
+    this.decorations = this.monacoEditor.deltaDecorations(this.decorations, []);
+
+    // Create new decorations for each function
+    const newDecorations = this.analysisResult.functions.map(func => ({
+      range: new (window as any).monaco.Range(func.lineno, 1, func.end_lineno, 1),
+      options: {
+        isWholeLine: true,
+        className: 'guppy-function-highlight',
+        glyphMarginClassName: 'guppy-function-glyph',
+        hoverMessage: { value: `**${func.name}**\nCompile signature: \`${func.compile_sig}\`` }
+      }
+    }));
+
+    // Apply decorations
+    this.decorations = this.monacoEditor.deltaDecorations([], newDecorations);
+  }
+
+  clearHighlights(): void {
+    if (!this.monacoEditor) return;
+    this.decorations = this.monacoEditor.deltaDecorations(this.decorations, []);
+  }
+
+  // Scroll to and highlight a specific function in the editor
+  scrollToFunction(func: GuppyFunction): void {
+    if (!this.monacoEditor) return;
+    
+    // Scroll to the function
+    this.monacoEditor.revealLineInCenter(func.lineno);
+    
+    // Temporarily highlight the function with a different color
+    const tempDecoration = this.monacoEditor.deltaDecorations([], [{
+      range: new (window as any).monaco.Range(func.lineno, 1, func.end_lineno, 1),
+      options: {
+        isWholeLine: true,
+        className: 'guppy-function-temp-highlight'
+      }
+    }]);
+
+    // Remove the temporary highlight after 2 seconds
+    setTimeout(() => {
+      this.monacoEditor.deltaDecorations(tempDecoration, []);
+    }, 2000);
+  }
+
+  // URL and sample upload methods
+  downloadFromUrl(): void {
+    if (!this.urlValue.trim()) return;
+    
+    this.isDownloading = true;
+    this.errorMessage = '';
+    
+    this.http.get(this.urlValue, { responseType: 'text' })
+      .subscribe({
+        next: (data) => {
+          this.pythonCode = data;
+          this.resetAnalysis();
+          // Clear URL input after successful download
+          this.urlValue = '';
+        },
+        error: (error) => {
+          console.error('Error downloading file:', error);
+          this.errorMessage = 'Error downloading file. Please check the URL and try again.';
+        },
+        complete: () => {
+          this.isDownloading = false;
+        }
+      });
+  }
+
+  browseSamples(): void {
+    this.showSampleBrowser = true;
+  }
+
+  closeSampleBrowser(): void {
+    this.showSampleBrowser = false;
+  }
+
+  loadSampleScript(sample: {name: string, description: string, content: string}): void {
+    this.pythonCode = sample.content;
+    this.resetAnalysis();
+    this.showSampleBrowser = false;
+  }
+
+  private initializeSampleScripts(): void {
+
+  }
+
   private resetAnalysis(): void {
     this.analysisResult = null;
     this.selectedFunctions.clear();
     this.compileResults = {};
+    this.clearHighlights();
   }
 
   clearCode(): void {

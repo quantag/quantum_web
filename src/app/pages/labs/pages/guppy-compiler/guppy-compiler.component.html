@@ -18,6 +18,38 @@
                     <mat-icon>upload_file</mat-icon>
                     Upload Python Script
                 </button>
+                
+                <input 
+                    type="url" 
+                    #urlInput 
+                    id="urlInput" 
+                    placeholder="https://example.com/script.py"
+                    [(ngModel)]="urlValue"
+                    class="url-input"
+                />
+                <button 
+                    mat-raised-button
+                    color="accent"
+                    (click)="downloadFromUrl()" 
+                    [disabled]="!urlValue || isDownloading"
+                    class="download-url-btn"
+                >
+                    <mat-spinner *ngIf="isDownloading" diameter="16"></mat-spinner>
+                    <mat-icon *ngIf="!isDownloading">download</mat-icon>
+                    {{ isDownloading ? 'Downloading...' : 'Download' }}
+                </button>
+                
+                <button 
+                    mat-raised-button
+                    (click)="browseSamples()" 
+                    [disabled]="isBrowsing"
+                    class="browse-samples-btn"
+                >
+                    <mat-spinner *ngIf="isBrowsing" diameter="16"></mat-spinner>
+                    <mat-icon *ngIf="!isBrowsing">folder</mat-icon>
+                    {{ isBrowsing ? 'Loading...' : 'Browse Samples' }}
+                </button>
+                
                 <button *ngIf="pythonCode.length > 0" mat-raised-button class="clear-btn" (click)="clearCode()">
                     <mat-icon>clear</mat-icon>
                     Clear Code
@@ -34,7 +66,8 @@
                 <ngx-monaco-editor
                     class="monaco-editor"
                     [options]="editorOptions"
-                    [(ngModel)]="pythonCode">
+                    [(ngModel)]="pythonCode"
+                    (onInit)="onEditorInit($event)">
                 </ngx-monaco-editor>
             </div>
         </div>
@@ -68,11 +101,10 @@
             {{ errorMessage }}
         </div>
 
-        <!-- Analysis Results -->
+        <!-- Detected Guppy Functions -->
         <div class="results-section" [class.results-section--light]="!isDarkMode" *ngIf="analysisResult">
             <div class="section-header">
-                <h3>Analysis Results</h3>
-                <span class="results-info">Found {{ analysisResult.count }} compilable functions</span>
+                <h3>Detected Guppy Functions</h3>
             </div>
 
             <div class="functions-list" *ngIf="analysisResult.functions.length > 0">
@@ -84,7 +116,9 @@
                             (change)="onFunctionSelect(func.name, $event.checked)"
                             class="function-checkbox">
                             <div class="function-details">
-                                <div class="function-name">{{ func.name }}</div>
+                                <div class="function-name" (click)="scrollToFunction(func)" title="Click to navigate to function in editor">
+                                    {{ func.name }}
+                                </div>
                                 <div class="function-meta">
                                     <span class="line-info">Lines {{ func.lineno }}-{{ func.end_lineno }}</span>
                                     <span class="compile-sig">{{ func.compile_sig }}</span>
@@ -134,6 +168,34 @@
             <div class="no-functions" *ngIf="analysisResult.functions.length === 0">
                 <mat-icon>info</mat-icon>
                 <p>No compilable functions found in the provided code.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sample Files Browser Modal -->
+    <div *ngIf="showSampleBrowser" class="sample-browser-overlay">
+        <div class="sample-browser-modal">
+            <div class="browser-header">
+                <h3>Sample Python Scripts</h3>
+                <button (click)="closeSampleBrowser()" class="close-btn" mat-icon-button>
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+            
+            <div class="sample-list">
+                <div 
+                    *ngFor="let sample of availableSamples" 
+                    class="sample-item"
+                    (click)="loadSampleScript(sample)"
+                >
+                    <div class="sample-icon">
+                        <mat-icon>description</mat-icon>
+                    </div>
+                    <div class="sample-details">
+                        <div class="sample-name">{{ sample.name }}</div>
+                        <div class="sample-description">{{ sample.description }}</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
