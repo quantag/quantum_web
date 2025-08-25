@@ -8,38 +8,6 @@
   flex-direction: column;
 }
 
-.compiler-header {
-  padding: 1rem 100px;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  
-  h2 {
-    margin: 0;
-    color: $white;
-    font-size: 1.5rem;
-    font-weight: 600;
-  }
-}
-
-.back-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    background: #5a6fd8;
-  }
-}
 
 .compiler-content-container {
   flex: 1;

@@ -1,15 +1,15 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { SeoService } from '../../../../services/seo.service';
+import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 
 @Component({
   selector: 'app-base64',
   templateUrl: './base64.component.html',
   styleUrls: ['./base64.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink]
+  imports: [CommonModule, FormsModule, LabHeaderComponent]
 })
 export class Base64Component implements OnInit, AfterViewInit {
   @ViewChild('plainTextArea', { static: false }) plainTextArea!: ElementRef<HTMLTextAreaElement>;

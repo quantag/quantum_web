@@ -2,15 +2,15 @@ import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ITableDiff } from '../../../../interfaces/table_diff.interface';
-import { RouterLink } from '@angular/router';
 import { SeoService } from '../../../../services/seo.service';
+import { LabHeaderComponent } from "../../../../components/lab-header/lab-header.component";
 
 @Component({
   selector: 'app-compare-sql',
   templateUrl: './compare_sql.component.html',
   styleUrls: ['./compare_sql.component.scss'],
   standalone: true,
-  imports: [CommonModule, RouterLink]
+  imports: [CommonModule, LabHeaderComponent]
 })
 export class CompareSqlComponent implements OnInit{
   file1: File | null = null;

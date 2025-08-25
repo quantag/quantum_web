@@ -2,15 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { SeoService } from '../../../../services/seo.service';
+import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 
 @Component({
   selector: 'app-qir',
   templateUrl: './qir.component.html',
   styleUrls: ['./qir.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink]
+  imports: [CommonModule, FormsModule, LabHeaderComponent]
 })
 export class QirComponent implements OnInit {
   openQasmCode: string = '';

@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit, OnDestroy, PLATFORM_ID, ViewChild, ElementRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
@@ -14,20 +13,21 @@ import { Subscription } from 'rxjs';
 import { SeoService } from '../../../../services/seo.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { GuppyAnalysisResponse, GuppyFunction, GuppyCompileResponse, GuppyCompileFunctionResult } from '../../../../interfaces/guppy.interface';
+import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 
 @Component({
   selector: 'app-guppy-compiler',
   standalone: true,
   imports: [
     CommonModule, 
-    RouterLink, 
     FormsModule, 
     MonacoEditorModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
     MatListModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    LabHeaderComponent
   ],
   templateUrl: './guppy-compiler.component.html',
   styleUrl: './guppy-compiler.component.scss'

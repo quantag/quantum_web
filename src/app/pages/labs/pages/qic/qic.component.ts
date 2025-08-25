@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import JSZip from 'jszip';
 import { ProcessImgResponse } from '../../../../interfaces/proccessImgResponse.interface';
-import { RouterLink } from '@angular/router';
 import { SeoService } from '../../../../services/seo.service';
+import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 
 interface CompressedImage {
   src: string;
@@ -26,7 +26,7 @@ interface OriginalImage {
   templateUrl: './qic.component.html',
   styleUrls: ['./qic.component.scss'],
   standalone: true,
-  imports: [CommonModule, RouterLink]
+  imports: [CommonModule, LabHeaderComponent]
 })
 export class QicComponent implements OnInit {
   originalImage: OriginalImage | null = null;

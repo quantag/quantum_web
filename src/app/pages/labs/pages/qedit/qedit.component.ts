@@ -11,9 +11,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { RouterLink } from '@angular/router';
 import { SeoService } from '../../../../services/seo.service';
 import { ThemeService } from '../../../../services/theme.service';
+import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 
 declare var QuantumCircuit: any;
 
@@ -22,7 +22,7 @@ declare var QuantumCircuit: any;
     templateUrl: './qedit.component.html',
     styleUrls: ['./qedit.component.scss'],
     standalone: true,
-    imports: [CommonModule, FormsModule, MonacoEditorModule, MatFormField, MatListModule, MatIconModule, MatTooltipModule, MatProgressSpinnerModule, MatSelectModule, RouterLink]
+    imports: [CommonModule, FormsModule, MonacoEditorModule, MatFormField, MatListModule, MatIconModule, MatTooltipModule, MatProgressSpinnerModule, MatSelectModule, LabHeaderComponent]
 })
 export class QeditComponent implements OnInit, OnDestroy {
     public editorOptions = {language: 'qasm3', theme: 'vs', minimap: {enabled: false}};
