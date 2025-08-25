@@ -1,11 +1,6 @@
 <div class="xyz">
     <header class="xyz-header">
-        <button class="back-btn" routerLink="/labs">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 12H5M12 19L5 12L12 5"/>
-            </svg>
-            Back to Labs
-        </button>
+        <app-button [label]="'Back to Labs'" (clicked)="navigateBack()" [icon]="'arrow_back'"></app-button>
         <div class="header-content">
             <h2>XYZ Molecular Viewer</h2>
             <div *ngIf="hasLoadedFile && currentFileName" class="current-file">
@@ -18,101 +13,69 @@
         </div>
     </header>
     
-    <div class="file-inputs" [class.centered]="!hasLoadedFile">
-        <div class="input-section">
-            <label for="fileInput">Upload XYZ File:</label>
-            <input type="file" #fileInput id="fileInput" accept=".xyz" />
-        </div>
-        
-        <div class="divider">
-            <span>OR</span>
-        </div>
-        
-        <div class="input-section">
-            <label for="urlInput">Download from URL:</label>
-            <div class="url-input-group">
-                <input 
-                    type="url" 
-                    #urlInput 
-                    id="urlInput" 
-                    placeholder="https://example.com/molecule.xyz"
-                    [(ngModel)]="urlValue"
-                />
-                <button 
-                    type="button" 
-                    (click)="downloadFromUrl()" 
-                    [disabled]="!urlValue || isDownloading"
-                    class="download-btn"
-                >
-                    <svg *ngIf="!isDownloading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7,10 12,15 17,10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    <svg *ngIf="isDownloading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 6v6l4 2"/>
-                    </svg>
-                    {{ isDownloading ? 'Downloading...' : 'Download' }}
-                </button>
-            </div>
-        </div>
-
-        <div class="divider">
-            <span>OR</span>
-        </div>
-
-        <div class="input-section">
-            <label>Browse Sample Files:</label>
-            <button 
-                type="button" 
-                (click)="browseFiles()" 
+    <div class="file-inputs">
+        <div class="upload-controls">
+            <input type="file" #fileInput id="fileInput" accept=".xyz" style="display: none;" />
+            <app-button
+                [type]="'raised'"
+                [icon]="'upload_file'"
+                [label]="'Upload XYZ File'"
+                (clicked)="fileInput.click()"
+            ></app-button>
+            
+            <input 
+                type="url" 
+                #urlInput 
+                id="urlInput" 
+                placeholder="https://example.com/molecule.xyz"
+                [(ngModel)]="urlValue"
+                class="url-input"
+            />
+            <app-button
+                [type]="'raised'"
+                [icon]="'download'"
+                [label]="'Download from URL'"
+                (clicked)="downloadFromUrl()"
+                [disabled]="!urlValue || isDownloading"
+                [loading]="isDownloading"
+            ></app-button>
+            
+            <app-button
+                [type]="'raised'"
+                [icon]="'folder'"
+                [label]="'Browse Samples'"
+                (clicked)="browseFiles()"
                 [disabled]="isBrowsing"
-                class="browse-btn"
-            >
-                <svg *ngIf="!isBrowsing" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                </svg>
-                <svg *ngIf="isBrowsing" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v6l4 2"/>
-                </svg>
-                {{ isBrowsing ? 'Loading...' : 'Browse Files' }}
-            </button>
+                [loading]="isBrowsing"
+            ></app-button>
         </div>
     </div>
 
     <!-- File Browser Modal -->
-    <div *ngIf="showBrowser" class="file-browser-overlay">
-        <div class="file-browser-modal">
-            <div class="browser-header">
+    <div *ngIf="showBrowser" class="sample-browser-overlay">
+        <div class="sample-browser-modal">
+            <div class="modal-header">
                 <h3>Sample XYZ Files</h3>
-                <button (click)="closeBrowser()" class="close-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
+                <app-button
+                    [type]="'icon'"
+                    [icon]="'close'"
+                    [color]="'accent'"
+                    (clicked)="closeBrowser()"
+                    class="close-btn"
+                ></app-button>
             </div>
             
-            <div class="file-list">
-                <div 
-                    *ngFor="let file of availableFiles" 
-                    class="file-item"
-                    (click)="loadFileFromBrowser(file)"
-                >
-                    <div class="file-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                            <polyline points="10,9 9,9 8,9"/>
-                        </svg>
-                    </div>
-                    <div class="file-details">
-                        <div class="file-name">{{ file.name }}</div>
-                        <div class="file-meta">{{ file.date }}</div>
+            <div class="modal-body">
+                <div class="sample-list">
+                    <div 
+                        *ngFor="let file of availableFiles" 
+                        class="sample-item"
+                        (click)="loadFileFromBrowser(file)"
+                    >
+                        <div class="sample-header">
+                            <div class="sample-name">{{ file.name }}</div>
+                            <div class="sample-description">{{ file.date }} - {{ file.size }}</div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -11,7 +11,9 @@
 
 .compiler-content-container {
   flex: 1;
-  padding: 0 100px 2rem;
+  width: 85%;
+  max-width: 1400px;
+  margin: 15px auto;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -24,17 +26,6 @@
     gap: 1rem;
     align-items: center;
     flex-wrap: wrap;
-    
-    .upload-btn, .clear-btn, .download-url-btn, .browse-samples-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      font-weight: 500;
-      border-radius: 8px;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
 
     .url-input {
       flex: 1;
@@ -54,39 +45,6 @@
         outline: none;
         border-color: #667eea;
         background: rgba(255, 255, 255, 0.15);
-      }
-    }
-
-    .download-url-btn {
-      background: #667eea;
-      color: white;
-      border: none;
-      
-      &:hover:not(:disabled) {
-        background: #5a6fd8;
-      }
-      
-      &:disabled {
-        background: #404040;
-        cursor: not-allowed;
-        opacity: 0.6;
-      }
-    }
-
-    .browse-samples-btn {
-      background: transparent;
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      
-      &:hover:not(:disabled) {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.5);
-      }
-      
-      &:disabled {
-        background: #404040;
-        cursor: not-allowed;
-        opacity: 0.6;
       }
     }
   }
@@ -126,20 +84,6 @@
         color: $white;
         font-size: 1.25rem;
         font-weight: 600;
-      }
-      
-      .close-btn {
-        background: none;
-        border: none;
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 1.5rem;
-        cursor: pointer;
-        padding: 0.25rem;
-        line-height: 1;
-        
-        &:hover {
-          color: $white;
-        }
       }
     }
     
@@ -226,29 +170,6 @@
   display: flex;
   gap: 1rem;
   justify-content: center;
-  
-  .action-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem 2rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 8px;
-    min-width: 150px;
-    transition: all 0.2s ease;
-    
-    &:disabled {
-      background: #404040 !important;
-      color: rgba(255, 255, 255, 0.5) !important;
-      cursor: not-allowed;
-      opacity: 0.6;
-      
-      mat-icon {
-        color: rgba(255, 255, 255, 0.5) !important;
-      }
-    }
-  }
 }
 
 // Error Message
@@ -378,23 +299,7 @@
     .download-buttons {
       display: flex;
       gap: 0.75rem;
-      flex-wrap: wrap;
-      
-      .download-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        border-color: #4E61F6;
-        color: #4E61F6;
-        font-size: 0.875rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        
-        &:hover {
-          background-color: rgba(78, 97, 246, 0.1);
-        }
-      }
+      flex-wrap: wrap;      
     }
   }
   
@@ -467,17 +372,6 @@
       
       mat-icon {
         color: #cf222e;
-      }
-    }
-  }
-  
-  .download-buttons {
-    .download-btn {
-      border-color: #0969da;
-      color: #0969da;
-      
-      &:hover {
-        background-color: rgba(9, 105, 218, 0.1);
       }
     }
   }

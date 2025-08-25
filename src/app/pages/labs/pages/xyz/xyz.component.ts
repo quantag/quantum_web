@@ -5,8 +5,10 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { SeoService } from '../../../../services/seo.service';
+import { DirectoryParserService, DirectoryFile } from '../../../../services/directory-parser.service';
+import { ButtonComponent } from '../../../../components/button/button.component';
 
 
 @Component({
@@ -14,7 +16,7 @@ import { SeoService } from '../../../../services/seo.service';
   templateUrl: './xyz.component.html',
   styleUrls: ['./xyz.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink]
+  imports: [CommonModule, FormsModule, ButtonComponent]
 })
 export class XyzComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -32,13 +34,15 @@ export class XyzComponent implements OnInit, OnDestroy, AfterViewInit {
   isDownloading: boolean = false;
   isBrowsing: boolean = false;
   showBrowser: boolean = false;
-  availableFiles: Array<{name: string, size: string, date: string, url: string}> = [];
+  availableFiles: DirectoryFile[] = [];
   currentFileName: string = '';
 
   constructor(
     private http: HttpClient, 
     @Inject(PLATFORM_ID) private platformId: Object,
-    private seoService: SeoService
+    private seoService: SeoService,
+    private directoryParser: DirectoryParserService,
+    private router: Router
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -63,6 +67,10 @@ export class XyzComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.renderer) {
       this.renderer.dispose();
     }
+  }
+
+    navigateBack() {
+    this.router.navigate(['/labs']);
   }
 
   private initThree(): void {
@@ -232,7 +240,7 @@ export class XyzComponent implements OnInit, OnDestroy, AfterViewInit {
     this.http.get(baseUrl, { responseType: 'text' })
       .subscribe({
         next: (html) => {
-          this.availableFiles = this.parseDirectoryListing(html, baseUrl);
+          this.availableFiles = this.directoryParser.parseXyzDirectoryListing(html, baseUrl);
           this.showBrowser = true;
         },
         error: (error) => {
@@ -245,41 +253,7 @@ export class XyzComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  private parseDirectoryListing(html: string, baseUrl: string): Array<{name: string, size: string, date: string, url: string}> {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const files: Array<{name: string, size: string, date: string, url: string}> = [];
-    
-    const rows = doc.querySelectorAll('table tr');
-    
-    rows.forEach(row => {
-      const cells = row.querySelectorAll('td');
-      if (cells.length >= 4) {
-        const nameCell = cells[1];
-        const dateCell = cells[2];
-        const sizeCell = cells[3];
-        
-        const link = nameCell.querySelector('a');
-        if (link && link.getAttribute('href')?.endsWith('.xyz')) {
-          const fileName = link.textContent?.trim() || '';
-          const fileUrl = baseUrl + link.getAttribute('href');
-          const fileDate = dateCell.textContent?.trim() || '';
-          const fileSize = sizeCell.textContent?.trim() || '';
-          
-          files.push({
-            name: fileName,
-            size: fileSize,
-            date: fileDate,
-            url: fileUrl
-          });
-        }
-      }
-    });
-    
-    return files;
-  }
-
-  loadFileFromBrowser(file: {name: string, size: string, date: string, url: string}): void {
+  loadFileFromBrowser(file: DirectoryFile): void {
     this.isDownloading = true;
     this.showBrowser = false;
     

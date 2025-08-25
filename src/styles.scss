@@ -26,9 +26,9 @@ html {
   @include mat.all-component-themes($theme);
   @include mat.color-variants-backwards-compatibility($theme);
   @include mat.button-overrides((
-    outlined-outline-color: $white,
     outlined-disabled-outline-color: $grey-400,
     outlined-disabled-label-text-color: $grey-400,
+    protected-disabled-label-text-color: $grey-400
   ));
 }
 
@@ -74,3 +74,7 @@ ul, li {
 .mdc-checkbox .mdc-checkbox__checkmark {
   color: $primary-900;
 }
+
+// app-button .mat-accent.mat-mdc-button-base {
+//   color: $primary-900;
+// }

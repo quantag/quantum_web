@@ -12,8 +12,10 @@ import { isPlatformBrowser } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { SeoService } from '../../../../services/seo.service';
 import { ThemeService } from '../../../../services/theme.service';
+import { DirectoryParserService } from '../../../../services/directory-parser.service';
 import { GuppyAnalysisResponse, GuppyFunction, GuppyCompileResponse, GuppyCompileFunctionResult } from '../../../../interfaces/guppy.interface';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
+import { ButtonComponent } from '../../../../components/button/button.component';
 
 @Component({
   selector: 'app-guppy-compiler',
@@ -27,7 +29,8 @@ import { LabHeaderComponent } from '../../../../components/lab-header/lab-header
     MatProgressSpinnerModule,
     MatListModule,
     MatCheckboxModule,
-    LabHeaderComponent
+    LabHeaderComponent,
+    ButtonComponent
   ],
   templateUrl: './guppy-compiler.component.html',
   styleUrl: './guppy-compiler.component.scss'
@@ -74,7 +77,8 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object,
     private http: HttpClient,
     private seoService: SeoService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private directoryParser: DirectoryParserService
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -91,9 +95,6 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
         theme: isDark ? 'vs-dark' : 'vs'
       };
     });
-
-    // Initialize sample scripts
-    this.initializeSampleScripts();
   }
 
   ngOnDestroy(): void {
@@ -321,14 +322,29 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
     
     this.isDownloading = true;
     this.errorMessage = '';
-    
+
+    console.log(this.isValidUrl(this.urlValue));
+    console.log(this.urlValue);
+
+    //check if original URL is valid
+    if (!this.isValidUrl(this.urlValue)) {
+      this.errorMessage = 'Invalid URL. Please enter a valid Python (.py) URL.';
+      this.isDownloading = false;
+      return;
+    }
+
     this.http.get(this.urlValue, { responseType: 'text' })
       .subscribe({
         next: (data) => {
-          this.pythonCode = data;
-          this.resetAnalysis();
-          // Clear URL input after successful download
-          this.urlValue = '';
+          // Validate that we received Python code, not HTML
+          if (this.isPythonCode(data)) {
+            this.pythonCode = data;
+            this.resetAnalysis();
+            // Clear URL input after successful download
+            this.urlValue = '';
+          } else {
+            this.errorMessage = 'The URL did not return valid Python code. Please check the URL and ensure it points to a raw Python file.';
+          }
         },
         error: (error) => {
           console.error('Error downloading file:', error);
@@ -341,7 +357,23 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
   }
 
   browseSamples(): void {
-    this.showSampleBrowser = true;
+    this.isBrowsing = true;
+    const baseUrl = 'https://quantag-it.com/pub/samples/quantum/guppy/';
+    
+    this.http.get(baseUrl, { responseType: 'text' })
+      .subscribe({
+        next: (html) => {
+          this.availableSamples = this.directoryParser.parsePythonDirectoryListing(html, baseUrl);
+          this.showSampleBrowser = true;
+        },
+        error: (error) => {
+          console.error('Error browsing sample files:', error);
+          this.errorMessage = 'Error browsing sample files. Please try again.';
+        },
+        complete: () => {
+          this.isBrowsing = false;
+        }
+      });
   }
 
   closeSampleBrowser(): void {
@@ -349,13 +381,76 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
   }
 
   loadSampleScript(sample: {name: string, description: string, content: string}): void {
-    this.pythonCode = sample.content;
-    this.resetAnalysis();
-    this.showSampleBrowser = false;
+    // Check if content is a URL (starts with http)
+    if (sample.content.startsWith('http')) {
+      this.isDownloading = true;
+      this.showSampleBrowser = false;
+      
+      this.http.get(sample.content, { responseType: 'text' })
+        .subscribe({
+          next: (data) => {
+            // Validate that we received Python code
+            if (this.isPythonCode(data)) {
+              this.pythonCode = data;
+              this.resetAnalysis();
+            } else {
+              this.errorMessage = `The file ${sample.name} did not return valid Python code.`;
+            }
+          },
+          error: (error) => {
+            console.error('Error downloading sample file:', error);
+            this.errorMessage = `Error downloading ${sample.name}. Please try again.`;
+          },
+          complete: () => {
+            this.isDownloading = false;
+          }
+        });
+    } else {
+      // Content is already the Python code (fallback for hardcoded samples)
+      this.pythonCode = sample.content;
+      this.resetAnalysis();
+      this.showSampleBrowser = false;
+    }
   }
 
-  private initializeSampleScripts(): void {
 
+  private isValidUrl(url: string): boolean {
+    const pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+      '((([a-z0-9][a-z0-9-]*[a-z0-9])?\\.)+[a-z]{2,}|localhost|' + // domain name
+      '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|' + // OR ip (v4) address
+      '\\[?[a-f0-9]*:[a-f0-9:]+\\]?)' + // OR ipv6
+      '(\\:\\d+)?(\\/[-a-z0-9%_.~+]*)*' + // port and path
+      '(\\?[;&a-z0-9%_.~+=-]*)?' + // query string
+      '(\\#[-a-z0-9_]*)?$','i'); // fragment locator
+    
+    // Check if URL is valid and ends with .py
+    return !!pattern.test(url) && url.toLowerCase().endsWith('.py');
+  }
+
+  private isPythonCode(content: string): boolean {
+    // Check if content looks like HTML (most common issue)
+    if (content.trim().toLowerCase().startsWith('<!doctype html') || 
+        content.trim().toLowerCase().startsWith('<html') ||
+        content.includes('<head>') || 
+        content.includes('<body>')) {
+      return false;
+    }
+
+    // Check for common Python patterns
+    const pythonPatterns = [
+      /^import\s+\w+/m,           // import statements
+      /^from\s+\w+\s+import/m,    // from import statements  
+      /^def\s+\w+\s*\(/m,         // function definitions
+      /^class\s+\w+/m,            // class definitions
+      /^@\w+/m,                   // decorators
+      /^#.*$/m,                   // comments
+      /^if\s+__name__\s*==\s*['"]['"]__main__['"]['"]:/m // main block
+    ];
+
+    // Content should match at least one Python pattern
+    const hasPythonPattern = pythonPatterns.some(pattern => pattern.test(content));
+
+    return hasPythonPattern;
   }
 
   private resetAnalysis(): void {

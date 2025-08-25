@@ -6,10 +6,12 @@
         <div class="upload-section">
             <div class="upload-controls">
                 <input #fileInput type="file" accept=".py" (change)="onFileChange($event)" style="display: none;">
-                <button mat-raised-button class="upload-btn" (click)="onFileSelect()">
-                    <mat-icon>upload_file</mat-icon>
-                    Upload Python Script
-                </button>
+                <app-button
+                    [type]="'raised'"
+                    [icon]="'upload_file'"
+                    [label]="'Upload Python Script'"
+                    (clicked)="onFileSelect()"
+                ></app-button>
                 
                 <input 
                     type="url" 
@@ -19,33 +21,31 @@
                     [(ngModel)]="urlValue"
                     class="url-input"
                 />
-                <button 
-                    mat-raised-button
-                    color="accent"
-                    (click)="downloadFromUrl()" 
+                <app-button
+                    [type]="'raised'"
+                    [icon]="'download'"
+                    [label]="'Download from URL'"
+                    (clicked)="downloadFromUrl()"
                     [disabled]="!urlValue || isDownloading"
-                    class="download-url-btn"
-                >
-                    <mat-spinner *ngIf="isDownloading" diameter="16"></mat-spinner>
-                    <mat-icon *ngIf="!isDownloading">download</mat-icon>
-                    {{ isDownloading ? 'Downloading...' : 'Download' }}
-                </button>
-                
-                <button 
-                    mat-raised-button
-                    (click)="browseSamples()" 
+                    [loading]="isDownloading"
+                ></app-button>
+
+                <app-button
+                    [type]="'raised'"
+                    [icon]="'folder'"
+                    [label]="'Browse Samples'"
+                    (clicked)="browseSamples()"
                     [disabled]="isBrowsing"
-                    class="browse-samples-btn"
-                >
-                    <mat-spinner *ngIf="isBrowsing" diameter="16"></mat-spinner>
-                    <mat-icon *ngIf="!isBrowsing">folder</mat-icon>
-                    {{ isBrowsing ? 'Loading...' : 'Browse Samples' }}
-                </button>
-                
-                <button *ngIf="pythonCode.length > 0" mat-raised-button class="clear-btn" (click)="clearCode()">
-                    <mat-icon>clear</mat-icon>
-                    Clear Code
-                </button>
+                    [loading]="isBrowsing"
+                ></app-button>
+
+                <app-button
+                    *ngIf="pythonCode.length > 0"
+                    [type]="'raised'"
+                    [icon]="'clear'"
+                    [label]="'Clear Code'"
+                    (clicked)="clearCode()"
+                ></app-button>
             </div>
         </div>
 
@@ -66,25 +66,23 @@
 
         <!-- Action Buttons -->
         <div class="action-section">
-            <button mat-raised-button 
-                    class="action-btn analyze-btn"
-                    (click)="analyzePythonCode()"
-                    [disabled]="isAnalyzing || !pythonCode.trim()">
-                    
-                <mat-spinner *ngIf="isAnalyzing" diameter="20"></mat-spinner>
-                <mat-icon *ngIf="!isAnalyzing">search</mat-icon>
-                <span *ngIf="!isAnalyzing">Analyze</span>
-            </button>
+            <app-button
+                [type]="'raised'"
+                [icon]="'search'"
+                [label]="'Analyze'"
+                (clicked)="analyzePythonCode()"
+                [disabled]="isAnalyzing || !pythonCode.trim()"
+                [loading]="isAnalyzing"
+            ></app-button>
 
-            <button mat-raised-button 
-                    color="primary" 
-                    class="action-btn compile-btn"
-                    (click)="compileSelectedFunctions()"
-                    [disabled]="isCompiling || !hasSelectedFunctions()">
-                <mat-spinner *ngIf="isCompiling" diameter="20"></mat-spinner>
-                <mat-icon *ngIf="!isCompiling">build</mat-icon>
-                <span *ngIf="!isCompiling">Compile</span>
-            </button>
+            <app-button
+                [type]="'raised'"
+                [icon]="'build'"
+                [label]="'Compile'"
+                (clicked)="compileSelectedFunctions()"
+                [disabled]="isCompiling || !hasSelectedFunctions()"
+                [loading]="isCompiling"
+            ></app-button>
         </div>
 
         <!-- Error Message -->
@@ -129,29 +127,29 @@
                         </div>
 
                         <div class="download-buttons" *ngIf="isCompileSuccessful(func.name)">
-                            <button mat-stroked-button 
-                                    class="download-btn"
-                                    *ngIf="hasCompileResult(func.name, 'hugr')"
-                                    (click)="downloadFile(func.name, 'hugr')">
-                                <mat-icon>get_app</mat-icon>
-                                Download Hugr
-                            </button>
-                            
-                            <button mat-stroked-button 
-                                    class="download-btn"
-                                    *ngIf="hasCompileResult(func.name, 'json')"
-                                    (click)="downloadFile(func.name, 'json')">
-                                <mat-icon>get_app</mat-icon>
-                                Download JSON
-                            </button>
-                            
-                            <button mat-stroked-button 
-                                    class="download-btn"
-                                    *ngIf="hasCompileResult(func.name, 'str')"
-                                    (click)="downloadFile(func.name, 'str')">
-                                <mat-icon>get_app</mat-icon>
-                                Download String
-                            </button>
+                            <app-button
+                                [type]="'stroked'"
+                                [icon]="'get_app'"
+                                [label]="'Download Hugr'"
+                                (clicked)="downloadFile(func.name, 'hugr')"
+                                [disabled]="!hasCompileResult(func.name, 'hugr')">
+                            </app-button>
+
+                            <app-button
+                                [type]="'stroked'"
+                                [icon]="'get_app'"
+                                [label]="'Download JSON'"
+                                (clicked)="downloadFile(func.name, 'json')"
+                                [disabled]="!hasCompileResult(func.name, 'json')">
+                            </app-button>
+
+                            <app-button
+                                [type]="'stroked'"
+                                [icon]="'get_app'"
+                                [label]="'Download String'"
+                                (clicked)="downloadFile(func.name, 'str')"
+                                [disabled]="!hasCompileResult(func.name, 'str')">
+                            </app-button>
                         </div>
                     </div>
                 </div>
@@ -167,25 +165,28 @@
     <!-- Sample Files Browser Modal -->
     <div *ngIf="showSampleBrowser" class="sample-browser-overlay">
         <div class="sample-browser-modal">
-            <div class="browser-header">
+            <div class="modal-header">
                 <h3>Sample Python Scripts</h3>
-                <button (click)="closeSampleBrowser()" class="close-btn" mat-icon-button>
-                    <mat-icon>close</mat-icon>
-                </button>
+                <app-button
+                    [type]="'icon'"
+                    [icon]="'close'"
+                    [color]="'accent'"
+                    (clicked)="closeSampleBrowser()"
+                    class="close-btn"
+                ></app-button>
             </div>
             
-            <div class="sample-list">
-                <div 
-                    *ngFor="let sample of availableSamples" 
-                    class="sample-item"
-                    (click)="loadSampleScript(sample)"
-                >
-                    <div class="sample-icon">
-                        <mat-icon>description</mat-icon>
-                    </div>
-                    <div class="sample-details">
-                        <div class="sample-name">{{ sample.name }}</div>
-                        <div class="sample-description">{{ sample.description }}</div>
+            <div class="modal-body">
+                <div class="sample-list">
+                    <div 
+                        *ngFor="let sample of availableSamples" 
+                        class="sample-item"
+                        (click)="loadSampleScript(sample)"
+                    >
+                        <div class="sample-header">
+                            <div class="sample-name">{{ sample.name }}</div>
+                            <div class="sample-description">{{ sample.description }}</div>
+                        </div>
                     </div>
                 </div>
             </div>

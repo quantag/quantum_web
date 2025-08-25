@@ -20,12 +20,13 @@
 
 .compare-sql-content-container {
   flex: 1;
-  padding: 2rem;
+  padding: 1rem 0;
   overflow-y: auto;
 }
 
 .comparison-content {
-  max-width: 1200px;
+  max-width: 1400px;
+  width: 85%;
   margin: 0 auto;
 }
 
