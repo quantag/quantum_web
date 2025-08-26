@@ -108,6 +108,20 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
+            },
+            "client-only": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "outputMode": "static",
+              "server": false,
+              "ssr": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -120,6 +134,10 @@
             },
             "development": {
               "buildTarget": "quantum-new:build:development",
+              "proxyConfig": "proxy.conf.json"
+            },
+            "client-only": {
+              "buildTarget": "quantum-new:build:client-only",
               "proxyConfig": "proxy.conf.json"
             }
           },

@@ -5,6 +5,8 @@ import JSZip from 'jszip';
 import { ProcessImgResponse } from '../../../../interfaces/proccessImgResponse.interface';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
+import { FormsModule } from '@angular/forms';
+import { UploadSectionComponent, UploadSectionConfig, UploadedContent } from '../../../../components/upload-section/upload-section.component';
 
 interface CompressedImage {
   src: string;
@@ -26,7 +28,7 @@ interface OriginalImage {
   templateUrl: './qic.component.html',
   styleUrls: ['./qic.component.scss'],
   standalone: true,
-  imports: [CommonModule, LabHeaderComponent]
+  imports: [CommonModule, LabHeaderComponent, FormsModule, UploadSectionComponent]
 })
 export class QicComponent implements OnInit {
   originalImage: OriginalImage | null = null;
@@ -35,6 +37,19 @@ export class QicComponent implements OnInit {
   isCompressing: boolean = false;
   isCreatingZip: boolean = false;
   errorMessage: string = '';
+
+  // Upload section configuration
+  uploadConfig: UploadSectionConfig = {
+    acceptedFileTypes: ['image/png'],
+    fileExtensions: ['.png'],
+    sampleBaseUrl: 'https://quantag-it.com/pub/samples/image/',
+    showUrlUpload: true,
+    showSampleBrowser: true,
+    showClearButton: false, // We handle clearing through the drag-drop area
+    showFileUpload: false, // We use custom drag-drop upload
+    uploadButtonLabel: 'Upload Image',
+    urlPlaceholder: 'https://example.com/image.png'
+  };
 
   constructor(private http: HttpClient, private seoService: SeoService) { }
 
@@ -120,6 +135,17 @@ export class QicComponent implements OnInit {
 
   }
 
+  // Upload section event handlers
+  onContentUploaded(uploadedContent: UploadedContent): void {
+    if (uploadedContent.file) {
+      this.processImageFile(uploadedContent.file);
+    }
+  }
+
+  onUploadError(error: string): void {
+    this.errorMessage = error;
+  }  
+  
   formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;

@@ -1,0 +1,104 @@
+<!-- File Upload Section -->
+<div class="upload-section">
+  <div class="upload-controls">
+    <!-- File Upload Button -->
+      <input 
+        #fileInput 
+        type="file" 
+        [accept]="acceptAttribute" 
+        (change)="onFileChange($event)" 
+        style="display: none;">
+      <app-button
+        *ngIf="config.showFileUpload"
+        [type]="'raised'"
+        [icon]="'upload_file'"
+        [label]="config.uploadButtonLabel || 'Upload File'"
+        [disabled]="disabled"
+        (clicked)="onFileSelect()">
+      </app-button>
+    
+    <!-- URL Input and Download Button -->
+    <ng-container *ngIf="config.showUrlUpload">
+      <input 
+        type="url" 
+        #urlInput 
+        id="urlInput" 
+        [placeholder]="config.urlPlaceholder || 'Enter file URL'"
+        [(ngModel)]="urlValue"
+        [disabled]="disabled || isDownloading"
+        class="url-input"
+      />
+      <app-button
+        [type]="'raised'"
+        [icon]="'download'"
+        [label]="'Download from URL'"
+        [disabled]="disabled || !urlValue || isDownloading"
+        [loading]="isDownloading"
+        (clicked)="downloadFromUrl()">
+      </app-button>
+    </ng-container>
+
+    <!-- Browse Samples Button -->
+    <app-button
+      *ngIf="config.showSampleBrowser && config.sampleBaseUrl"
+      [type]="'raised'"
+      [icon]="'folder'"
+      [label]="'Browse Samples'"
+      [disabled]="disabled || isBrowsing"
+      [loading]="isBrowsing"
+      (clicked)="browseSamples()">
+    </app-button>
+
+    <!-- Clear Content Button -->
+    <app-button
+      *ngIf="config.showClearButton && hasContent"
+      [type]="'raised'"
+      [icon]="'clear'"
+      [label]="'Clear Content'"
+      [disabled]="disabled"
+      (clicked)="clearContent()">
+    </app-button>
+  </div>
+</div>
+
+<!-- Sample Files Browser Modal -->
+<div *ngIf="showSampleBrowser" class="sample-browser-overlay">
+  <div class="sample-browser-modal">
+    <div class="modal-header">
+      <h3>Sample Files</h3>
+      <app-button
+        [type]="'icon'"
+        [icon]="'close'"
+        [color]="'accent'"
+        [disabled]="isDownloading"
+        (clicked)="closeSampleBrowser()"
+        class="close-btn">
+      </app-button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="sample-list">
+        <div 
+          *ngFor="let sample of availableSamples" 
+          class="sample-item"
+          [class.disabled]="disabled || isDownloading"
+          (click)="loadSampleScript(sample)">
+          <div class="sample-header">
+            <div class="sample-name">{{ sample.name }}</div>
+            <div class="sample-description">{{ sample.description }}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="availableSamples.length === 0 && !isBrowsing" class="no-samples">
+        <mat-icon>info</mat-icon>
+        <p>No sample files available.</p>
+      </div>
+      
+      <div *ngIf="isBrowsing" class="loading-samples">
+        <mat-icon class="spinning">refresh</mat-icon>
+        <p>Loading samples...</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -3,51 +3,14 @@
 
     <div class="compiler-content-container">
         <!-- File Upload Section -->
-        <div class="upload-section">
-            <div class="upload-controls">
-                <input #fileInput type="file" accept=".py" (change)="onFileChange($event)" style="display: none;">
-                <app-button
-                    [type]="'raised'"
-                    [icon]="'upload_file'"
-                    [label]="'Upload Python Script'"
-                    (clicked)="onFileSelect()"
-                ></app-button>
-                
-                <input 
-                    type="url" 
-                    #urlInput 
-                    id="urlInput" 
-                    placeholder="https://example.com/script.py"
-                    [(ngModel)]="urlValue"
-                    class="url-input"
-                />
-                <app-button
-                    [type]="'raised'"
-                    [icon]="'download'"
-                    [label]="'Download from URL'"
-                    (clicked)="downloadFromUrl()"
-                    [disabled]="!urlValue || isDownloading"
-                    [loading]="isDownloading"
-                ></app-button>
-
-                <app-button
-                    [type]="'raised'"
-                    [icon]="'folder'"
-                    [label]="'Browse Samples'"
-                    (clicked)="browseSamples()"
-                    [disabled]="isBrowsing"
-                    [loading]="isBrowsing"
-                ></app-button>
-
-                <app-button
-                    *ngIf="pythonCode.length > 0"
-                    [type]="'raised'"
-                    [icon]="'clear'"
-                    [label]="'Clear Code'"
-                    (clicked)="clearCode()"
-                ></app-button>
-            </div>
-        </div>
+        <app-upload-section
+            [config]="uploadConfig"
+            [currentContent]="pythonCode"
+            [disabled]="isAnalyzing || isCompiling"
+            (contentUploaded)="onContentUploaded($event)"
+            (contentCleared)="clearCode()"
+            (error)="onUploadError($event)">
+        </app-upload-section>
 
         <!-- Code Editor Section -->
         <div class="editor-section">
@@ -158,37 +121,6 @@
             <div class="no-functions" *ngIf="analysisResult.functions.length === 0">
                 <mat-icon>info</mat-icon>
                 <p>No compilable functions found in the provided code.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sample Files Browser Modal -->
-    <div *ngIf="showSampleBrowser" class="sample-browser-overlay">
-        <div class="sample-browser-modal">
-            <div class="modal-header">
-                <h3>Sample Python Scripts</h3>
-                <app-button
-                    [type]="'icon'"
-                    [icon]="'close'"
-                    [color]="'accent'"
-                    (clicked)="closeSampleBrowser()"
-                    class="close-btn"
-                ></app-button>
-            </div>
-            
-            <div class="modal-body">
-                <div class="sample-list">
-                    <div 
-                        *ngFor="let sample of availableSamples" 
-                        class="sample-item"
-                        (click)="loadSampleScript(sample)"
-                    >
-                        <div class="sample-header">
-                            <div class="sample-name">{{ sample.name }}</div>
-                            <div class="sample-description">{{ sample.description }}</div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

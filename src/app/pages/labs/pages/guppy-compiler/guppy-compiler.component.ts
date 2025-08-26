@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnInit, OnDestroy, PLATFORM_ID, ViewChild, ElementRef } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
@@ -12,10 +12,10 @@ import { isPlatformBrowser } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { SeoService } from '../../../../services/seo.service';
 import { ThemeService } from '../../../../services/theme.service';
-import { DirectoryParserService } from '../../../../services/directory-parser.service';
 import { GuppyAnalysisResponse, GuppyFunction, GuppyCompileResponse, GuppyCompileFunctionResult } from '../../../../interfaces/guppy.interface';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 import { ButtonComponent } from '../../../../components/button/button.component';
+import { UploadSectionComponent, UploadSectionConfig, UploadedContent } from '../../../../components/upload-section/upload-section.component';
 
 @Component({
   selector: 'app-guppy-compiler',
@@ -30,13 +30,13 @@ import { ButtonComponent } from '../../../../components/button/button.component'
     MatListModule,
     MatCheckboxModule,
     LabHeaderComponent,
-    ButtonComponent
+    ButtonComponent,
+    UploadSectionComponent
   ],
   templateUrl: './guppy-compiler.component.html',
   styleUrl: './guppy-compiler.component.scss'
 })
 export class GuppyCompilerComponent implements OnInit, OnDestroy {
-  @ViewChild('fileInput', { static: true }) fileInputRef!: ElementRef<HTMLInputElement>;
 
   public editorOptions = {
     language: 'python',
@@ -45,6 +45,19 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
     fontSize: 14,
     wordWrap: 'on' as const,
     automaticLayout: true
+  };
+
+  // Upload section configuration
+  uploadConfig: UploadSectionConfig = {
+    acceptedFileTypes: ['text/x-python-script'],
+    fileExtensions: ['.py'],
+    sampleBaseUrl: 'https://quantag-it.com/pub/samples/quantum/guppy/',
+    showUrlUpload: true,
+    showSampleBrowser: true,
+    showClearButton: true,
+    showFileUpload: true,
+    uploadButtonLabel: 'Upload Python Script',
+    urlPlaceholder: 'https://example.com/script.py'
   };
 
   public pythonCode: string = '';
@@ -59,13 +72,6 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
   private isBrowser: boolean;
   private themeSubscription?: Subscription;
   
-  // URL and sample upload properties
-  public urlValue: string = '';
-  public isDownloading: boolean = false;
-  public isBrowsing: boolean = false;
-  public showSampleBrowser: boolean = false;
-  public availableSamples: Array<{name: string, description: string, content: string}> = [];
-  
   // Monaco editor properties
   private monacoEditor: any;
   private decorations: string[] = [];
@@ -77,8 +83,7 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object,
     private http: HttpClient,
     private seoService: SeoService,
-    private themeService: ThemeService,
-    private directoryParser: DirectoryParserService
+    private themeService: ThemeService
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -101,23 +106,14 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
     this.themeSubscription?.unsubscribe();
   }
 
-  onFileSelect(): void {
-    if (!this.isBrowser) return;
-    this.fileInputRef.nativeElement.click();
+  onUploadError(error: string): void {
+    this.errorMessage = error;
   }
 
-  onFileChange(event: any): void {
-    const file = event.target.files[0];
-    if (file && file.type === 'text/x-python-script' || file.name.endsWith('.py')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.pythonCode = e.target?.result as string;
-      };
-      reader.readAsText(file);
-      this.resetAnalysis();
-    } else {
-      this.errorMessage = 'Please select a valid Python (.py) file';
-    }
+  onContentUploaded(uploadedContent: UploadedContent): void {
+    this.pythonCode = uploadedContent.content;
+    this.resetAnalysis();
+    this.errorMessage = '';
   }
 
   analyzePythonCode(): void {
@@ -314,143 +310,6 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.monacoEditor.deltaDecorations(tempDecoration, []);
     }, 2000);
-  }
-
-  // URL and sample upload methods
-  downloadFromUrl(): void {
-    if (!this.urlValue.trim()) return;
-    
-    this.isDownloading = true;
-    this.errorMessage = '';
-
-    console.log(this.isValidUrl(this.urlValue));
-    console.log(this.urlValue);
-
-    //check if original URL is valid
-    if (!this.isValidUrl(this.urlValue)) {
-      this.errorMessage = 'Invalid URL. Please enter a valid Python (.py) URL.';
-      this.isDownloading = false;
-      return;
-    }
-
-    this.http.get(this.urlValue, { responseType: 'text' })
-      .subscribe({
-        next: (data) => {
-          // Validate that we received Python code, not HTML
-          if (this.isPythonCode(data)) {
-            this.pythonCode = data;
-            this.resetAnalysis();
-            // Clear URL input after successful download
-            this.urlValue = '';
-          } else {
-            this.errorMessage = 'The URL did not return valid Python code. Please check the URL and ensure it points to a raw Python file.';
-          }
-        },
-        error: (error) => {
-          console.error('Error downloading file:', error);
-          this.errorMessage = 'Error downloading file. Please check the URL and try again.';
-        },
-        complete: () => {
-          this.isDownloading = false;
-        }
-      });
-  }
-
-  browseSamples(): void {
-    this.isBrowsing = true;
-    const baseUrl = 'https://quantag-it.com/pub/samples/quantum/guppy/';
-    
-    this.http.get(baseUrl, { responseType: 'text' })
-      .subscribe({
-        next: (html) => {
-          this.availableSamples = this.directoryParser.parsePythonDirectoryListing(html, baseUrl);
-          this.showSampleBrowser = true;
-        },
-        error: (error) => {
-          console.error('Error browsing sample files:', error);
-          this.errorMessage = 'Error browsing sample files. Please try again.';
-        },
-        complete: () => {
-          this.isBrowsing = false;
-        }
-      });
-  }
-
-  closeSampleBrowser(): void {
-    this.showSampleBrowser = false;
-  }
-
-  loadSampleScript(sample: {name: string, description: string, content: string}): void {
-    // Check if content is a URL (starts with http)
-    if (sample.content.startsWith('http')) {
-      this.isDownloading = true;
-      this.showSampleBrowser = false;
-      
-      this.http.get(sample.content, { responseType: 'text' })
-        .subscribe({
-          next: (data) => {
-            // Validate that we received Python code
-            if (this.isPythonCode(data)) {
-              this.pythonCode = data;
-              this.resetAnalysis();
-            } else {
-              this.errorMessage = `The file ${sample.name} did not return valid Python code.`;
-            }
-          },
-          error: (error) => {
-            console.error('Error downloading sample file:', error);
-            this.errorMessage = `Error downloading ${sample.name}. Please try again.`;
-          },
-          complete: () => {
-            this.isDownloading = false;
-          }
-        });
-    } else {
-      // Content is already the Python code (fallback for hardcoded samples)
-      this.pythonCode = sample.content;
-      this.resetAnalysis();
-      this.showSampleBrowser = false;
-    }
-  }
-
-
-  private isValidUrl(url: string): boolean {
-    const pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-      '((([a-z0-9][a-z0-9-]*[a-z0-9])?\\.)+[a-z]{2,}|localhost|' + // domain name
-      '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|' + // OR ip (v4) address
-      '\\[?[a-f0-9]*:[a-f0-9:]+\\]?)' + // OR ipv6
-      '(\\:\\d+)?(\\/[-a-z0-9%_.~+]*)*' + // port and path
-      '(\\?[;&a-z0-9%_.~+=-]*)?' + // query string
-      '(\\#[-a-z0-9_]*)?$','i'); // fragment locator
-    
-    // Check if URL is valid and ends with .py
-    return !!pattern.test(url) && url.toLowerCase().endsWith('.py');
-  }
-
-  private isPythonCode(content: string): boolean {
-    // Check if content looks like HTML (most common issue)
-    if (content.trim().toLowerCase().startsWith('<!doctype html') || 
-        content.trim().toLowerCase().startsWith('<html') ||
-        content.includes('<head>') || 
-        content.includes('<body>')) {
-      return false;
-    }
-
-    // Check for common Python patterns
-    const pythonPatterns = [
-      /^import\s+\w+/m,           // import statements
-      /^from\s+\w+\s+import/m,    // from import statements  
-      /^def\s+\w+\s*\(/m,         // function definitions
-      /^class\s+\w+/m,            // class definitions
-      /^@\w+/m,                   // decorators
-      /^#.*$/m,                   // comments
-      /^if\s+__name__\s*==\s*['"]['"]__main__['"]['"]:/m // main block
-    ];
-
-    // Content should match at least one Python pattern
-    const hasPythonPattern = pythonPatterns.some(pattern => pattern.test(content));
-
-    return hasPythonPattern;
   }
 
   private resetAnalysis(): void {

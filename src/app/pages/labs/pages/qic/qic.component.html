@@ -2,6 +2,14 @@
     <app-lab-header title="Quantum Image Compression"></app-lab-header>
 
     <div class="qic-content-container">
+        <!-- File Upload Section -->
+        <app-upload-section
+            [config]="uploadConfig"
+            [currentContent]="originalImage?.src || ''"
+            [disabled]="isCompressing"
+            (contentUploaded)="onContentUploaded($event)"
+            (error)="onUploadError($event)">
+        </app-upload-section>
         <div class="compression-content">
             <!-- Input Section -->
             <div class="input-section">

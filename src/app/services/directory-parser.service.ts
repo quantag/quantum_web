@@ -97,6 +97,47 @@ export class DirectoryParserService {
   }
 
   /**
+   * Parse directory listing HTML for image sample files
+   * @param html HTML content from directory listing
+   * @param baseUrl Base URL for constructing file URLs
+   * @returns Array of SampleScript objects for images
+   */
+  parseImageDirectoryListing(html: string, baseUrl: string): SampleScript[] {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const files: SampleScript[] = [];
+    
+    const rows = doc.querySelectorAll('table tr');
+    
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      if (cells.length >= 2) {
+        const nameCell = cells[1];
+        const link = nameCell.querySelector('a');
+        
+        if (link && this.isImageFile(link.getAttribute('href') || '')) {
+          const fileName = link.textContent?.trim() || '';
+          const fileUrl = baseUrl + link.getAttribute('href');
+          
+          // Create a sample object with URL as content (will be loaded on demand)
+          files.push({
+            name: fileName.replace(/\.(png|jpg|jpeg|gif|bmp|webp)$/i, ''),
+            description: `Image file: ${fileName}`,
+            content: fileUrl // Store URL, will fetch content when selected
+          });
+        }
+      }
+    });
+    
+    return files;
+  }
+
+  private isImageFile(href: string): boolean {
+    const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp'];
+    return imageExtensions.some(ext => href.toLowerCase().endsWith(ext));
+  }
+
+  /**
    * Generic directory listing parser that can handle different file types
    * @param html HTML content from directory listing
    * @param baseUrl Base URL for constructing file URLs
