@@ -50,6 +50,11 @@ export class SeoService {
       description: 'Convert OpenQASM code to QIR',
       keywords: 'QIR viewer, quantum intermediate representation, QIR compiler, quantum debugging, quantum code analysis, quantum programming, QIR standard, quantum development tools, quantum optimization, quantum syntax'
     },
+    'qbin': {
+      title: 'OpenQASM to QBIN Converter',
+      description: 'Convert OpenQASM quantum code to QBIN binary format with hex and binary representation support. Professional quantum circuit compilation tool.',
+      keywords: 'binary openqasm, OpenQASM to QBIN, QASM converter, QBIN encoder, quantum binary format, quantum compilation, QBIN generator, hex representation, quantum circuit binary, QASM to binary, quantum development tools'
+    },
     'qic': {
       title: 'Quantum Image Compression',
       description: 'Compress images using quantum algorithms',

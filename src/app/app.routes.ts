@@ -4,6 +4,7 @@ import { PrivacyComponent } from './pages/privacy/privacy.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { LabsComponent } from './pages/labs/labs.component';
 import { QirComponent } from './pages/labs/pages/qir/qir.component';
+import { QbinComponent } from './pages/labs/pages/qbin/qbin.component';
 import { XyzComponent } from './pages/labs/pages/xyz/xyz.component';
 import { QicComponent } from './pages/labs/pages/qic/qic.component';
 import { QeditComponent } from './pages/labs/pages/qedit/qedit.component';
@@ -36,6 +37,10 @@ export const routes: Routes = [
     {
         path: 'labs/qir',
         component: QirComponent
+    },
+    {
+        path: 'labs/qbin',
+        component: QbinComponent
     },
     {
         path: 'labs/qic',

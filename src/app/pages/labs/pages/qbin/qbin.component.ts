@@ -1,0 +1,186 @@
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { SeoService } from '../../../../services/seo.service';
+import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
+
+@Component({
+  selector: 'app-qbin',
+  templateUrl: './qbin.component.html',
+  styleUrls: ['./qbin.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, LabHeaderComponent]
+})
+export class QbinComponent implements OnInit {
+  openQasmCode: string = '';
+  qbinData: string = '';
+//   qbinHexOutput: string = '';
+//   qbinBinaryOutput: string = '';
+//   outputMode: 'hex' | 'binary' = 'hex';
+  isConverting: boolean = false;
+  errorMessage: string = '';
+  
+
+  constructor(private http: HttpClient, private seoService: SeoService) { }
+
+  apiUrl = 'https://quantum.quantag-it.com/qbin-api';
+
+
+  ngOnInit(): void {
+    this.seoService.updateSeoTags(this.seoService.getSeoData('qbin'));
+  }
+
+//   get displayOutput(): string {
+//     return this.outputMode === 'hex' ? this.qbinHexOutput : this.qbinBinaryOutput;
+//   }
+
+  convertToQbin(): void {
+    if (!this.openQasmCode.trim()) {
+      this.errorMessage = 'Please enter OpenQASM code to convert.';
+      return;
+    }
+
+    this.isConverting = true;
+    this.errorMessage = '';
+    this.qbinData = '';
+    // this.qbinHexOutput = '';
+    // this.qbinBinaryOutput = '';
+
+    
+    // Encode the QASM code to base64
+    const encodedQasm = btoa(this.openQasmCode);
+    const payload = { qasm_b64: encodedQasm };
+    
+    this.http.post(this.apiUrl + '/compile', payload).subscribe({
+      next: (response: any) => {
+        if (response.qbin_b64) {
+          try {
+            const binaryData = atob(response.qbin_b64);
+
+            this.qbinData = Array.from(binaryData).map(c => c.charCodeAt(0).toString(16).padStart(2, '0'))
+              .join(' ')
+              .toUpperCase();
+              
+          } catch (error) {
+            console.error('Error decoding QBIN data:', error);
+            this.errorMessage = 'Error processing QBIN response data.';
+          }
+        } else {
+          this.errorMessage = response.error || 'Error converting OpenQASM to QBIN. Please check your code syntax and try again.';
+        }
+      },
+      error: (error) => {
+        console.error('Error converting OpenQASM to QBIN:', error);
+        this.errorMessage = 'Error converting OpenQASM to QBIN. Please check your code syntax and try again.';
+        this.isConverting = false;
+      },
+      complete: () => {
+        this.isConverting = false;
+      }
+    });
+  }
+
+  compileToOpenQASM(): void {
+    if (!this.qbinData.trim()) {
+      this.errorMessage = 'No QBIN data to convert.';
+      return;
+    }
+
+    this.isConverting = true;
+    this.errorMessage = '';
+    this.openQasmCode = '';
+
+    try {
+        const payload = { qbin_b64: btoa(this.qbinData) };
+
+        this.http.post(this.apiUrl + '/decompile', payload).subscribe({
+        next: (response: any) => {
+            if (response.qasm_b64) {
+            this.openQasmCode = atob(response.qasm_b64);
+            } else {
+            this.errorMessage = response.error || 'Error converting QBIN to OpenQASM. Please try again.';
+            }
+        },
+        error: (error) => {
+            console.error('Error converting QBIN to OpenQASM:', error);
+            this.errorMessage = 'Error converting QBIN to OpenQASM. Please try again.';
+            this.isConverting = false;
+        },
+        complete: () => {
+            this.isConverting = false;
+        }
+        });
+    } catch {
+        this.errorMessage = 'Error decoding QBIN data.';
+        this.isConverting = false;
+    }
+  }
+
+  downloadQbinFile(): void {
+    if (!this.qbinData.trim()) {
+      this.errorMessage = 'No QBIN data to download.';
+      return;
+    }
+
+    let binaryData: Uint8Array;
+    
+    try {
+      // Try to decode base64 first
+      const decoded = atob(this.qbinData);
+      const bytes = [];
+      for (let i = 0; i < decoded.length; i++) {
+        bytes.push(decoded.charCodeAt(i));
+      }
+      binaryData = new Uint8Array(bytes);
+    } catch {
+      // If not base64, treat as text
+      const encoder = new TextEncoder();
+      binaryData = encoder.encode(this.qbinData);
+    }
+
+    const blob = new Blob([new Uint8Array(binaryData)], { type: 'application/octet-stream' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `quantum_circuit_${Date.now()}.qbin`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+
+  clearFields(): void {
+    this.openQasmCode = '';
+    this.qbinData = '';
+    this.errorMessage = '';
+  }
+
+  clearOpenQasm(): void {
+    this.openQasmCode = '';
+    this.errorMessage = '';
+  }
+
+  clearQbin(): void {
+    this.qbinData = '';
+    this.errorMessage = '';
+  }
+
+  copyQasmCode(): void {
+    if (this.openQasmCode) {
+      navigator.clipboard.writeText(this.openQasmCode).then(() => {
+        console.log('OpenQASM code copied to clipboard');
+      }).catch(err => {
+        console.error('Could not copy text: ', err);
+      });
+    }
+  }
+
+  copyQbinCode(): void {
+    navigator.clipboard.writeText(this.qbinData).then(() => {
+    console.log('QBIN code copied to clipboard');
+    }).catch(err => {
+    console.error('Could not copy text: ', err);
+    });
+  }
+}

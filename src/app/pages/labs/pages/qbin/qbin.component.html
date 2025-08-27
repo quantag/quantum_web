@@ -1,0 +1,115 @@
+<div class="qbin-container">
+    <app-lab-header title="QBIN Converter"></app-lab-header>
+
+    <div class="converter-content">
+        <div class="converter-grid">
+            <!-- OpenQASM Input Section -->
+            <div class="input-section">
+                <div class="section-header">
+                    <h3>
+                        OpenQASM Code
+                    </h3>
+                    <div class="section-actions">
+                        <button 
+                            type="button" 
+                            (click)="copyQasmCode()" 
+                            class="copy-btn"
+                            [disabled]="!openQasmCode"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                            Copy
+                        </button>
+                        <button 
+                            type="button" 
+                            (click)="clearFields()" 
+                            class="clear-btn"
+                            [disabled]="isConverting"
+                        >
+                            Clear
+                        </button>
+                    </div>
+                </div>
+                
+                <textarea
+                    [(ngModel)]="openQasmCode"
+                    placeholder="Example:&#10;OPENQASM 2.0;&#10;include &quot;qelib1.inc&quot;;&#10;qreg q[2];&#10;creg c[2];&#10;h q[0];&#10;cx q[0],q[1];&#10;measure q -> c;"
+                    class="code-textarea openqasm-input"
+                    [disabled]="isConverting"
+                ></textarea>
+            </div>
+
+            <!-- Convert Button Section -->
+            <div class="convert-section">
+                <div class="convert-actions">
+                    <button 
+                        type="button" 
+                        (click)="convertToQbin()" 
+                        class="convert-btn encode-btn"
+                        [disabled]="!openQasmCode.trim() || isConverting"
+                    >
+                        {{ isConverting ? 'Converting...' : 'OpenQASM to QBIN' }}
+                    </button>
+
+                    <button 
+                        type="button" 
+                        (click)="downloadQbinFile()" 
+                        class="download-btn"
+                        [disabled]="!qbinData.trim()"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Download .qbin
+                    </button>
+                </div>
+
+                <!-- Error Message -->
+                <div *ngIf="errorMessage" class="error-message">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                    {{ errorMessage }}
+                </div>
+            </div>
+
+            <!-- QBIN Output Section -->
+            <div class="output-section">
+                <div class="section-header">
+                    <h3>
+                        QBIN Output
+                    </h3>
+                    <div class="section-actions">
+                        <button 
+                            type="button" 
+                            (click)="copyQbinCode()" 
+                            class="copy-btn"
+                            [disabled]="!qbinData"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="output-content">
+                    <textarea
+                        [(ngModel)]="qbinData"
+                        placeholder="Output will appear here"
+                        class="code-textarea qbin-output"
+                        readonly
+                    ></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
