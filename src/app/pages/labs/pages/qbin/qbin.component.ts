@@ -60,7 +60,6 @@ export class QbinComponent implements OnInit {
         if (response.qbin_b64) {
           try {
             const binaryData = atob(response.qbin_b64);
-            console.log('Decoded QBIN binary data:', Array.from(binaryData));
             this.qbinData = Array.from(binaryData).map(c => c.charCodeAt(0).toString(16).padStart(2, '0'))
               .join(' ')
               .toUpperCase();
@@ -69,7 +68,6 @@ export class QbinComponent implements OnInit {
               c.charCodeAt(0).toString(2).padStart(8, '0')
             ).join(' ');
 
-              
           } catch (error) {
             console.error('Error decoding QBIN data:', error);
             this.errorMessage = 'Error processing QBIN response data.';
@@ -104,10 +102,6 @@ export class QbinComponent implements OnInit {
         const hexString = this.qbinData.replace(/\s/g, ''); // Remove spaces
         const binaryString = hexString.match(/.{2}/g)?.map(hex => String.fromCharCode(parseInt(hex, 16))).join('') || '';
         const base64Data = btoa(binaryString);
-
-        console.log(hexString)
-        console.log(binaryString)
-        console.log(base64Data)
         
         const payload = { qbin_b64: base64Data };
 
@@ -188,7 +182,6 @@ export class QbinComponent implements OnInit {
   copyQasmCode(): void {
     if (this.openQasmCode) {
       navigator.clipboard.writeText(this.openQasmCode).then(() => {
-        console.log('OpenQASM code copied to clipboard');
       }).catch(err => {
         console.error('Could not copy text: ', err);
       });
@@ -198,7 +191,6 @@ export class QbinComponent implements OnInit {
   copyQbinCode(): void {
     const dataToCopy = this.conversionMode === 'qasmToQbin' ? this.displayQbinData : this.qbinData;
     navigator.clipboard.writeText(dataToCopy).then(() => {
-    console.log('QBIN code copied to clipboard');
     }).catch(err => {
     console.error('Could not copy text: ', err);
     });
