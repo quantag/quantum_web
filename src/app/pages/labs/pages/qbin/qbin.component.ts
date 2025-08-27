@@ -15,11 +15,13 @@ import { LabHeaderComponent } from '../../../../components/lab-header/lab-header
 export class QbinComponent implements OnInit {
   openQasmCode: string = '';
   qbinData: string = '';
+  qbinBinaryData: string = '';
 //   qbinHexOutput: string = '';
 //   qbinBinaryOutput: string = '';
-//   outputMode: 'hex' | 'binary' = 'hex';
+  outputMode: 'hex' | 'binary' = 'hex';
   isConverting: boolean = false;
   errorMessage: string = '';
+  conversionMode: 'qasmToQbin' | 'qbinToQasm' = 'qasmToQbin';
   
 
   constructor(private http: HttpClient, private seoService: SeoService) { }
@@ -44,6 +46,7 @@ export class QbinComponent implements OnInit {
     this.isConverting = true;
     this.errorMessage = '';
     this.qbinData = '';
+    this.qbinBinaryData = '';
     // this.qbinHexOutput = '';
     // this.qbinBinaryOutput = '';
 
@@ -57,10 +60,15 @@ export class QbinComponent implements OnInit {
         if (response.qbin_b64) {
           try {
             const binaryData = atob(response.qbin_b64);
-
+            console.log('Decoded QBIN binary data:', Array.from(binaryData));
             this.qbinData = Array.from(binaryData).map(c => c.charCodeAt(0).toString(16).padStart(2, '0'))
               .join(' ')
               .toUpperCase();
+              
+            this.qbinBinaryData = Array.from(binaryData).map(c => 
+              c.charCodeAt(0).toString(2).padStart(8, '0')
+            ).join(' ');
+
               
           } catch (error) {
             console.error('Error decoding QBIN data:', error);
@@ -92,7 +100,16 @@ export class QbinComponent implements OnInit {
     this.openQasmCode = '';
 
     try {
-        const payload = { qbin_b64: btoa(this.qbinData) };
+        // Convert hex string to binary data, then to base64
+        const hexString = this.qbinData.replace(/\s/g, ''); // Remove spaces
+        const binaryString = hexString.match(/.{2}/g)?.map(hex => String.fromCharCode(parseInt(hex, 16))).join('') || '';
+        const base64Data = btoa(binaryString);
+
+        console.log(hexString)
+        console.log(binaryString)
+        console.log(base64Data)
+        
+        const payload = { qbin_b64: base64Data };
 
         this.http.post(this.apiUrl + '/decompile', payload).subscribe({
         next: (response: any) => {
@@ -153,6 +170,7 @@ export class QbinComponent implements OnInit {
   clearFields(): void {
     this.openQasmCode = '';
     this.qbinData = '';
+    this.qbinBinaryData = '';
     this.errorMessage = '';
   }
 
@@ -163,6 +181,7 @@ export class QbinComponent implements OnInit {
 
   clearQbin(): void {
     this.qbinData = '';
+    this.qbinBinaryData = '';
     this.errorMessage = '';
   }
 
@@ -177,10 +196,99 @@ export class QbinComponent implements OnInit {
   }
 
   copyQbinCode(): void {
-    navigator.clipboard.writeText(this.qbinData).then(() => {
+    const dataToCopy = this.conversionMode === 'qasmToQbin' ? this.displayQbinData : this.qbinData;
+    navigator.clipboard.writeText(dataToCopy).then(() => {
     console.log('QBIN code copied to clipboard');
     }).catch(err => {
     console.error('Could not copy text: ', err);
     });
+  }
+
+  toggleConversionMode(): void {
+    this.conversionMode = this.conversionMode === 'qasmToQbin' ? 'qbinToQasm' : 'qasmToQbin';
+    this.clearFields();
+  }
+
+  convert(): void {
+    if (this.conversionMode === 'qasmToQbin') {
+      this.convertToQbin();
+    } else {
+      this.compileToOpenQASM();
+    }
+  }
+
+  get inputLabel(): string {
+    return this.conversionMode === 'qasmToQbin' ? 'OpenQASM Code' : 'QBIN Data';
+  }
+
+  get outputLabel(): string {
+    return this.conversionMode === 'qasmToQbin' ? 'QBIN Output' : 'OpenQASM Output';
+  }
+
+  get switchModeButtonLabel(): string {
+    return this.conversionMode === 'qasmToQbin' ? 'OpenQASM to QBIN' : 'QBIN to OpenQASM';
+  }
+
+    get convertButtonLabel(): string {
+    if (this.isConverting) {
+      return 'Converting...';
+    }
+    return this.conversionMode === 'qasmToQbin' ? 'Encode to QBIN' : 'Encode to OpenQASM';
+  }
+
+  get inputData(): string {
+    return this.conversionMode === 'qasmToQbin' ? this.openQasmCode : this.qbinData;
+  }
+
+  set inputData(value: string) {
+    if (this.conversionMode === 'qasmToQbin') {
+      this.openQasmCode = value;
+    } else {
+      this.qbinData = value;
+    }
+  }
+
+  get outputData(): string {
+    return this.conversionMode === 'qasmToQbin' ? this.displayQbinData : this.openQasmCode;
+  }
+
+  get inputPlaceholder(): string {
+    return this.conversionMode === 'qasmToQbin' 
+      ? `Example:\nOPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[2];\ncreg c[2];\nh q[0];\ncx q[0],q[1];\nmeasure q -> c;`
+      : "Paste your QBIN data here (hex format)...";
+  }
+
+  copyInputData(): void {
+    if (this.conversionMode === 'qasmToQbin') {
+      this.copyQasmCode();
+    } else {
+      this.copyQbinCode();
+    }
+  }
+
+  copyOutputData(): void {
+    if (this.conversionMode === 'qasmToQbin') {
+      this.copyQbinCode();
+    } else {
+      this.copyQasmCode();
+    }
+  }
+
+  toggleOutputMode(): void {
+    this.outputMode = this.outputMode === 'hex' ? 'binary' : 'hex';
+  }
+
+  setOutputMode(mode: 'hex' | 'binary'): void {
+    if (this.outputMode !== mode) {
+      this.outputMode = mode;
+    }
+  }
+
+  get displayQbinData(): string {
+    return this.outputMode === 'hex' ? this.qbinData : this.qbinBinaryData;
+  }
+
+  get toggleOutputModeLabel(): string {
+    return this.outputMode === 'hex' ? 'BIN' : 'HEX';
   }
 }

@@ -3,18 +3,18 @@
 
     <div class="converter-content">
         <div class="converter-grid">
-            <!-- OpenQASM Input Section -->
+            <!-- Input Section -->
             <div class="input-section">
                 <div class="section-header">
                     <h3>
-                        OpenQASM Code
+                        {{ inputLabel }}
                     </h3>
                     <div class="section-actions">
                         <button 
                             type="button" 
-                            (click)="copyQasmCode()" 
+                            (click)="copyInputData()" 
                             class="copy-btn"
-                            [disabled]="!openQasmCode"
+                            [disabled]="!inputData"
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -34,9 +34,11 @@
                 </div>
                 
                 <textarea
-                    [(ngModel)]="openQasmCode"
-                    placeholder="Example:&#10;OPENQASM 2.0;&#10;include &quot;qelib1.inc&quot;;&#10;qreg q[2];&#10;creg c[2];&#10;h q[0];&#10;cx q[0],q[1];&#10;measure q -> c;"
-                    class="code-textarea openqasm-input"
+                    [(ngModel)]="inputData"
+                    [placeholder]="inputPlaceholder"
+                    class="code-textarea"
+                    [class.openqasm-input]="conversionMode === 'qasmToQbin'"
+                    [class.qbin-input]="conversionMode === 'qbinToQasm'"
                     [disabled]="isConverting"
                 ></textarea>
             </div>
@@ -46,11 +48,11 @@
                 <div class="convert-actions">
                     <button 
                         type="button" 
-                        (click)="convertToQbin()" 
+                        (click)="convert()" 
                         class="convert-btn encode-btn"
-                        [disabled]="!openQasmCode.trim() || isConverting"
+                        [disabled]="!inputData.trim() || isConverting"
                     >
-                        {{ isConverting ? 'Converting...' : 'OpenQASM to QBIN' }}
+                        {{ convertButtonLabel }}
                     </button>
 
                     <button 
@@ -58,6 +60,7 @@
                         (click)="downloadQbinFile()" 
                         class="download-btn"
                         [disabled]="!qbinData.trim()"
+                        *ngIf="conversionMode === 'qasmToQbin'"
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -65,6 +68,21 @@
                             <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
                         Download .qbin
+                    </button>
+
+                    <button 
+                        type="button" 
+                        (click)="toggleConversionMode()" 
+                        class="mode-toggle-btn"
+                        [disabled]="isConverting"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="17,1 21,5 17,9"/>
+                            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                            <polyline points="7,23 3,19 7,15"/>
+                            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                        </svg>
+                        {{ switchModeButtonLabel }}
                     </button>
                 </div>
 
@@ -79,18 +97,40 @@
                 </div>
             </div>
 
-            <!-- QBIN Output Section -->
+            <!-- Output Section -->
             <div class="output-section">
                 <div class="section-header">
                     <h3>
-                        QBIN Output
+                        {{ outputLabel }}
                     </h3>
                     <div class="section-actions">
+                        <!-- Output format toggle for QBIN mode -->
+                        <div class="format-toggle-group" *ngIf="conversionMode === 'qasmToQbin'" [class.disabled]="!outputData">
+                            <button 
+                                type="button" 
+                                (click)="setOutputMode('binary')" 
+                                class="format-toggle-btn"
+                                [class.active]="outputMode === 'binary'"
+                                [disabled]="!outputData"
+                            >
+                                Binary
+                            </button>
+                            <button 
+                                type="button" 
+                                (click)="setOutputMode('hex')" 
+                                class="format-toggle-btn"
+                                [class.active]="outputMode === 'hex'"
+                                [disabled]="!outputData"
+                            >
+                                Hex
+                            </button>
+                        </div>
+                        
                         <button 
                             type="button" 
-                            (click)="copyQbinCode()" 
+                            (click)="copyOutputData()" 
                             class="copy-btn"
-                            [disabled]="!qbinData"
+                            [disabled]="!outputData"
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -103,9 +143,11 @@
                 
                 <div class="output-content">
                     <textarea
-                        [(ngModel)]="qbinData"
+                        [ngModel]="outputData"
                         placeholder="Output will appear here"
-                        class="code-textarea qbin-output"
+                        class="code-textarea"
+                        [class.qbin-output]="conversionMode === 'qasmToQbin'"
+                        [class.openqasm-output]="conversionMode === 'qbinToQasm'"
                         readonly
                     ></textarea>
                 </div>
