@@ -1,5 +1,5 @@
 <div class="qir-container">
-    <app-lab-header title="OpenQASM to QIR Converter"></app-lab-header>
+    <app-lab-header title="OpenQASM Code Converter"></app-lab-header>
 
     <div class="converter-content">
         <div class="converter-grid">
@@ -48,7 +48,7 @@
                         <circle cx="12" cy="12" r="10"/>
                         <path d="M12 6v6l4 2"/>
                     </svg>
-                    {{ isConverting ? 'Converting...' : 'Convert to QIR' }}
+                    {{ isConverting ? 'Converting...' : 'Convert' }}
                 </button>
 
                 <!-- Error Message -->
@@ -62,7 +62,7 @@
                 </div>
             </div>
 
-            <!-- QIR Output Section -->
+            <!-- Output Section -->
             <div class="output-section">
                 <div class="section-header">
                     <h3>
@@ -77,14 +77,25 @@
                             <path d="M17.5 10v4"/>
                             <circle cx="12" cy="12" r="1.5"/>
                         </svg>
-                        QIR Output
+                        {{ selectedFormat }} Output
                     </h3>
                     <div class="section-actions">
+                        <!-- Format Selection Dropdown -->
+                        <select 
+                            [(ngModel)]="selectedFormat" 
+                            class="format-dropdown"
+                            [disabled]="isConverting"
+                        >
+                            <option *ngFor="let format of conversionFormats" [value]="format.value">
+                                {{ format.label }}
+                            </option>
+                        </select>
+                        
                         <button 
                             type="button" 
-                            (click)="copyQirCode()" 
+                            (click)="copyResponseCode()" 
                             class="copy-btn"
-                            [disabled]="!qirCode"
+                            [disabled]="!responseCode"
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -96,8 +107,9 @@
                 </div>
                 
                 <textarea
-                    [(ngModel)]="qirCode"
-                    placeholder="Converted QIR code will appear here..."
+                    id="qir-output"
+                    [(ngModel)]="responseCode"
+                    [placeholder]="'Converted ' + selectedFormat + ' code will appear here...'"
                     class="code-textarea qir-output"
                     readonly
                 ></textarea>

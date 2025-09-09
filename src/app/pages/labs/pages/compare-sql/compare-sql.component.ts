@@ -32,7 +32,7 @@ export class CompareSqlComponent implements OnInit{
     }
   } = {};
 
-  private apiUrl = 'https://quantum.quantag-it.com/sql-compare-api/compare';
+  private apiUrl = 'https://cryspprod3.quantag-it.com:444/api14/compare';
 
 
   constructor(

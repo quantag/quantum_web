@@ -1,0 +1,186 @@
+<div class="monaco-lab-container">
+  <app-lab-header title="Monaco Editor Lab"></app-lab-header>
+
+  <div class="editor-workspace">
+    <!-- File Explorer -->
+    <div class="file-explorer">
+      <div class="explorer-header">
+        <h3>
+          <span class="icon">📁</span>
+          File Explorer
+        </h3>
+        <button 
+          type="button" 
+          (click)="showCreateFileDialog()" 
+          class="create-btn"
+          title="Create new file or folder"
+        >
+          <span class="icon">+</span>
+        </button>
+      </div>
+
+      <div class="file-tree">
+        <ng-container *ngFor="let file of fileSystem">
+          <div class="file-item-container">
+            <div 
+              class="file-item" 
+              [class.directory]="file.isDirectory"
+              [class.selected]="currentFile === file"
+              (click)="openFile(file)"
+            >
+              <span class="file-icon">{{ getFileIcon(file) }}</span>
+              <span class="file-name">{{ file.name }}</span>
+              <button 
+                *ngIf="!file.isDirectory || file.name !== 'src'"
+                class="delete-btn"
+                (click)="deleteFile(file, $event)"
+                title="Delete file"
+              >
+                ×
+              </button>
+            </div>
+            
+            <!-- Nested files for directories -->
+            <div 
+              *ngIf="file.isDirectory && file.isOpen && file.children" 
+              class="nested-files"
+            >
+              <ng-container *ngFor="let child of file.children">
+                <div class="file-item-container nested">
+                  <div 
+                    class="file-item" 
+                    [class.directory]="child.isDirectory"
+                    [class.selected]="currentFile === child"
+                    (click)="openFile(child)"
+                  >
+                    <span class="file-icon">{{ getFileIcon(child) }}</span>
+                    <span class="file-name">{{ child.name }}</span>
+                    <button 
+                      class="delete-btn"
+                      (click)="deleteFile(child, $event)"
+                      title="Delete file"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Resizer -->
+    <div class="resizer" 
+         (mousedown)="startResize($event)"
+         title="Drag to resize file explorer">
+    </div>
+
+    <!-- Editor Area -->
+    <div class="editor-area">
+      <div class="editor-header">
+        <div class="current-file">
+          <span *ngIf="currentFile" class="file-info">
+            <span class="file-icon">{{ getFileIcon(currentFile) }}</span>
+            <span class="file-name">{{ currentFile.name }}</span>
+          </span>
+          <span *ngIf="!currentFile" class="no-file">No file selected</span>
+        </div>
+        
+        <div class="editor-actions">
+          <button 
+            *ngIf="currentFile && !currentFile.isDirectory"
+            type="button" 
+            (click)="saveCurrentFile()" 
+            class="save-btn"
+            title="Save file (Ctrl+S)"
+          >
+            <span class="icon">💾</span>
+            Save
+          </button>
+        </div>
+      </div>
+
+      <div class="editor-container" #editorContainer></div>
+    </div>
+  </div>
+
+  <!-- Create File Dialog -->
+  <div *ngIf="showNewFileDialog" class="dialog-overlay">
+    <div class="create-file-dialog">
+      <h3>Create New {{ newFileType === 'file' ? 'File' : 'Folder' }}</h3>
+      
+      <div class="file-type-toggle">
+        <button 
+          type="button"
+          [class.active]="newFileType === 'file'"
+          (click)="newFileType = 'file'"
+        >
+          📄 File
+        </button>
+        <button 
+          type="button"
+          [class.active]="newFileType === 'folder'"
+          (click)="newFileType = 'folder'"
+        >
+          📁 Folder
+        </button>
+      </div>
+
+      <div class="input-group">
+        <label>{{ newFileType === 'file' ? 'File' : 'Folder' }} Name:</label>
+        <input 
+          #newFileNameInput
+          type="text" 
+          [(ngModel)]="newFileName" 
+          (keyup.enter)="createNewFile()"
+          (keyup.escape)="cancelCreateFile()"
+          [placeholder]="newFileType === 'file' ? 'example.ts' : 'folder-name'"
+        />
+      </div>
+
+      <div *ngIf="newFileType === 'file'" class="input-group">
+        <label>Language:</label>
+        <select [(ngModel)]="selectedLanguage">
+          <option *ngFor="let lang of availableLanguages" [value]="lang.id">
+            {{ lang.name }} ({{ lang.extensions.join(', ') }})
+          </option>
+        </select>
+      </div>
+
+      <div class="dialog-actions">
+        <button type="button" (click)="createNewFile()" class="create-btn">
+          Create
+        </button>
+        <button type="button" (click)="cancelCreateFile()" class="cancel-btn">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Panel -->
+  <div class="info-panel">
+    <div class="info-content">
+      <h4>💡 Tips & Shortcuts</h4>
+      <ul>
+        <li><kbd>Ctrl+S</kbd> - Save and download current file</li>
+        <li><kbd>Ctrl+F</kbd> - Find in current file</li>
+        <li><kbd>Ctrl+H</kbd> - Find and replace</li>
+        <li><kbd>F1</kbd> - Open command palette</li>
+        <li><kbd>Ctrl+Space</kbd> - Trigger code completion</li>
+        <li><kbd>Alt+Click</kbd> - Multi-cursor editing</li>
+      </ul>
+      
+      <div class="supported-languages">
+        <h5>📋 Supported Languages:</h5>
+        <div class="language-tags">
+          <span *ngFor="let lang of availableLanguages" class="language-tag">
+            {{ lang.name }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

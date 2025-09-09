@@ -26,7 +26,7 @@ export class QbinComponent implements OnInit {
 
   constructor(private http: HttpClient, private seoService: SeoService) { }
 
-  apiUrl = 'https://quantum.quantag-it.com/qbin-api';
+  apiUrl = 'https://cryspprod3.quantag-it.com:444/api18';
 
 
   ngOnInit(): void {

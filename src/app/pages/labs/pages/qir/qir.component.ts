@@ -14,9 +14,17 @@ import { LabHeaderComponent } from '../../../../components/lab-header/lab-header
 })
 export class QirComponent implements OnInit {
   openQasmCode: string = '';
-  qirCode: string = '';
+  responseCode: string = '';
   isConverting: boolean = false;
   errorMessage: string = '';
+  selectedFormat: string = 'QIR';
+  
+  // Available conversion formats
+  conversionFormats = [
+    { value: 'QIR', label: 'QIR' },
+    { value: 'CUDAQ-CPP', label: 'CUDAQ-CPP' },
+    { value: 'CUDAQ-Python', label: 'CUDAQ-Python' }
+  ];
 
   constructor(private http: HttpClient, private seoService: SeoService) { }
 
@@ -32,26 +40,42 @@ export class QirComponent implements OnInit {
 
     this.isConverting = true;
     this.errorMessage = '';
-    this.qirCode = '';
+    this.responseCode = '';
 
-    const apiUrl = 'https://quantum.quantag-it.com/proxy/api/qasm2qir';
+    // Determine the API endpoint based on selected format
+    let apiUrl: string = '';
+    switch (this.selectedFormat) {
+      case 'QIR':
+        apiUrl = 'https://quantum.quantag-it.com/proxy/api/qasm2qir';
+        break;
+      case 'CUDAQ-CPP':
+        apiUrl = 'https://cloud.quantag-it.com/api1/compile';
+        break;
+      case 'CUDAQ-Python':
+        apiUrl = 'https://cloud.quantag-it.com/api1/compile';
+        break;
+    }
     
     // Encode the QASM code to base64
     const encodedQasm = btoa(this.openQasmCode);
-    const payload = { qasm: encodedQasm };
+    let payload: { qasm: string; type?: string } = { qasm: encodedQasm };
+
+    if(this.selectedFormat === 'CUDAQ-CPP' || this.selectedFormat === 'CUDAQ-Python') {
+      payload.type = this.selectedFormat === 'CUDAQ-CPP' ? 'cpp' : 'python';
+    }
     
     this.http.post(apiUrl, payload).subscribe({
       next: (response: any) => {
-        if (response.status === "0") {
-          // Decode the base64 QIR response
-          this.qirCode = atob(response.qir);
+        if(this.selectedFormat === 'CUDAQ-CPP' || this.selectedFormat === 'CUDAQ-Python')   {
+          this.responseCode = atob(response.output);
         } else {
-          this.errorMessage = response.error || 'Error converting code. Please check your OpenQASM syntax and try again.';
+          this.responseCode = atob(response.qir) || '';
         }
+        this.isConverting = false;
       },
       error: (error) => {
-        console.error('Error converting OpenQASM to QIR:', error);
-        this.errorMessage = 'Error converting code. Please check your OpenQASM syntax and try again.';
+        console.error(`Error converting OpenQASM to ${this.selectedFormat}:`, error);
+        this.errorMessage = `Error converting code to ${this.selectedFormat}. Please check your OpenQASM syntax and try again.`;
         this.isConverting = false;
       },
       complete: () => {
@@ -62,15 +86,15 @@ export class QirComponent implements OnInit {
 
   clearFields(): void {
     this.openQasmCode = '';
-    this.qirCode = '';
+    this.responseCode = '';
     this.errorMessage = '';
   }
 
-  copyQirCode(): void {
-    if (this.qirCode) {
-      navigator.clipboard.writeText(this.qirCode).then(() => {
+  copyResponseCode(): void {
+    if (this.responseCode) {
+      navigator.clipboard.writeText(this.responseCode).then(() => {
         // You could add a toast notification here
-        console.log('QIR code copied to clipboard');
+        console.log(`${this.selectedFormat} code copied to clipboard`);
       }).catch(err => {
         console.error('Could not copy text: ', err);
       });

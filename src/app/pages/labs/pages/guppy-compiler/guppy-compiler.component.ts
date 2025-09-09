@@ -77,7 +77,7 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
   private decorations: string[] = [];
 
   // API endpoints (to be updated with actual endpoints)
-  private apiEndpoint = 'https://quantum.quantag-it.com/guppy-compile-api';
+  private apiEndpoint = 'https://cryspprod3.quantag-it.com:444/api17';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,

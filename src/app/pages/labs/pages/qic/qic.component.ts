@@ -53,7 +53,7 @@ export class QicComponent implements OnInit {
 
   constructor(private http: HttpClient, private seoService: SeoService) { }
 
-  private apiUrl = 'https://quantum.quantag-it.com/image-handling-api/process';
+  private apiUrl = 'https://cryspprod3.quantag-it.com:444/api13/process';
 
   ngOnInit(): void {
     this.seoService.updateSeoTags(this.seoService.getSeoData('qic'));

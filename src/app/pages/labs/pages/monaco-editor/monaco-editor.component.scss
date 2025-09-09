@@ -1,0 +1,685 @@
+@use 'colors' as *;
+
+.monaco-lab-container {
+  min-height: calc(100vh - 64px - 90px);
+  background: $primary-900;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-workspace {
+  display: flex;
+  padding: 1rem;
+  max-width: 1400px;
+  width: 85%;
+  margin: 0 auto;
+  height: calc(100vh - 64px - 90px - 2rem);
+  gap: 0;
+}
+
+// File Explorer Styles - Dark VS Code Theme
+.file-explorer {
+  background: #252526;
+  color: #cccccc;
+  border: 1px solid #3c3c3c;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: var(--explorer-width, 300px);
+  min-width: 200px;
+  max-width: 600px;
+  flex-shrink: 0;
+}
+
+// Resizer Styles
+.resizer {
+  width: 4px;
+  background: #3c3c3c;
+  cursor: col-resize;
+  position: relative;
+  flex-shrink: 0;
+  
+  &:hover {
+    background: #0e639c;
+  }
+  
+  &.resizing {
+    background: #0e639c;
+  }
+}
+
+.explorer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #2d2d30;
+  border-bottom: 1px solid #3c3c3c;
+  height: 44px;
+
+  h3 {
+    margin: 0;
+    color: #cccccc;
+    font-size: 0.85rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .icon {
+      font-size: 1rem;
+      color: #cccccc;
+    }
+  }
+}
+
+.create-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  color: #cccccc;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: normal;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #3c3c3c;
+    color: #ffffff;
+  }
+
+  .icon {
+    font-size: 0.9rem;
+  }
+}
+
+.file-tree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.25rem 0;
+  background: #252526;
+}
+
+.file-item-container {
+  &.nested {
+    margin-left: 0.75rem;
+    border-left: 1px solid #3c3c3c;
+  }
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  position: relative;
+  min-height: 22px;
+  font-size: 0.85rem;
+
+  &:hover {
+    background: #2a2d2e;
+  }
+
+  &.selected {
+    background: #094771;
+    color: #ffffff;
+    font-weight: normal;
+  }
+
+  &.directory {
+    font-weight: normal;
+    color: #cccccc;
+    
+    &:hover {
+      background: #2a2d2e;
+    }
+
+    &.selected {
+      background: #094771;
+    }
+  }
+
+  .file-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    color: #cccccc;
+  }
+
+  .file-name {
+    flex: 1;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #cccccc;
+  }
+
+  .delete-btn {
+    display: none;
+    width: 16px;
+    height: 16px;
+    background: transparent;
+    color: #cccccc;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: normal;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s ease;
+
+    &:hover {
+      background: #3c3c3c;
+      color: #ffffff;
+    }
+  }
+
+  &:hover .delete-btn {
+    display: flex;
+  }
+}
+
+.nested-files {
+  border-left: 1px solid #3c3c3c;
+  margin-left: 1rem;
+}
+
+.explorer-actions {
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid #3c3c3c;
+  background: #2d2d30;
+}
+
+.download-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: #0e639c;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: normal;
+  width: 100%;
+  justify-content: center;
+  transition: all 0.1s ease;
+
+  &:hover {
+    background: #1177bb;
+  }
+
+  .icon {
+    font-size: 0.9rem;
+  }
+}
+
+// Editor Area Styles - Dark VS Code Theme
+.editor-area {
+  background: #1e1e1e;
+  color: #cccccc;
+  flex: 1;
+  border: 1px solid #3c3c3c;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 300px;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #2d2d30;
+  border-bottom: 1px solid #3c3c3c;
+  height: 44px;
+}
+
+.current-file {
+  .file-info {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #cccccc;
+    font-weight: normal;
+
+    .file-icon {
+      font-size: 1rem;
+      color: #cccccc;
+    }
+
+    .file-name {
+      font-size: 0.85rem;
+      color: #cccccc;
+    }
+  }
+
+  .no-file {
+    color: #858585;
+    font-style: italic;
+    font-size: 0.85rem;
+  }
+}
+
+.editor-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.save-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  background: #0e639c;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: normal;
+  transition: all 0.1s ease;
+
+  &:hover {
+    background: #1177bb;
+  }
+
+  .icon {
+    font-size: 0.8rem;
+  }
+}
+
+.editor-container {
+  flex: 1;
+  min-height: 0;
+  background: #1e1e1e;
+  overflow: hidden;
+}
+
+// Dialog Styles - Dark VS Code Theme
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.create-file-dialog {
+  background: #252526;
+  border: 1px solid #3c3c3c;
+  border-radius: 6px;
+  padding: 1.5rem;
+  min-width: 400px;
+  max-width: 500px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  color: #cccccc;
+
+  h3 {
+    margin: 0 0 1rem 0;
+    color: #cccccc;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
+
+.file-type-toggle {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+
+  button {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #3c3c3c;
+    background: #2d2d30;
+    color: #cccccc;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.1s ease;
+
+    &:hover {
+      background: #3c3c3c;
+    }
+
+    &.active {
+      background: #0e639c;
+      color: #ffffff;
+      border-color: #0e639c;
+    }
+  }
+}
+
+.input-group {
+  margin-bottom: 1rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #cccccc;
+    font-weight: 500;
+    font-size: 0.85rem;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #3c3c3c;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    background: #2d2d30;
+    color: #cccccc;
+    outline: none;
+    transition: border-color 0.1s ease;
+
+    &:focus {
+      border-color: #0e639c;
+    }
+
+    &::placeholder {
+      color: #6c6c6c;
+    }
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: flex-end;
+
+  button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #3c3c3c;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.1s ease;
+  }
+
+  .create-btn {
+    background: #0e639c;
+    color: #ffffff;
+    border-color: #0e639c;
+
+    &:hover {
+      background: #1177bb;
+    }
+
+    &:disabled {
+      background: #383838;
+      color: #6c6c6c;
+      border-color: #383838;
+      cursor: not-allowed;
+    }
+  }
+
+  .cancel-btn {
+    background: #2d2d30;
+    color: #cccccc;
+
+    &:hover {
+      background: #3c3c3c;
+    }
+  }
+}
+
+// Info Panel Styles
+.info-panel {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-top: 1rem;
+}
+
+.info-content {
+  h4 {
+    margin: 0 0 1rem 0;
+    color: white;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  ul {
+    margin: 0 0 1.5rem 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      kbd {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-family: monospace;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+}
+
+.supported-languages {
+  h5 {
+    margin: 0 0 0.5rem 0;
+    color: white;
+    font-size: 0.9rem;
+  }
+}
+
+.language-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.language-tag {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// Dark mode styles - VS Code Theme
+[data-theme="dark"] {
+  .editor-workspace {
+    background: #1e1e1e;
+    color: #cccccc;
+  }
+
+  .file-explorer,
+  .editor-area {
+    background: #252526;
+    color: #cccccc;
+    border-color: #3c3c3c;
+  }
+
+  .explorer-header,
+  .editor-header {
+    background: #2d2d30;
+    border-bottom-color: #3c3c3c;
+
+    h3 {
+      color: #cccccc;
+    }
+  }
+
+  .file-item {
+    color: #cccccc;
+
+    &:hover {
+      background: #3c3c3c;
+    }
+
+    &.selected {
+      background: rgba(14, 99, 156, 0.3);
+      color: #ffffff;
+    }
+
+    &.directory:hover {
+      background: #3c3c3c;
+    }
+  }
+
+  .nested-files {
+    border-left-color: #3c3c3c;
+  }
+
+  .explorer-actions {
+    background: #2d2d30;
+    border-top-color: #3c3c3c;
+  }
+
+  .create-file-dialog {
+    background: #252526;
+    border-color: #3c3c3c;
+    color: #cccccc;
+
+    h3 {
+      color: #cccccc;
+    }
+  }
+
+  .input-group {
+    label {
+      color: #cccccc;
+    }
+
+    input, select {
+      background: #2d2d30;
+      border-color: #3c3c3c;
+      color: #cccccc;
+
+      &:focus {
+        border-color: #0e639c;
+      }
+
+      &::placeholder {
+        color: #6c6c6c;
+      }
+    }
+  }
+
+  .file-type-toggle button {
+    background: #2d2d30;
+    border-color: #3c3c3c;
+    color: #cccccc;
+
+    &:hover {
+      background: #3c3c3c;
+    }
+
+    &.active {
+      background: #0e639c;
+      color: #ffffff;
+      border-color: #0e639c;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 1200px) {
+  .file-explorer {
+    max-width: 50vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .editor-workspace {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 64px - 90px - 2rem);
+  }
+
+  .file-explorer {
+    width: 100% !important;
+    max-width: none;
+    min-width: auto;
+    height: 300px;
+    order: 1;
+  }
+
+  .resizer {
+    display: none;
+  }
+
+  .editor-area {
+    order: 2;
+    min-width: auto;
+  }
+
+  .info-panel {
+    order: 3;
+  }
+
+  .create-file-dialog {
+    margin: 1rem;
+    min-width: auto;
+    max-width: calc(100vw - 2rem);
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .editor-workspace {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .explorer-header,
+  .editor-header {
+    padding: 0.75rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+
+  .file-item {
+    padding: 0.75rem;
+  }
+
+  .info-panel {
+    .language-tags {
+      justify-content: center;
+    }
+  }
+}

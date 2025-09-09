@@ -84,6 +84,11 @@ export class SeoService {
       title: 'Guppy Compiler',
       description: 'Advanced Guppy Python compiler for quantum computing. Analyze Python functions, extract compilable quantum operations, and generate optimized quantum circuits in binary, JSON, and string formats for quantum development.',
       keywords: 'Guppy compiler, Python quantum compiler, quantum Python, quantum circuit generation, Guppy language, quantum programming, Python to Guppy, quantum development tools, HUGR packages, quantum functions'
+    },
+    'monaco-editor': {
+      title: 'Monaco Editor Lab - Advanced Code Editor with File System',
+      description: 'Professional web-based code editor powered by Monaco Editor with virtual file system, syntax highlighting, IntelliSense, and multi-language support. Perfect for coding, prototyping, and educational purposes.',
+      keywords: 'Monaco Editor, code editor, online IDE, web editor, syntax highlighting, IntelliSense, file system, TypeScript editor, JavaScript editor, web development, coding lab, online compiler, code playground'
     }
   };
 

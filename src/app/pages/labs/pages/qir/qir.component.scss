@@ -51,6 +51,7 @@
     font-weight: 600;
 
     svg {
+      flex-shrink: 0;
       width: 20px;
       height: 20px;
       color: #667eea;
@@ -60,7 +61,42 @@
 
 .section-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
+  align-items: center;
+}
+
+.format-dropdown {
+  padding: 0.4rem 2.5rem 0.4rem 1rem; // More padding on right for arrow space
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: white;
+  color: #333;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 140px;
+  appearance: none; // Remove default arrow
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center; // Position arrow on right side
+  background-size: 1rem;
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f8f9fa;
+  }
+
+  option {
+    padding: 0.5rem;
+  }
 }
 
 .clear-btn,
@@ -223,10 +259,24 @@
 
   .section-header {
     padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
     
     h3 {
       font-size: 1rem;
     }
+  }
+
+  .section-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .format-dropdown {
+    min-width: 120px;
+    flex: 1;
+    max-width: 150px;
   }
 
   .code-textarea {
