@@ -49,10 +49,10 @@ export class QirComponent implements OnInit {
         apiUrl = 'https://quantum.quantag-it.com/proxy/api/qasm2qir';
         break;
       case 'CUDAQ-CPP':
-        apiUrl = 'https://cloud.quantag-it.com/api1/compile';
+        apiUrl = 'https://qcloud-gateway-asivl5za.ew.gateway.dev/compile';
         break;
       case 'CUDAQ-Python':
-        apiUrl = 'https://cloud.quantag-it.com/api1/compile';
+        apiUrl = 'https://qcloud-gateway-asivl5za.ew.gateway.dev/compile';
         break;
     }
     
