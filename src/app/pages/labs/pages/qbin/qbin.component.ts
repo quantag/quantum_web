@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-qbin',
@@ -25,9 +26,6 @@ export class QbinComponent implements OnInit {
   
 
   constructor(private http: HttpClient, private seoService: SeoService) { }
-
-  apiUrl = 'https://cryspprod3.quantag-it.com:444/api18';
-
 
   ngOnInit(): void {
     this.seoService.updateSeoTags(this.seoService.getSeoData('qbin'));
@@ -55,7 +53,7 @@ export class QbinComponent implements OnInit {
     const encodedQasm = btoa(this.openQasmCode);
     const payload = { qasm_b64: encodedQasm };
     
-    this.http.post(this.apiUrl + '/compile', payload).subscribe({
+    this.http.post(environment.apiGatewayUrl + '/qbin-compile', payload).subscribe({
       next: (response: any) => {
         if (response.qbin_b64) {
           try {
@@ -105,7 +103,7 @@ export class QbinComponent implements OnInit {
         
         const payload = { qbin_b64: base64Data };
 
-        this.http.post(this.apiUrl + '/decompile', payload).subscribe({
+        this.http.post(environment.apiGatewayUrl + '/qbin-decompile', payload).subscribe({
         next: (response: any) => {
             if (response.qasm_b64) {
             this.openQasmCode = atob(response.qasm_b64);

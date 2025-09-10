@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ITableDiff } from '../../../../interfaces/table_diff.interface';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from "../../../../components/lab-header/lab-header.component";
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-compare-sql',
@@ -31,8 +32,6 @@ export class CompareSqlComponent implements OnInit{
       fieldsOnlyInDb2: Array<{key: string, value: string}>;
     }
   } = {};
-
-  private apiUrl = 'https://cryspprod3.quantag-it.com:444/api14/compare';
 
 
   constructor(
@@ -121,7 +120,7 @@ export class CompareSqlComponent implements OnInit{
         db2_b64: file2Base64
       };
 
-      this.http.post<ITableDiff>(this.apiUrl, requestBody).subscribe({
+      this.http.post<ITableDiff>(environment.apiGatewayUrl + '/sql-compare', requestBody).subscribe({
         next: (response) => {
           this.result = response;
           this.updateStaticArrays();

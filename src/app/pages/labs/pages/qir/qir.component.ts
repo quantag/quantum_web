@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-qir',
@@ -44,16 +45,10 @@ export class QirComponent implements OnInit {
 
     // Determine the API endpoint based on selected format
     let apiUrl: string = '';
-    switch (this.selectedFormat) {
-      case 'QIR':
-        apiUrl = 'https://quantum.quantag-it.com/proxy/api/qasm2qir';
-        break;
-      case 'CUDAQ-CPP':
-        apiUrl = 'https://qcloud-gateway-asivl5za.ew.gateway.dev/compile';
-        break;
-      case 'CUDAQ-Python':
-        apiUrl = 'https://qcloud-gateway-asivl5za.ew.gateway.dev/compile';
-        break;
+    if(this.selectedFormat === 'QIR') {
+      apiUrl = 'https://quantum.quantag-it.com/proxy/api/qasm2qir';
+    } else {
+      apiUrl = environment.apiGatewayUrl + '/cudaq-compile';
     }
     
     // Encode the QASM code to base64

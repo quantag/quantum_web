@@ -16,6 +16,7 @@ import { GuppyAnalysisResponse, GuppyFunction, GuppyCompileResponse, GuppyCompil
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 import { ButtonComponent } from '../../../../components/button/button.component';
 import { UploadSectionComponent, UploadSectionConfig, UploadedContent } from '../../../../components/upload-section/upload-section.component';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-guppy-compiler',
@@ -77,7 +78,6 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
   private decorations: string[] = [];
 
   // API endpoints (to be updated with actual endpoints)
-  private apiEndpoint = 'https://cryspprod3.quantag-it.com:444/api17';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -129,7 +129,7 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
     // Convert Python code to base64
     const base64Code = btoa(this.pythonCode);
     this.http.post<GuppyAnalysisResponse>(
-      this.apiEndpoint + '/detect',
+      environment.apiGatewayUrl + '/guppy-detect',
       { source_b64: base64Code }
     ).subscribe({
       next: (response) => {
@@ -173,7 +173,7 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
     const base64Code = btoa(this.pythonCode);
 
     this.http.post<GuppyCompileResponse>(
-      this.apiEndpoint + '/compile',
+      environment.apiGatewayUrl + '/guppy-compile',
       { 
         source_b64: base64Code,
         functions: Array.from(this.selectedFunctions),

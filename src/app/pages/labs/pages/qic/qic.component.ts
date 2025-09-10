@@ -7,6 +7,7 @@ import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 import { FormsModule } from '@angular/forms';
 import { UploadSectionComponent, UploadSectionConfig, UploadedContent } from '../../../../components/upload-section/upload-section.component';
+import { environment } from '../../../../../environments/environment';
 
 interface CompressedImage {
   src: string;
@@ -52,8 +53,6 @@ export class QicComponent implements OnInit {
   };
 
   constructor(private http: HttpClient, private seoService: SeoService) { }
-
-  private apiUrl = 'https://cryspprod3.quantag-it.com:444/api13/process';
 
   ngOnInit(): void {
     this.seoService.updateSeoTags(this.seoService.getSeoData('qic'));
@@ -163,7 +162,7 @@ export class QicComponent implements OnInit {
 
     const base64Image = this.convertImageToBase64(this.originalImage);
 
-    this.http.post<ProcessImgResponse>(this.apiUrl, { image: base64Image }).subscribe({
+    this.http.post<ProcessImgResponse>(environment.apiGatewayUrl + '/image-process', { image: base64Image }).subscribe({
       next: (response) => {
         if (response) {
           // Create compressed images from the response
