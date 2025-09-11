@@ -46,7 +46,7 @@ export class QirComponent implements OnInit {
     // Determine the API endpoint based on selected format
     let apiUrl: string = '';
     if(this.selectedFormat === 'QIR') {
-      apiUrl = 'https://quantum.quantag-it.com/proxy/api/qasm2qir';
+      apiUrl = environment.apiGatewayUrl + '/qir-compile';
     } else {
       apiUrl = environment.apiGatewayUrl + '/cudaq-compile';
     }
