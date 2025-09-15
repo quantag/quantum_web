@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { PrivacyComponent } from './pages/privacy/privacy.component';
-import { ProfileComponent } from './pages/profile/profile.component';
 import { LabsComponent } from './pages/labs/labs.component';
 import { QirComponent } from './pages/labs/pages/qir/qir.component';
 import { QbinComponent } from './pages/labs/pages/qbin/qbin.component';
@@ -21,10 +20,6 @@ export const routes: Routes = [
     {
         path: 'privacy-policy',
         component: PrivacyComponent
-    },
-    {
-        path: 'profile',
-        component: ProfileComponent
     },
     {
         path: 'labs',

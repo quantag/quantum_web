@@ -6,7 +6,6 @@ import { IPlan } from '../../interfaces/plan.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { FormspreeService } from '../../services/formspree.service';
-import { GoogleAuthService } from '../../services/google-auth.service';
 
 @Component({
   selector: 'app-home',
@@ -211,7 +210,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    private googleAuthService: GoogleAuthService,
     private route: ActivatedRoute,
     private formspreeService: FormspreeService, // Import HttpClient for future API calls
     @Inject(PLATFORM_ID) private platformId: Object
@@ -220,7 +218,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.handleAuthCallback();
     this.startAutoScroll();
     this.activePlans = this.monthlyPlans;
 
@@ -353,22 +350,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         console.error('Form submission failed:', error);
         alert('There was an error submitting your message. Please try again later.');
         this.formSubmitted = false;
-      }
-    });
-  }
-
-  public handleAuthCallback(): void {
-    this.route.queryParams.subscribe(params => {
-      const code = params['code'];
-      const error = params['error'];
-      
-      if (error) {
-        console.error('Authentication error:', error);
-        return;
-      }
-      
-      if (code) {
-        this.googleAuthService.authenticateWithCode(code).subscribe();
       }
     });
   }

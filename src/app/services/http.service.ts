@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IAlgorithmInterface } from '../interfaces/IAlgoritm.interface';
 import { Observable } from 'rxjs';
-import { IUserContact } from '../interfaces/userData.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -25,7 +24,4 @@ export class HttpService {
         return this.httpClient.get<{algos:IAlgorithmInterface[]}>(this._baseUrl+'qapi/algos');
     }
 
-    public sendUserContact(userContact:IUserContact):Observable<any> {
-        return this.httpClient.post(this._baseUrl+'/api3/storeContact', userContact);
-    }
 }

@@ -1,33 +1,19 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { ButtonComponent } from '../button/button.component';
-import { Observable } from 'rxjs';
-import { GoogleAuthService } from '../../services/google-auth.service';
-import { IGoogleUser } from '../../interfaces/googleUser.interface';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-nav',
-  imports: [RouterModule, ButtonComponent],
+  imports: [RouterModule],
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss']
 })
 export class NavComponent implements OnInit {
   // Add mobile menu state
   isMobileMenuOpen = false;
-  user$: Observable<IGoogleUser | null>;
-  isLogin: boolean = false;
 
-  constructor(
-    private googleAuthService: GoogleAuthService,
-    private router: Router
-  ) {
-    this.user$ = this.googleAuthService.user$;
-  }
+  constructor() {}
 
   ngOnInit(): void {
-    this.user$.subscribe(user => {
-      this.isLogin = user !== null;
-    });
   }
 
   @HostListener('document:click', ['$event'])
@@ -40,18 +26,6 @@ export class NavComponent implements OnInit {
     if (!isMenuOpen && !isHamburger) {
       this.closeMobileMenu();
     }
-  }
-
-  signIn(): void {
-    this.googleAuthService.signIn();
-  }
-
-  openProfile(): void {
-  }
-
-  signOut(): void {
-    this.googleAuthService.signOut();
-    this.router.navigate(['/']);
   }
 
   // Toggle mobile menu

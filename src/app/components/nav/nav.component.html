@@ -19,18 +19,10 @@
             <li class="navigation__item">
                 <a class="navigation__link" href="https://quantag.github.io/qbin" target="_blank" (click)="closeMobileMenu()">QBIN</a>
             </li>
+
+            <li class="navigation__item">
+                <a class="navigation__link" href="https://cloud.quantag-it.com/" target="_blank" (click)="closeMobileMenu()">Cloud</a>
+            </li>
         </ul>
-
-        <div class="navigation__login-mobile">
-                <a [class.hidden]="!isLogin" class="navigation__link" routerLink="/profile" routerLinkActive="active">My Profile</a>
-                <app-button [class.hidden]="!isLogin" [label]="'Log Out'" (clicked)="signOut()"></app-button>
-                <app-button [class.hidden]="isLogin" [label]="'Log In'" (clicked)="signIn()"></app-button>
-        </div>
-    </div>
-
-    <div class="navigation__login-desktop">
-            <a [class.hidden]="!isLogin" class="navigation__link" routerLink="/profile" routerLinkActive="active">My Profile</a>
-            <app-button [class.hidden]="!isLogin" [label]="'Log Out'" (clicked)="signOut()"></app-button>
-            <app-button [class.hidden]="isLogin" [label]="'Log In'" (clicked)="signIn()"></app-button>
     </div>
 </div>
