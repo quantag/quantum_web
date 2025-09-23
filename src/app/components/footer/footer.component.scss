@@ -16,6 +16,22 @@
         align-items: center;
     }
 
+    &__contact {
+        display: flex;
+        color: $white;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        &__link {
+            padding: 8px 20px;
+            font-weight: 600;
+            font-size: 12px;
+            line-height: 16px;
+            letter-spacing: 0%;
+            color: $white;
+        }
+    }
+
     &__links {
         &__list {
             display: flex;
@@ -29,7 +45,6 @@
             font-weight: 600;
             font-size: 12px;
             line-height: 16px;
-            letter-spacing: 0%;
             color: $white;
         }
     }
@@ -38,9 +53,9 @@
         font-weight: 400;
         font-size: 10px;
         line-height: 12px;
-        letter-spacing: 0%;
         text-align: center;
         color: $light-grey;
+        margin-right: 65px;
     }
 
     // Add responsive styles
@@ -55,6 +70,10 @@
             flex-direction: column;
             gap: 15px;
         }
+
+        .footer__copyright {
+            margin-right: 0;
+        }
     }
 
     @media (max-width: 480px) {
@@ -64,6 +83,16 @@
                 align-items: center;
                 gap: 10px;
             }
+            
+            &__link {
+                padding: 8px 10px;
+            }
+        }
+
+        .footer__contact {
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
             
             &__link {
                 padding: 8px 10px;

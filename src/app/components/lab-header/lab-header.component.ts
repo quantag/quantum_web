@@ -11,6 +11,7 @@ import { ButtonComponent } from '../button/button.component';
 })
 export class LabHeaderComponent {
   @Input() title: string = '';
+  @Input() ghInfo: { title: string; url: string} | null = null;
 
   constructor(private router: Router) {}
 
