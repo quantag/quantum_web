@@ -22,10 +22,6 @@ export const routes: Routes = [
         component: PrivacyComponent
     },
     {
-        path: 'labs',
-        component: LabsComponent
-    },
-    {
         path: 'labs/xyz',
         component: XyzComponent
     },
@@ -56,6 +52,11 @@ export const routes: Routes = [
     {
         path: 'labs/guppy-compiler',
         component: GuppyCompilerComponent
+    },
+    {
+        path: 'labs',
+        component: LabsComponent,
+        pathMatch: 'full'
     },
     {
         path: '**',

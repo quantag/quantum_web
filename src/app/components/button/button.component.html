@@ -1,11 +1,11 @@
-<ng-container [ngSwitch]="type">
+<ng-container [ngSwitch]="type" >
+  <div [matTooltip]="tooltip" class="button-container" [matTooltipDisabled]="!disabled && !loading">
     <!-- Basic button -->
     <button 
       *ngSwitchCase="'basic'"
       mat-button
       [color]="color"
       [disabled]="disabled || loading"
-      [matTooltip]="tooltip"
       [attr.aria-label]="ariaLabel || label"
       [attr.data-test-id]="testId"
       [class.full-width]="fullWidth"
@@ -19,7 +19,6 @@
       mat-raised-button
       [color]="color"
       [disabled]="disabled || loading"
-      [matTooltip]="tooltip"
       [attr.aria-label]="ariaLabel || label"
       [attr.data-test-id]="testId"
       [class.full-width]="fullWidth"
@@ -33,7 +32,6 @@
       mat-stroked-button
       [color]="color"
       [disabled]="disabled || loading"
-      [matTooltip]="tooltip"
       [attr.aria-label]="ariaLabel || label"
       [attr.data-test-id]="testId"
       [class.full-width]="fullWidth"
@@ -47,7 +45,6 @@
       mat-flat-button
       [color]="color"
       [disabled]="disabled || loading"
-      [matTooltip]="tooltip"
       [attr.aria-label]="ariaLabel || label"
       [attr.data-test-id]="testId"
       [class.full-width]="fullWidth"
@@ -62,7 +59,6 @@
       mat-icon-button
       [color]="color"
       [disabled]="disabled || loading"
-      [matTooltip]="tooltip"
       [attr.aria-label]="ariaLabel || label"
       [attr.data-test-id]="testId"
       (click)="handleClick($event)">
@@ -77,22 +73,22 @@
       mat-button
       [color]="color"
       [disabled]="disabled || loading"
-      [matTooltip]="tooltip"
       [attr.aria-label]="ariaLabel || label"
       [attr.data-test-id]="testId"
       [class.full-width]="fullWidth"
       (click)="handleClick($event)">
       <ng-container *ngTemplateOutlet="buttonContent"></ng-container>
     </button>
-  </ng-container>
+  </div>
+</ng-container>
   
-  <!-- Template for button content with icon and text -->
-  <ng-template #buttonContent>
-    <mat-icon *ngIf="icon && iconPosition === 'before' && !loading && !customIcon">{{ icon }}</mat-icon>
-    <img *ngIf="customIcon && iconPosition === 'before' && !loading" [src]="customIcon" class="custom-icon" [alt]="customIcon">
-    
-    <mat-icon *ngIf="loading" class="loading-icon">sync</mat-icon>
-    <span *ngIf="label" [class.button-text-with-icon]="icon || customIcon">{{ label }}</span>
-    <mat-icon *ngIf="icon && iconPosition === 'after' && !loading && !customIcon">{{ icon }}</mat-icon>
-    <img *ngIf="customIcon && iconPosition === 'after' && !loading" [src]="customIcon" class="custom-icon" [alt]="customIcon">
-  </ng-template>
+<!-- Template for button content with icon and text -->
+<ng-template #buttonContent>
+  <mat-icon *ngIf="icon && iconPosition === 'before' && !loading && !customIcon">{{ icon }}</mat-icon>
+  <img *ngIf="customIcon && iconPosition === 'before' && !loading" [src]="customIcon" class="custom-icon" [alt]="customIcon">
+  
+  <mat-icon *ngIf="loading" class="loading-icon">sync</mat-icon>
+  <span *ngIf="label" [class.button-text-with-icon]="icon || customIcon">{{ label }}</span>
+  <mat-icon *ngIf="icon && iconPosition === 'after' && !loading && !customIcon">{{ icon }}</mat-icon>
+  <img *ngIf="customIcon && iconPosition === 'after' && !loading" [src]="customIcon" class="custom-icon" [alt]="customIcon">
+</ng-template>

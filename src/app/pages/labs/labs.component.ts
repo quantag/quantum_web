@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-labs',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './labs.component.html',
   styleUrls: ['./labs.component.scss']
 })
@@ -17,7 +17,8 @@ export class LabsComponent implements OnInit, OnDestroy {
 
   constructor(
     private seoService: SeoService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -31,5 +32,9 @@ export class LabsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.themeSubscription?.unsubscribe();
+  }
+
+  navigateToLab(labPath: string): void {
+    this.router.navigate(['labs',labPath]);
   }
 }

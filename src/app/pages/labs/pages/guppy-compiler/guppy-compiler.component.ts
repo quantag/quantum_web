@@ -138,6 +138,7 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
           // Highlight the detected functions after a short delay to ensure editor is ready
           setTimeout(() => {
             this.highlightGuppyFunctions();
+            this.scrollToGuppyFunctions();
           }, 100);
         } else {
           this.errorMessage = 'Analysis failed. Please check your Python code.';
@@ -283,6 +284,19 @@ export class GuppyCompilerComponent implements OnInit, OnDestroy {
 
     // Apply decorations
     this.decorations = this.monacoEditor.deltaDecorations([], newDecorations);
+  }
+
+  scrollToGuppyFunctions(): void {
+    if (!this.isBrowser) return;
+    
+    // Scroll to the results section container
+    const resultsSection = document.querySelector('.results-section');
+    if (resultsSection) {
+      resultsSection.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }
   }
 
   clearHighlights(): void {
