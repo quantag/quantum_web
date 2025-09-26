@@ -28,6 +28,53 @@
   margin: 0 auto;
 }
 
+// Description Section
+.description-section {
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #e2e8f0;
+
+  h3 {
+    margin: 0 0 15px 0;
+    color: $primary-900;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0 0 15px 0;
+    color: $grey-400;
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: justify;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  ul {
+    margin: 0 0 15px 0;
+    padding-left: 20px;
+    color: $grey-400;
+    font-size: 1rem;
+    line-height: 1.6;
+
+    li {
+      margin-bottom: 8px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      strong {
+        color: $primary-900;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
 .input-section {
   margin-bottom: 30px;
 }
@@ -43,7 +90,7 @@
     align-items: center;
     gap: 10px;
     margin: 0;
-    color: #2d3748;
+    color: $primary-900;
     font-size: 1.2rem;
     font-weight: 600;
 

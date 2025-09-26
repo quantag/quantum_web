@@ -1,0 +1,144 @@
+<div class="quantum-portfolio-container">
+    <app-lab-header title="Quantum Portfolio Optimizer"></app-lab-header>
+
+    <div class="content-container">
+        <!-- File Upload Section -->
+        <app-upload-section
+            [config]="uploadConfig"
+            [currentContent]="csvData"
+            [disabled]="isAnalyzing"
+            (contentUploaded)="onContentUploaded($event)"
+            (contentCleared)="clearData()"
+            (error)="onUploadError($event)">
+        </app-upload-section>
+
+        <div class="portfolio-content">
+            <!-- Description Section -->
+            <div class="description-section">
+                <h3>Portfolio Optimization with Quantum Technology</h3>
+                <p>We transform the portfolio selection problem into a <a href="https://support.dwavesys.com/hc/en-us/articles/360003684474-What-Is-a-QUBO">QUBO (Quadratic Unconstrained Binary Optimization)</a> model. This allows us to explore many possible investment combinations at once. Using either <strong>classical simulation (QAOA-like methods)</strong> or <strong>real quantum annealing on D-Wave hardware</strong>, our system finds the best portfolio that balances <strong>returns and risk</strong>.</p>
+            </div>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="section-header">
+                    <h3>
+                        <div class="csv-icon">
+                            <img src="assets/images/csv-icon.svg" alt="CSV Icon">
+                        </div>
+                        Upload Portfolio Data
+                    </h3>
+                </div>
+                
+                <div class="csv-input-container" 
+                     [class.drag-over]="isDragOver"
+                     (dragover)="onDragOver($event)" 
+                     (dragleave)="onDragLeave($event)" 
+                     (drop)="onDrop($event)">
+                    <input type="file" accept=".csv" (change)="onCsvFileSelected($event)" [disabled]="isAnalyzing" />
+                    
+                    <div *ngIf="!csvFile" class="drag-drop-content">
+                        <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        <div class="drag-drop-text">
+                            <span class="highlight">Click to select</span> or drag and drop your CSV file here
+                            <br>
+                            <small>Supports CSV files with portfolio data (stocks, returns, etc.)</small>
+                        </div>
+                    </div>
+                    
+                    <div *ngIf="csvFile" class="csv-preview-container">
+                        <div class="csv-info">
+                            <div class="csv-icon csv-icon-preview">
+                                <img src="assets/images/csv-icon.svg" alt="CSV Icon">
+                            </div>
+                            <span>{{ csvFile.name }}</span>
+                            <span>{{ (csvFile.size / 1024).toFixed(1) }} KB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Optimize Button -->
+                <div *ngIf="portfolioAssets.length > 0" class="optimize-section">
+                    <app-button
+                        [type]="'raised'"
+                        [label]="'Optimize Portfolio'"
+                        (clicked)="optimizePortfolio()"
+                        [disabled]="isAnalyzing"
+                        [loading]="isAnalyzing">
+                    </app-button>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-message" *ngIf="errorMessage">
+                <mat-icon>error</mat-icon>
+                {{ errorMessage }}
+            </div>
+
+            <!-- Portfolio Analysis Results -->
+            <div *ngIf="portfolioAssets.length > 0" class="analysis-results">
+                <div class="results-header">
+                    <h3>Portfolio Analysis</h3>
+                    <div *ngIf="optimizationResult" class="optimization-info">
+                        <span class="energy-value">Energy: {{ optimizationResult.energy.toFixed(4) }}</span>
+                    </div>
+                </div>
+
+                <div class="results-content">
+                    <!-- Portfolio Table -->
+                    <div class="portfolio-table-section">
+                        <div class="table-container">
+                            <table class="portfolio-table">
+                                <thead>
+                                    <tr>
+                                        <th>Asset</th>
+                                        <th>Return</th>
+                                        <th>Risk</th>
+                                        <th>Selected</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let asset of portfolioAssets" 
+                                        [class.selected-asset]="asset.selected === 'ok'"
+                                        [class.not-selected-asset]="asset.selected === 'x'">
+                                        <td class="asset-name">{{ asset.asset }}</td>
+                                        <td class="return-value">{{ (asset.returns * 100).toFixed(1) }}%</td>
+                                        <td class="risk-value">{{ (asset.risk * 100).toFixed(1) }}%</td>
+                                        <td class="selected-status">
+                                            <span *ngIf="asset.selected === 'ok'" class="status-ok">✓ ok</span>
+                                            <span *ngIf="asset.selected === 'x'" class="status-not-selected">✗ x</span>
+                                            <span *ngIf="asset.selected === ''" class="status-pending">-</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Pie Chart Section -->
+                    <div class="pie-chart-section">
+                        <div *ngIf="!optimizationResult" class="chart-placeholder">
+                            <div class="chart-icon">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+                                    <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+                                </svg>
+                            </div>
+                            <h4>Portfolio Visualization</h4>
+                            <p>Pie chart will appear after optimization</p>
+                        </div>
+                        
+                        <div *ngIf="optimizationResult" class="chart-container">
+                            <h4>Selected Assets Distribution</h4>
+                            <canvas id="canvas" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -11,6 +11,19 @@
             (error)="onUploadError($event)">
         </app-upload-section>
         <div class="compression-content">
+            <!-- Description Section -->
+            <div class="description-section">
+                <h3>Quantum-Inspired PCA for Image Compression</h3>
+                <p>This demo applies Quantum Principal Component Analysis (QPCA) concepts to images. The uploaded image is converted into a quantum-like state (normalized amplitudes) and analyzed through eigenvalue decomposition.</p>
+                <ul>
+                    <li><strong>Reconstruction:</strong> rebuilds the image using all principal components.</li>
+                    <li><strong>Compression:</strong> keeps only the top components capturing ~95% of total variance (energy), reducing information while preserving key features.</li>
+                    <li><strong>MSE:</strong> quantifies the loss between the original and compressed images.</li>
+                    <li><strong>Overlays:</strong> visualize leading eigencomponents that form the compressed basis.</li>
+                </ul>
+                <p>Although executed on a classical backend, the algorithm follows the mathematical structure of QPCA and can be adapted to run on <strong>real quantum processing units (QPUs)</strong> once large-scale hardware becomes available.</p>
+            </div>
+
             <!-- Input Section -->
             <div class="input-section">
                 <div class="section-header">
