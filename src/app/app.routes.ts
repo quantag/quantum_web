@@ -1,66 +1,54 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { PrivacyComponent } from './pages/privacy/privacy.component';
-import { LabsComponent } from './pages/labs/labs.component';
-import { QirComponent } from './pages/labs/pages/qir/qir.component';
-import { QbinComponent } from './pages/labs/pages/qbin/qbin.component';
-import { XyzComponent } from './pages/labs/pages/xyz/xyz.component';
-import { QicComponent } from './pages/labs/pages/qic/qic.component';
-import { QeditComponent } from './pages/labs/pages/qedit/qedit.component';
-import { Base64Component } from './pages/labs/pages/base64/base64.component';
-import { CompareSqlComponent } from './pages/labs/pages/compare-sql/compare-sql.component';
-import { GuppyCompilerComponent } from './pages/labs/pages/guppy-compiler/guppy-compiler.component';
-import { QuantumPortfolioOptimizerComponent } from './pages/labs/pages/quantum-portfolio-optimizer/quantum-portfolio-optimizer.component';
 
 export const routes: Routes = [
     {
         path: '',
-        component: HomeComponent,
+        loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent),
         pathMatch: 'full'
     },
     {
         path: 'privacy-policy',
-        component: PrivacyComponent
+        loadComponent: () => import('./pages/privacy/privacy.component').then(m => m.PrivacyComponent)
     },
     {
         path: 'labs/xyz',
-        component: XyzComponent
+        loadComponent: () => import('./pages/labs/pages/xyz/xyz.component').then(m => m.XyzComponent)
     },
     {
         path: 'labs/qir',
-        component: QirComponent
+        loadComponent: () => import('./pages/labs/pages/qir/qir.component').then(m => m.QirComponent)
     },
     {
         path: 'labs/qbin',
-        component: QbinComponent
+        loadComponent: () => import('./pages/labs/pages/qbin/qbin.component').then(m => m.QbinComponent)
     },
     {
         path: 'labs/qic',
-        component: QicComponent
+        loadComponent: () => import('./pages/labs/pages/qic/qic.component').then(m => m.QicComponent)
     },
     {
         path: 'labs/qedit',
-        component: QeditComponent
+        loadComponent: () => import('./pages/labs/pages/qedit/qedit.component').then(m => m.QeditComponent)
     },
     {
         path: 'labs/base64',
-        component: Base64Component
+        loadComponent: () => import('./pages/labs/pages/base64/base64.component').then(m => m.Base64Component)
     },
     {
         path: 'labs/compare-sql',
-        component: CompareSqlComponent
+        loadComponent: () => import('./pages/labs/pages/compare-sql/compare-sql.component').then(m => m.CompareSqlComponent)
     },
     {
         path: 'labs/guppy-compiler',
-        component: GuppyCompilerComponent
+        loadComponent: () => import('./pages/labs/pages/guppy-compiler/guppy-compiler.component').then(m => m.GuppyCompilerComponent)
     },
     {
         path: 'labs/quantum-portfolio-optimizer',
-        component: QuantumPortfolioOptimizerComponent
+        loadComponent: () => import('./pages/labs/pages/quantum-portfolio-optimizer/quantum-portfolio-optimizer.component').then(m => m.QuantumPortfolioOptimizerComponent)
     },
     {
         path: 'labs',
-        component: LabsComponent,
+        loadComponent: () => import('./pages/labs/labs.component').then(m => m.LabsComponent),
         pathMatch: 'full'
     },
     {

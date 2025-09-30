@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
+import { UploadSectionComponent, UploadSectionConfig, UploadedContent } from '../../../../components/upload-section/upload-section.component';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
@@ -11,9 +12,22 @@ import { environment } from '../../../../../environments/environment';
   templateUrl: './qbin.component.html',
   styleUrls: ['./qbin.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, LabHeaderComponent]
+  imports: [CommonModule, FormsModule, LabHeaderComponent, UploadSectionComponent]
 })
 export class QbinComponent implements OnInit {
+  // Upload section configuration
+  uploadConfig: UploadSectionConfig = {
+    acceptedFileTypes: ['text/plain', 'application/octet-stream'],
+    fileExtensions: ['.qasm', '.txt'],
+    sampleBaseUrl: 'https://quantag-it.com/pub/samples/qbin/',
+    showUrlUpload: true,
+    showSampleBrowser: true,
+    showClearButton: true,
+    showFileUpload: true,
+    uploadButtonLabel: 'Upload QASM File',
+    urlPlaceholder: 'https://example.com/circuit.qasm'
+  };
+
   openQasmCode: string = '';
   qbinData: string = '';
   qbinBinaryData: string = '';
@@ -280,5 +294,41 @@ export class QbinComponent implements OnInit {
 
   get toggleOutputModeLabel(): string {
     return this.outputMode === 'hex' ? 'BIN' : 'HEX';
+  }
+
+  // Upload section methods
+  onContentUploaded(uploadedContent: UploadedContent): void {
+    let content = uploadedContent.content;
+    
+    // Check if the content is a base64 data URL
+    if (content.startsWith('data:')) {
+      try {
+        // Extract the base64 part after the comma
+        const base64Index = content.indexOf(',');
+        if (base64Index !== -1) {
+          const base64Content = content.substring(base64Index + 1);
+          // Decode the base64 content
+          content = atob(base64Content);
+        }
+      } catch (error) {
+        console.error('Error decoding base64 content:', error);
+        this.errorMessage = 'Error decoding uploaded file content.';
+        return;
+      }
+    }
+    
+    this.openQasmCode = content;
+    this.errorMessage = '';
+  }
+
+  onUploadError(error: string): void {
+    this.errorMessage = error;
+  }
+
+  clearData(): void {
+    this.openQasmCode = '';
+    this.qbinData = '';
+    this.qbinBinaryData = '';
+    this.errorMessage = '';
   }
 }

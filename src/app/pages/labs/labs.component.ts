@@ -35,6 +35,6 @@ export class LabsComponent implements OnInit, OnDestroy {
   }
 
   navigateToLab(labPath: string): void {
-    this.router.navigate(['labs',labPath]);
+    this.router.navigate(['/labs', labPath]);
   }
 }

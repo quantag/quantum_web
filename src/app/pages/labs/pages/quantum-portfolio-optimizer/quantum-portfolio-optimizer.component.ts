@@ -42,7 +42,7 @@ export class QuantumPortfolioOptimizerComponent implements OnInit {
   uploadConfig: UploadSectionConfig = {
     acceptedFileTypes: ['text/csv', 'application/vnd.ms-excel'],
     fileExtensions: ['.csv'],
-    sampleBaseUrl: 'https://quantag-it.com/pub/samples/finance/portfolio/',
+    sampleBaseUrl: 'https://quantag-it.com/pub/samples/qaoa/',
     showUrlUpload: true,
     showSampleBrowser: true,
     showClearButton: false, // We handle clearing through the drag-drop area

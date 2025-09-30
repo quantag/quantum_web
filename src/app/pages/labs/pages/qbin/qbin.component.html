@@ -6,7 +6,18 @@
         }">
     </app-lab-header>
 
+    <!-- File Upload Section -->
+
+
     <div class="converter-content">
+        <app-upload-section
+            [config]="uploadConfig"
+            [currentContent]="openQasmCode"
+            [disabled]="isConverting"
+            (contentUploaded)="onContentUploaded($event)"
+            (contentCleared)="clearData()"
+            (error)="onUploadError($event)">
+        </app-upload-section>
         <div class="converter-grid">
             <!-- Input Section -->
             <div class="input-section">

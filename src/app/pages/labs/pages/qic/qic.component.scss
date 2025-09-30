@@ -48,6 +48,16 @@
     line-height: 1.6;
     text-align: justify;
 
+    a {
+        color: $primary-900;
+        text-decoration: none;
+        font-weight: 600;
+    
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
     &:last-child {
       margin-bottom: 0;
     }
