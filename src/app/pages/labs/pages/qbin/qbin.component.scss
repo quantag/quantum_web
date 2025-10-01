@@ -241,6 +241,29 @@
   align-items: center;
   gap: 1rem;
   padding: 2rem 1rem;
+
+  .convert-size-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    
+    .size-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      span {
+        font-size: 14px;
+        color: #6c757d;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 500;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
 }
 
 .convert-actions {

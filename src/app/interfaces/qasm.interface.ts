@@ -25,8 +25,8 @@ export interface HistogramData {
 }
 
 export interface HistogramDataInterface {
-    name: string,
-    value: number
+    name: string;
+    value: number;
 }
 
 export interface ICircuit {

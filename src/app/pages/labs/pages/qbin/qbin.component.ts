@@ -6,6 +6,7 @@ import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 import { UploadSectionComponent, UploadSectionConfig, UploadedContent } from '../../../../components/upload-section/upload-section.component';
 import { environment } from '../../../../../environments/environment';
+import { IQbinResponse } from '../../../../interfaces/qbin.interface';
 
 @Component({
   selector: 'app-qbin',
@@ -31,6 +32,8 @@ export class QbinComponent implements OnInit {
   openQasmCode: string = '';
   qbinData: string = '';
   qbinBinaryData: string = '';
+  sizeIn: number = 0;
+  sizeOut: number = 0;
 //   qbinHexOutput: string = '';
 //   qbinBinaryOutput: string = '';
   outputMode: 'hex' | 'binary' = 'hex';
@@ -59,6 +62,9 @@ export class QbinComponent implements OnInit {
     this.errorMessage = '';
     this.qbinData = '';
     this.qbinBinaryData = '';
+    this.sizeIn = 0;
+    this.sizeOut = 0;
+
     // this.qbinHexOutput = '';
     // this.qbinBinaryOutput = '';
 
@@ -67,8 +73,8 @@ export class QbinComponent implements OnInit {
     const encodedQasm = btoa(this.openQasmCode);
     const payload = { qasm_b64: encodedQasm };
     
-    this.http.post(environment.apiGatewayUrl + '/qbin-compile', payload).subscribe({
-      next: (response: any) => {
+    this.http.post<IQbinResponse>(environment.apiGatewayUrl + '/qbin-compile', payload).subscribe({
+      next: (response: IQbinResponse) => {
         if (response.qbin_b64) {
           try {
             const binaryData = atob(response.qbin_b64);
@@ -80,12 +86,15 @@ export class QbinComponent implements OnInit {
               c.charCodeAt(0).toString(2).padStart(8, '0')
             ).join(' ');
 
+            this.sizeIn = response.size_in;
+            this.sizeOut = response.size_out;
+
           } catch (error) {
             console.error('Error decoding QBIN data:', error);
             this.errorMessage = 'Error processing QBIN response data.';
           }
         } else {
-          this.errorMessage = response.error || 'Error converting OpenQASM to QBIN. Please check your code syntax and try again.';
+          this.errorMessage = 'Error converting OpenQASM to QBIN. Please check your code syntax and try again.';
         }
       },
       error: (error) => {
@@ -178,6 +187,8 @@ export class QbinComponent implements OnInit {
     this.qbinData = '';
     this.qbinBinaryData = '';
     this.errorMessage = '';
+    this.sizeIn = 0;
+    this.sizeOut = 0;
   }
 
   clearOpenQasm(): void {
@@ -189,6 +200,8 @@ export class QbinComponent implements OnInit {
     this.qbinData = '';
     this.qbinBinaryData = '';
     this.errorMessage = '';
+    this.sizeIn = 0;
+    this.sizeOut = 0;
   }
 
   copyQasmCode(): void {
@@ -321,14 +334,16 @@ export class QbinComponent implements OnInit {
     this.errorMessage = '';
   }
 
-  onUploadError(error: string): void {
-    this.errorMessage = error;
+  formatSize(bytes: number): string {
+    if (bytes < 1000) {
+      return `${bytes} bytes`;
+    } else {
+      const kb = (bytes / 1024).toFixed(1);
+      return `${kb} KB`;
+    }
   }
 
-  clearData(): void {
-    this.openQasmCode = '';
-    this.qbinData = '';
-    this.qbinBinaryData = '';
-    this.errorMessage = '';
+  onUploadError(error: string): void {
+    this.errorMessage = error;
   }
 }

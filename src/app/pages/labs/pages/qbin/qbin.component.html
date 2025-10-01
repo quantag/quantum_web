@@ -15,7 +15,7 @@
             [currentContent]="openQasmCode"
             [disabled]="isConverting"
             (contentUploaded)="onContentUploaded($event)"
-            (contentCleared)="clearData()"
+            (contentCleared)="clearFields()"
             (error)="onUploadError($event)">
         </app-upload-section>
         <div class="converter-grid">
@@ -61,6 +61,14 @@
 
             <!-- Convert Button Section -->
             <div class="convert-section">
+                <div class="convert-size-info">
+                    <div *ngIf="sizeIn > 0" class="size-info">
+                        <span>Input Size: {{ formatSize(sizeIn) }}</span>
+                    </div>
+                    <div *ngIf="sizeOut > 0" class="size-info">
+                        <span>Output Size: {{ formatSize(sizeOut) }}</span>
+                    </div>
+                </div>
                 <div class="convert-actions">
                     <button 
                         type="button" 
