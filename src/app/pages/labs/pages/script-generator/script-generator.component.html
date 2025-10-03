@@ -1,0 +1,144 @@
+<div class="script-generator-container">
+    <app-lab-header title="Quantum Script Generator"></app-lab-header>
+
+    <div class="generator-content">
+        <!-- File Upload Section -->
+        <app-upload-section
+            [config]="uploadConfig"
+            [currentContent]="fileContent"
+            [disabled]="isGenerating"
+            (contentUploaded)="onContentUploaded($event)"
+            (contentCleared)="clearData()"
+            (error)="onUploadError($event)">
+        </app-upload-section>
+
+        <div class="generator-main">
+            <!-- Description Section -->
+            <div class="description-section">
+                <h3>Binary to Quantum Script Generator</h3>
+                <p>This microservice generates <strong>OpenQASM code for quantum state initialization</strong> from arbitrary input data.
+                    You can upload any binary file, and the service automatically converts the file's contents into an equivalent quantum state representation
+                    expressed in <strong>OpenQASM</strong>, the standard assembly language for quantum computing or QBIN - binary representation of OpenQASM
+                </p>
+            </div>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="section-header">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                        Upload Binary File
+                    </h3>
+                </div>
+                
+                <div class="binary-input-container" 
+                     [class.drag-over]="isDragOver"
+                     (dragover)="onDragOver($event)" 
+                     (dragleave)="onDragLeave($event)" 
+                     (drop)="onDrop($event)">
+                    <input type="file" (change)="onBinaryFileSelected($event)" [disabled]="isGenerating" />
+                    
+                    <div *ngIf="!binaryFile" class="drag-drop-content">
+                        <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        <div class="drag-drop-text">
+                            <span class="highlight">Click to select</span> or drag and drop your binary file here
+                            <br>
+                            <small>Supports any binary file format (.bin, .exe, .pdf, .jpg, etc.)</small>
+                        </div>
+                    </div>
+                    
+                    <div *ngIf="binaryFile" class="binary-preview-container">
+                        <div class="binary-info">
+                            <svg class="file-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10,9 9,9 8,9"/>
+                            </svg>
+                            <span>{{ binaryFile.name }}</span>
+                            <span>{{ formatFileSize(binaryFile.size) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generate Button -->
+                <div *ngIf="binaryFile || fileContent" class="generate-section">
+                    <app-button
+                        [type]="'raised'"
+                        [label]="isGenerating ? 'Generating...' : 'Generate Quantum Scripts'"
+                        (clicked)="generateScripts()"
+                        [disabled]="isGenerating"
+                        [loading]="isGenerating">
+                    </app-button>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="errorMessage" class="error-message">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                {{ errorMessage }}
+            </div>
+
+            <!-- Results Section -->
+            <div *ngIf="hasGenerated" class="results-section">
+                <div class="results-header">
+                    <h3>Generated Quantum Scripts</h3>
+                    <p>Your binary data has been successfully converted to quantum circuit representations.</p>
+                </div>
+
+                <div class="results-grid">
+                    <!-- OpenQASM Result -->
+                    <div class="result-card" *ngIf="generatedOpenQASM">
+                        <div class="result-header">
+                            <div class="format-info">
+                                <h4>OpenQASM Format</h4>
+                                <span class="file-size">{{ formatFileSize(generatedOpenQASMSize) }}</span>
+                            </div>
+                            <span class="format-badge openqasm">QASM</span>
+                        </div>
+                        <div class="result-actions">
+                            <app-button
+                                [type]="'stroked'"
+                                [label]="'Download .qasm'"
+                                (clicked)="downloadOpenQASM()">
+                            </app-button>
+                        </div>
+                    </div>
+
+                    <!-- QBIN Result -->
+                    <div class="result-card" *ngIf="generatedQBIN">
+                        <div class="result-header">
+                            <div class="format-info">
+                                <h4>QBIN Format</h4>
+                                <span class="file-size">{{ formatFileSize(generatedQBINSize) }}</span>
+                            </div>
+                            <span class="format-badge qbin">QBIN</span>
+                        </div>
+                        <div class="result-actions">
+                            <app-button
+                                [type]="'stroked'"
+                                [label]="'Download .qbin'"
+                                (clicked)="downloadQBIN()">
+                            </app-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

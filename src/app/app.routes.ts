@@ -47,6 +47,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/labs/pages/quantum-portfolio-optimizer/quantum-portfolio-optimizer.component').then(m => m.QuantumPortfolioOptimizerComponent)
     },
     {
+        path: 'labs/script-generator',
+        loadComponent: () => import('./pages/labs/pages/script-generator/script-generator.component').then(m => m.ScriptGeneratorComponent)
+    },
+    {
         path: 'labs',
         loadComponent: () => import('./pages/labs/labs.component').then(m => m.LabsComponent),
         pathMatch: 'full'

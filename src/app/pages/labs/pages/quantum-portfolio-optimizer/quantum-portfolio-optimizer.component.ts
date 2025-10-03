@@ -7,6 +7,7 @@ import { LabHeaderComponent } from '../../../../components/lab-header/lab-header
 import { UploadSectionComponent, UploadSectionConfig, UploadedContent } from '../../../../components/upload-section/upload-section.component';
 import { ButtonComponent } from '../../../../components/button/button.component';
 import { Chart, registerables } from 'chart.js';
+import { environment } from '../../../../../environments/environment';
 Chart.register(...registerables);
 
 // Interfaces
@@ -71,15 +72,6 @@ export class QuantumPortfolioOptimizerComponent implements OnInit {
       description: 'Optimize investment portfolios using quantum computing algorithms for better risk-return analysis.',
       keywords: 'quantum computing, portfolio optimization, investment, finance, quantum algorithms'
     });
-
-    // this.pieChartData = {
-    //     labels: ['AAPL', 'GOOGL', 'MSFT', 'TSLA'],
-    //     datasets: [{
-    //         data: [30, 25, 25, 20],
-    //         backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c']
-    //     }]
-    // };
-
   }
 
   onUploadError(error: string): void {
@@ -223,24 +215,24 @@ export class QuantumPortfolioOptimizerComponent implements OnInit {
     };
 
 
-    this.http.post<OptimizationResponse>('https://cryspprod3.quantag-it.com:444/api20/solve', payload)
-      .subscribe({
-        next: (response) => {
-          if (response.status === 'ok') {
-            this.optimizationResult = response;
-            this.updateAssetSelection(response.selected_assets);
-            this.createPieChart();
-          } else {
-            this.errorMessage = 'Optimization failed. Please try again.';
-          }
-          this.isAnalyzing = false;
-        },
-        error: (error) => {
-          console.error('Optimization error:', error);
-          this.errorMessage = 'Error optimizing portfolio. Please try again.';
-          this.isAnalyzing = false;
+    this.http.post<OptimizationResponse>(environment.apiGatewayUrl + '/portfolio-optimize', payload)
+    .subscribe({
+      next: (response) => {
+        if (response.status === 'ok') {
+          this.optimizationResult = response;
+          this.updateAssetSelection(response.selected_assets);
+          this.createPieChart();
+        } else {
+          this.errorMessage = 'Optimization failed. Please try again.';
         }
-      });
+        this.isAnalyzing = false;
+      },
+      error: (error) => {
+        console.error('Optimization error:', error);
+        this.errorMessage = 'Error optimizing portfolio. Please try again.';
+        this.isAnalyzing = false;
+      }
+    });
   }
 
   private updateAssetSelection(selectedAssets: string[]): void {

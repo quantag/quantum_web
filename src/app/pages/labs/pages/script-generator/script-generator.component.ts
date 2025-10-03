@@ -1,0 +1,222 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { SeoService } from '../../../../services/seo.service';
+import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
+import { ButtonComponent } from '../../../../components/button/button.component';
+import { UploadedContent, UploadSectionComponent, UploadSectionConfig } from '../../../../components/upload-section/upload-section.component';
+import { HttpClient } from '@angular/common/http';
+import { InitQasmResponse } from '../../../../interfaces/initQasmResponse.interface';
+import { environment } from '../../../../../environments/environment';
+
+@Component({
+  selector: 'app-script-generator',
+  templateUrl: './script-generator.component.html',
+  styleUrls: ['./script-generator.component.scss'],
+  standalone: true,
+  imports: [CommonModule, LabHeaderComponent, ButtonComponent, UploadSectionComponent]
+})
+export class ScriptGeneratorComponent implements OnInit {
+
+  public binaryFile: File | null = null;
+  public fileContent: string = '';
+  public fileSize: number = 0;
+  public isGenerating: boolean = false;
+  public errorMessage: string = '';
+  public generatedOpenQASM: string = '';
+  public generatedOpenQASMSize: number = 0;
+  public generatedQBINSize: number = 0;
+  public generatedQBIN: string = '';
+  public hasGenerated: boolean = false;
+  public isDragOver: boolean = false;
+  
+  // Expose Math for template use
+  public readonly Math = Math;
+
+
+  uploadConfig: UploadSectionConfig = {
+    acceptedFileTypes: ['image/png'],
+    fileExtensions: ['.png'],
+    sampleBaseUrl: 'https://quantag-it.com/pub/samples/image/',
+    showUrlUpload: true,
+    showSampleBrowser: true,
+    showClearButton: false, // We handle clearing through the drag-drop area
+    showFileUpload: false, // We use custom drag-drop upload
+    uploadButtonLabel: 'Upload File',
+    urlPlaceholder: 'https://example.com/data.png'
+  };
+
+  constructor(
+    private seoService: SeoService,
+    private http: HttpClient
+  ) {}
+
+  ngOnInit(): void {
+    this.seoService.updateSeoTags({
+      title: 'Quantum Script Generator - Quantag IT',
+      description: 'Generate OpenQASM and QBIN quantum scripts from binary input data.',
+      keywords: 'quantum computing, script generation, OpenQASM, QBIN, binary data'
+    });
+  }
+
+  clearData(): void {
+    this.fileContent = '';
+    this.fileSize = 0;
+    this.binaryFile = null;
+    this.generatedOpenQASM = '';
+    this.generatedQBIN = '';
+    this.hasGenerated = false;
+    this.errorMessage = '';
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      this.handleFileSelection(files[0]);
+    }
+  }
+
+  onBinaryFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const files = target.files;
+    if (files && files.length > 0) {
+      this.handleFileSelection(files[0]);
+    }
+  }
+
+  private handleFileSelection(file: File): void {
+    this.binaryFile = file;
+    this.errorMessage = '';
+    this.hasGenerated = false;
+    this.generatedOpenQASM = '';
+    this.generatedQBIN = '';
+
+    // Read file as binary
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        // Convert ArrayBuffer to base64 string for storage
+        const arrayBuffer = e.target.result as ArrayBuffer;
+        const uint8Array = new Uint8Array(arrayBuffer);
+        let binaryString = '';
+        for (let i = 0; i < uint8Array.length; i++) {
+          binaryString += String.fromCharCode(uint8Array[i]);
+        }
+        this.fileContent = btoa(binaryString); // Store as base64
+        this.fileSize = file.size;
+      }
+    };
+    reader.onerror = () => {
+      this.errorMessage = 'Error reading file. Please try again.';
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  generateScripts(): void {
+    if (!this.binaryFile && !this.fileContent) {
+      this.errorMessage = 'Please upload a binary file first.';
+      return;
+    }
+
+    this.isGenerating = true;
+    this.errorMessage = '';
+
+    // Convert file content to base64 for API
+    const base64Content = btoa(this.fileContent);
+    
+    const payload = {
+      data: base64Content,
+    };
+
+    // Simulate API call for now (replace with actual endpoint)
+    this.generateFiles(payload);
+  }
+
+  private generateFiles(payload: any): void {
+    this.http.post<InitQasmResponse>(environment.apiGatewayUrl + '/generate-script', payload)
+    .subscribe({
+      next: (response) => {
+          this.generatedOpenQASM = atob(response.qasm_base64);
+          this.generatedOpenQASMSize = this.getFileSize(this.generatedOpenQASM);
+          // this.generatedQBIN = atob(response.qbin);
+          // this.generatedQBINSize = this.getFileSize(this.generatedQBIN);
+        this.hasGenerated = true;
+        this.isGenerating = false;
+      },
+      error: (error) => {
+        console.error('Script generation error:', error);
+        this.errorMessage = 'Error generating scripts. Please try again.';
+        this.isGenerating = false;
+      }
+    });
+  }
+
+
+  onUploadError(error: string): void {
+    this.errorMessage = error;
+  }
+
+  onContentUploaded(uploadedContent: UploadedContent): void {
+    if(uploadedContent.file) {
+      this.handleFileSelection(uploadedContent.file);
+    }
+    this.errorMessage = '';
+  }
+
+  downloadOpenQASM(): void {
+    if (!this.generatedOpenQASM) return;
+    
+    const blob = new Blob([this.generatedOpenQASM], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `quantum_script_${Date.now()}.qasm`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+
+  downloadQBIN(): void {
+    if (!this.generatedQBIN) return;
+    
+    const blob = new Blob([this.generatedQBIN], { type: 'application/octet-stream' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `quantum_script_${Date.now()}.qbin`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes < 1024) {
+      return `${bytes} bytes`;
+    } else if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    } else {
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
+  }
+
+  getFileSize(content: string): number {
+    return new Blob([content]).size;
+  }
+}

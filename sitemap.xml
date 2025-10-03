@@ -82,8 +82,15 @@
   </url>
 
   <url>
-    <loc>https://quantum.quantag-it.com/labs/qbin</loc>
-    <lastmod>2025-08-26</lastmod>
+    <loc>https://quantum.quantag-it.com/labs/quantum-portfolio-optimizer</loc>
+    <lastmod>2025-10-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://quantum.quantag-it.com/labs/script-generator</loc>
+    <lastmod>2025-10-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
