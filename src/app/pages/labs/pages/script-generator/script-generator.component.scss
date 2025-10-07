@@ -227,7 +227,7 @@
 
 .results-header {
   padding: 20px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: $primary-800;
   color: white;
 
   h3 {
@@ -297,7 +297,7 @@
   letter-spacing: 0.5px;
 
   &.openqasm {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea 0%, $primary-800 100%);
     color: white;
   }
 
