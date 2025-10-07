@@ -7,6 +7,9 @@ import { UploadedContent, UploadSectionComponent, UploadSectionConfig } from '..
 import { HttpClient } from '@angular/common/http';
 import { InitQasmResponse } from '../../../../interfaces/initQasmResponse.interface';
 import { environment } from '../../../../../environments/environment';
+import { IQbinResponse } from '../../../../interfaces/qbin.interface';
+import { switchMap, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-script-generator',
@@ -136,34 +139,58 @@ export class ScriptGeneratorComponent implements OnInit {
     this.isGenerating = true;
     this.errorMessage = '';
 
-    // Convert file content to base64 for API
-    const base64Content = btoa(this.fileContent);
-    
+    // File content is already base64 encoded from handleFileSelection
     const payload = {
-      data: base64Content,
+      data: this.fileContent,
     };
 
-    // Simulate API call for now (replace with actual endpoint)
     this.generateFiles(payload);
   }
 
   private generateFiles(payload: any): void {
     this.http.post<InitQasmResponse>(environment.apiGatewayUrl + '/generate-script', payload)
-    .subscribe({
-      next: (response) => {
+      .pipe(
+        switchMap((response: InitQasmResponse) => {
+          // Process the first response (OpenQASM generation)
           this.generatedOpenQASM = atob(response.qasm_base64);
           this.generatedOpenQASMSize = this.getFileSize(this.generatedOpenQASM);
-          // this.generatedQBIN = atob(response.qbin);
-          // this.generatedQBINSize = this.getFileSize(this.generatedQBIN);
-        this.hasGenerated = true;
-        this.isGenerating = false;
-      },
-      error: (error) => {
-        console.error('Script generation error:', error);
-        this.errorMessage = 'Error generating scripts. Please try again.';
-        this.isGenerating = false;
-      }
-    });
+          
+          // Use the qasm_base64 from the first response for the second request
+          const qasmPayload = { qasm_b64: response.qasm_base64 };
+          
+          // Chain the second HTTP request
+          return this.http.post<IQbinResponse>(environment.apiGatewayUrl + '/qbin-compile', qasmPayload);
+        }),
+        catchError((error) => {
+          console.error('Script generation error:', error);
+          this.errorMessage = 'Error generating scripts. Please try again.';
+          this.isGenerating = false;
+          return throwError(() => error);
+        })
+      )
+      .subscribe({
+        next: (qbinResponse: IQbinResponse) => {
+          // Process the second response (QBIN generation)
+          if (qbinResponse.qbin_b64) {
+            try {
+              this.generatedQBIN = atob(qbinResponse.qbin_b64); // Store the base64 encoded QBIN
+              this.generatedQBINSize = this.getFileSize(this.generatedQBIN);
+              this.hasGenerated = true;
+            } catch (error) {
+              console.error('Error decoding QBIN data:', error);
+              this.errorMessage = 'Error processing QBIN response data.';
+            }
+          } else {
+            this.errorMessage = 'Error converting OpenQASM to QBIN. Please check your code syntax and try again.';
+          }
+          this.isGenerating = false;
+        },
+        error: (error) => {
+          console.error('Error converting OpenQASM to QBIN:', error);
+          this.errorMessage = 'Error converting OpenQASM to QBIN. Please check your code syntax and try again.';
+          this.isGenerating = false;
+        }
+      });
   }
 
 
@@ -194,8 +221,26 @@ export class ScriptGeneratorComponent implements OnInit {
 
   downloadQBIN(): void {
     if (!this.generatedQBIN) return;
-    
-    const blob = new Blob([this.generatedQBIN], { type: 'application/octet-stream' });
+    // Decode base64 to get binary data
+    let binaryData: Uint8Array;
+    const qbinData = Array.from(this.generatedQBIN).map(c => c.charCodeAt(0).toString(16).padStart(2, '0'))
+    .join(' ')
+    .toUpperCase();
+
+    try {
+      const decoded = atob(qbinData);
+      const bytes = [];
+      for (let i = 0; i < decoded.length; i++) {
+        bytes.push(decoded.charCodeAt(i));
+      }
+      binaryData = new Uint8Array(bytes);
+    } catch {
+      // If not base64, treat as text
+      const encoder = new TextEncoder();
+      binaryData = encoder.encode(qbinData);
+    }
+
+    const blob = new Blob([new Uint8Array(binaryData)], { type: 'application/octet-stream' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;

@@ -85,7 +85,10 @@
           (click)="loadSampleScript(sample)">
           <div class="sample-header">
             <div class="sample-name">{{ sample.name }}</div>
-            <div class="sample-description">{{ sample.description }}</div>
+            <div class="sample-info">
+              <div class="sample-description">{{ sample.description }}</div>
+              <div class="sample-size">{{ sample.size }}</div>
+            </div>
           </div>
         </div>
       </div>

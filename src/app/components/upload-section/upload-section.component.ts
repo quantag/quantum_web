@@ -63,7 +63,7 @@ export class UploadSectionComponent {
   public isDownloading: boolean = false;
   public isBrowsing: boolean = false;
   public showSampleBrowser: boolean = false;
-  public availableSamples: Array<{name: string, description: string, content: string}> = [];
+  public availableSamples: Array<{name: string, description: string, content: string, size: string}> = [];
 
   private isBrowser: boolean;
 
@@ -212,7 +212,8 @@ export class UploadSectionComponent {
             this.availableSamples = genericFiles.map(file => ({
               name: file.name.replace(this.config.fileExtensions[0], ''),
               description: `File: ${file.name}`,
-              content: file.url
+              content: file.url,
+              size: file.size
             }));
           }
           this.showSampleBrowser = true;
