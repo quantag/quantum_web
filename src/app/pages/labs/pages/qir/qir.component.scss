@@ -8,6 +8,9 @@
 }
 
 .converter-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
   flex: 1;
   padding: 1rem 0;
   max-width: 1400px;
@@ -19,7 +22,7 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   gap: 2rem;
-  height: calc(100vh - 129px - 64px - 90px);
+  height: calc(100vh - 129px - 64px - 90px - 50px);
   min-height: 600px;
 }
 

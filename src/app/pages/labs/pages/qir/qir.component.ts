@@ -5,13 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 import { environment } from '../../../../../environments/environment';
+import { UploadedContent, UploadSectionComponent, UploadSectionConfig } from '../../../../components/upload-section/upload-section.component';
 
 @Component({
   selector: 'app-qir',
   templateUrl: './qir.component.html',
   styleUrls: ['./qir.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, LabHeaderComponent]
+  imports: [CommonModule, FormsModule, LabHeaderComponent, UploadSectionComponent]
 })
 export class QirComponent implements OnInit {
   openQasmCode: string = '';
@@ -26,6 +27,18 @@ export class QirComponent implements OnInit {
     { value: 'CUDAQ-CPP', label: 'CUDAQ-CPP' },
     { value: 'CUDAQ-Python', label: 'CUDAQ-Python' }
   ];
+
+  uploadConfig: UploadSectionConfig = {
+    acceptedFileTypes: ['text/plain', 'application/octet-stream'],
+    fileExtensions: ['.qasm', '.txt'],
+    sampleBaseUrl: 'https://quantag-it.com/pub/samples/qbin/',
+    showUrlUpload: true,
+    showSampleBrowser: true,
+    showClearButton: true,
+    showFileUpload: true,
+    uploadButtonLabel: 'Upload QASM File',
+    urlPlaceholder: 'https://example.com/circuit.qasm'
+  };
 
   constructor(private http: HttpClient, private seoService: SeoService) { }
 
@@ -94,5 +107,34 @@ export class QirComponent implements OnInit {
         console.error('Could not copy text: ', err);
       });
     }
+  }
+
+  // Upload section methods
+  onContentUploaded(uploadedContent: UploadedContent): void {
+    let content = uploadedContent.content;
+    
+    // Check if the content is a base64 data URL
+    if (content.startsWith('data:')) {
+      try {
+        // Extract the base64 part after the comma
+        const base64Index = content.indexOf(',');
+        if (base64Index !== -1) {
+          const base64Content = content.substring(base64Index + 1);
+          // Decode the base64 content
+          content = atob(base64Content);
+        }
+      } catch (error) {
+        console.error('Error decoding base64 content:', error);
+        this.errorMessage = 'Error decoding uploaded file content.';
+        return;
+      }
+    }
+    
+    this.openQasmCode = content;
+    this.errorMessage = '';
+  }
+
+  onUploadError(error: string): void {
+    this.errorMessage = error;
   }
 }

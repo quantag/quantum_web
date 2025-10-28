@@ -2,6 +2,14 @@
     <app-lab-header title="OpenQASM Code Converter"></app-lab-header>
 
     <div class="converter-content">
+        <app-upload-section
+            [config]="uploadConfig"
+            [currentContent]="openQasmCode"
+            [disabled]="isConverting"
+            (contentUploaded)="onContentUploaded($event)"
+            (contentCleared)="clearFields()"
+            (error)="onUploadError($event)">
+        </app-upload-section>
         <div class="converter-grid">
             <!-- OpenQASM Input Section -->
             <div class="input-section">
