@@ -1,5 +1,5 @@
 <div class="qir-container">
-    <app-lab-header title="OpenQASM Code Converter"></app-lab-header>
+    <app-lab-header title="OpenQASM Code Converter" [maxWidth]="'100%'"></app-lab-header>
 
     <div class="converter-content">
         <app-upload-section
@@ -43,7 +43,50 @@
 
             <!-- Convert Button -->
             <div class="convert-section">
-                <button 
+                <div class="convert-size-info">
+                    <div *ngIf="sizeIn > 0" class="size-info">
+                        <span>Input Size: {{ formatSize(sizeIn) }}</span>
+                    </div>
+                    <div *ngIf="sizeOut > 0" class="size-info">
+                        <span>Output Size: {{ formatSize(sizeOut) }}</span>
+                    </div>
+                </div>
+
+                <div class="convert-actions">
+                    <select 
+                        [(ngModel)]="selectedFormat" 
+                        class="format-dropdown"
+                        [disabled]="isConverting"
+                        (change)="onChangeFormat()"
+                    >
+                        <option *ngFor="let format of conversionFormats" [value]="format.value">
+                            {{ format.label }}
+                        </option>
+                    </select>
+
+                    <button 
+                        type="button" 
+                        (click)="convert()" 
+                        class="convert-btn encode-btn"
+                        [disabled]="!openQasmCode.trim() || isConverting"
+                    >
+                        {{ convertButtonLabel }}
+                    </button>
+
+                    <button 
+                        type="button" 
+                        (click)="downloadOutput()" 
+                        class="download-btn"
+                        [disabled]="!responseCode.trim()"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        {{ downloadButtonLabel }}
+                    </button>
+                <!-- <button 
                     type="button" 
                     (click)="convertToQir()" 
                     class="convert-btn"
@@ -57,7 +100,8 @@
                         <path d="M12 6v6l4 2"/>
                     </svg>
                     {{ isConverting ? 'Converting...' : 'Convert' }}
-                </button>
+                </button> -->
+                </div>
 
                 <!-- Error Message -->
                 <div *ngIf="errorMessage" class="error-message">
@@ -88,22 +132,44 @@
                         {{ selectedFormat }} Output
                     </h3>
                     <div class="section-actions">
-                        <!-- Format Selection Dropdown -->
-                        <select 
-                            [(ngModel)]="selectedFormat" 
-                            class="format-dropdown"
-                            [disabled]="isConverting"
-                        >
-                            <option *ngFor="let format of conversionFormats" [value]="format.value">
-                                {{ format.label }}
-                            </option>
-                        </select>
+                        <div class="format-toggle-group" [class.disabled]="!outputData">
+                            <button 
+                                type="button" 
+                                (click)="setOutputMode('binary')" 
+                                class="format-toggle-btn"
+                                [class.active]="outputMode === 'binary'"
+                                [disabled]="!outputData"
+                            >
+                                Binary
+                            </button>
+                            <button
+                                *ngIf="selectedFormat === 'QBIN'"
+                                type="button" 
+                                (click)="setOutputMode('hex')" 
+                                class="format-toggle-btn"
+                                [class.active]="outputMode === 'hex'"
+                                [disabled]="!outputData"
+                            >
+                                Hex
+                            </button>
+                            <button 
+                                *ngIf="selectedFormat === 'QIR'"
+                                type="button" 
+                                (click)="setOutputMode('text')" 
+                                class="format-toggle-btn"
+                                [class.active]="outputMode === 'text'"
+                                [disabled]="!outputData"
+                            >
+                                Text
+                            </button>
+                        </div>
+
                         
                         <button 
                             type="button" 
                             (click)="copyResponseCode()" 
                             class="copy-btn"
-                            [disabled]="!responseCode"
+                            [disabled]="!outputData "
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -113,14 +179,29 @@
                         </button>
                     </div>
                 </div>
-                
-                <textarea
-                    id="qir-output"
-                    [(ngModel)]="responseCode"
-                    [placeholder]="'Converted ' + selectedFormat + ' code will appear here...'"
-                    class="code-textarea qir-output"
-                    readonly
-                ></textarea>
+
+                @if(outputMode === 'binary') {
+                    <div class="hex-dump" *ngIf="hexLines.length > 0">
+                        <div class="hex-line hex-line-header">
+                            <span class="offset">Offset</span>
+                            <span class="hex-values">Hex Values</span>
+                            <span class="ascii-values">Decoded</span>
+                        </div>
+                        <div class="hex-line" *ngFor="let line of hexLines">
+                            <span class="offset">{{ line.offset }}</span>
+                            <span class="hex-values">{{ line.hex }}</span>
+                            <span class="ascii-values">{{ line.ascii }}</span>
+                        </div>
+                    </div>
+                } @else {
+                    <textarea
+                        id="qir-output"
+                        [(ngModel)]="outputData"
+                        [placeholder]="'Converted ' + selectedFormat + ' code will appear here...'"
+                        class="code-textarea qir-output"
+                        readonly
+                    ></textarea>
+                }
             </div>
         </div>
     </div>

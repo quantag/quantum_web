@@ -246,7 +246,7 @@ export class QbinComponent implements OnInit {
     return this.conversionMode === 'qasmToQbin' ? 'OpenQASM to QBIN' : 'QBIN to OpenQASM';
   }
 
-    get convertButtonLabel(): string {
+  get convertButtonLabel(): string {
     if (this.isConverting) {
       return 'Converting...';
     }

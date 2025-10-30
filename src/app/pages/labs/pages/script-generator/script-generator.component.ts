@@ -9,7 +9,8 @@ import { InitQasmResponse } from '../../../../interfaces/initQasmResponse.interf
 import { environment } from '../../../../../environments/environment';
 import { IQbinResponse } from '../../../../interfaces/qbin.interface';
 import { switchMap, catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { forkJoin, throwError } from 'rxjs';
+import { IQirResponse } from '../../../../interfaces/qir.interface';
 
 @Component({
   selector: 'app-script-generator',
@@ -29,6 +30,8 @@ export class ScriptGeneratorComponent implements OnInit {
   public generatedOpenQASMSize: number = 0;
   public generatedQBINSize: number = 0;
   public generatedQBIN: string = '';
+  public generatedQIRBinary: string = '';
+  public generatedQIRBinarySize: number = 0;
   public hasGenerated: boolean = false;
   public isDragOver: boolean = false;
   
@@ -67,6 +70,10 @@ export class ScriptGeneratorComponent implements OnInit {
     this.binaryFile = null;
     this.generatedOpenQASM = '';
     this.generatedQBIN = '';
+    this.generatedQIRBinary = '';
+    this.generatedOpenQASMSize = 0;
+    this.generatedQBINSize = 0;
+    this.generatedQIRBinarySize = 0;
     this.hasGenerated = false;
     this.errorMessage = '';
   }
@@ -108,6 +115,7 @@ export class ScriptGeneratorComponent implements OnInit {
     this.hasGenerated = false;
     this.generatedOpenQASM = '';
     this.generatedQBIN = '';
+    this.generatedQIRBinary = '';
 
     // Read file as binary
     const reader = new FileReader();
@@ -156,10 +164,14 @@ export class ScriptGeneratorComponent implements OnInit {
           this.generatedOpenQASMSize = this.getFileSize(this.generatedOpenQASM);
           
           // Use the qasm_base64 from the first response for the second request
-          const qasmPayload = { qasm_b64: response.qasm_base64 };
+          const qbinQasmPayload = { qasm_b64: response.qasm_base64 };
+          const qirQasmPayload = { qasm: response.qasm_base64 };
           
           // Chain the second HTTP request
-          return this.http.post<IQbinResponse>(environment.apiGatewayUrl + '/qbin-compile', qasmPayload);
+          return forkJoin([
+            this.http.post<IQbinResponse>(environment.apiGatewayUrl + '/qbin-compile', qbinQasmPayload),
+            this.http.post<any>(environment.apiGatewayUrl + '/qasm2qir', qirQasmPayload)
+          ]);
         }),
         catchError((error) => {
           console.error('Script generation error:', error);
@@ -169,7 +181,7 @@ export class ScriptGeneratorComponent implements OnInit {
         })
       )
       .subscribe({
-        next: (qbinResponse: IQbinResponse) => {
+        next: ([qbinResponse, qirResponse]: [IQbinResponse, IQirResponse]) => {
           // Process the second response (QBIN generation)
           if (qbinResponse.qbin_b64) {
             try {
@@ -213,6 +225,19 @@ export class ScriptGeneratorComponent implements OnInit {
     const link = document.createElement('a');
     link.href = url;
     link.download = `quantum_script_${Date.now()}.qasm`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+
+  downloadQIRBinary(): void {
+    if (!this.generatedQIRBinary) return;
+    const blob = new Blob([this.generatedQIRBinary], { type: 'application/octet-stream' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `quantum_script_${Date.now()}.bin`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

@@ -19,10 +19,6 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/labs/pages/qir/qir.component').then(m => m.QirComponent)
     },
     {
-        path: 'labs/qbin',
-        loadComponent: () => import('./pages/labs/pages/qbin/qbin.component').then(m => m.QbinComponent)
-    },
-    {
         path: 'labs/qic',
         loadComponent: () => import('./pages/labs/pages/qic/qic.component').then(m => m.QicComponent)
     },
