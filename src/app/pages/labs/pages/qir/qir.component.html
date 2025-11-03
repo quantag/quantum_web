@@ -132,7 +132,7 @@
                         {{ selectedFormat }} Output
                     </h3>
                     <div class="section-actions">
-                        <div class="format-toggle-group" [class.disabled]="!outputData">
+                        <div class="format-toggle-group" [class.disabled]="!outputData" *ngIf="selectedFormat === 'QIR'">
                             <button 
                                 type="button" 
                                 (click)="setOutputMode('binary')" 
@@ -141,16 +141,6 @@
                                 [disabled]="!outputData"
                             >
                                 Binary
-                            </button>
-                            <button
-                                *ngIf="selectedFormat === 'QBIN'"
-                                type="button" 
-                                (click)="setOutputMode('hex')" 
-                                class="format-toggle-btn"
-                                [class.active]="outputMode === 'hex'"
-                                [disabled]="!outputData"
-                            >
-                                Hex
                             </button>
                             <button 
                                 *ngIf="selectedFormat === 'QIR'"

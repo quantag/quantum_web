@@ -26,7 +26,7 @@ export class QirComponent implements OnInit {
   selectedFormat: string = 'QIR';
   sizeIn: number = 0;
   sizeOut: number = 0;
-  outputMode: 'hex' | 'binary' | 'text' = 'text';
+  outputMode: 'binary' | 'text' = 'text';
   hexLines: Array<{offset: string, hex: string, ascii: string}> = [];
 
   
@@ -210,7 +210,7 @@ export class QirComponent implements OnInit {
 
   onChangeFormat(): void {
     this.clearFields(false);
-    this.selectedFormat === 'QBIN' ? this.outputMode = 'hex' : this.outputMode = 'text';
+    this.selectedFormat === 'QBIN' ? this.outputMode = 'binary' : this.outputMode = 'text';
   }
 
   // Upload section methods
@@ -251,7 +251,7 @@ export class QirComponent implements OnInit {
     }
   }
 
-    setOutputMode(mode: 'hex' | 'binary' | 'text'): void {
+    setOutputMode(mode:'binary' | 'text'): void {
     if (this.outputMode !== mode) {
       this.outputMode = mode;
     }
