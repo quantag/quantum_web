@@ -101,12 +101,12 @@ export class QirComponent implements OnInit {
 
     // Encode the QASM code to base64
     const encodedQasm = btoa(this.openQasmCode);
-    let payload: { qasm: string; type?: string } = { qasm: encodedQasm };
+    let payload: { qasm: string; format?: string } = { qasm: encodedQasm };
     let qasmFilePayload: { qasm: string, format: string } = { qasm: encodedQasm, format: 'bitcode' };
     
     forkJoin([
-      this.http.post<IQirResponse>('https://cryspprod3.quantag-it.com:444/api7/qasm2qir', payload),
-      this.http.post<IQirResponse>('https://cryspprod3.quantag-it.com:444/api7/qasm2qir', qasmFilePayload)
+      this.http.post<IQirResponse>(environment.apiGatewayUrl + '/qasm-to-qir', payload),
+      this.http.post<IQirResponse>(environment.apiGatewayUrl + '/qasm-to-qir', qasmFilePayload)
     ]).subscribe({
       next: ([base64Response, binaryResponse]: [IQirResponse, IQirResponse]) => {
         this.responseCode = atob(base64Response.qir) || '';

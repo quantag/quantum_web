@@ -170,7 +170,7 @@ export class ScriptGeneratorComponent implements OnInit {
           // Chain the second HTTP request
           return forkJoin([
             this.http.post<IQbinResponse>(environment.apiGatewayUrl + '/qbin-compile', qbinQasmPayload),
-            this.http.post<any>(environment.apiGatewayUrl + '/qasm2qir', qirQasmPayload)
+            this.http.post<any>(environment.apiGatewayUrl + '/qasm-to-qir', qirQasmPayload)
           ]);
         }),
         catchError((error) => {
