@@ -9,7 +9,7 @@ import { InitQasmResponse } from '../../../../interfaces/initQasmResponse.interf
 import { environment } from '../../../../../environments/environment';
 import { IQbinResponse } from '../../../../interfaces/qbin.interface';
 import { switchMap, catchError } from 'rxjs/operators';
-import { forkJoin, throwError } from 'rxjs';
+import { forkJoin, throwError, of } from 'rxjs';
 import { IQirResponse } from '../../../../interfaces/qir.interface';
 
 @Component({
@@ -167,11 +167,19 @@ export class ScriptGeneratorComponent implements OnInit {
           const qbinQasmPayload = { qasm_b64: response.qasm_base64 };
           const qirQasmPayload = { qasm: response.qasm_base64 };
           
-          // Chain the second HTTP request
-          return forkJoin([
-            this.http.post<IQbinResponse>(environment.apiGatewayUrl + '/qbin-compile', qbinQasmPayload),
-            this.http.post<any>(environment.apiGatewayUrl + '/qasm-to-qir', qirQasmPayload)
-          ]);
+          // Chain the second HTTP request with individual error handling
+          return forkJoin({
+            qbin: this.http.post<IQbinResponse>(environment.apiGatewayUrl + '/qbin-compile', qbinQasmPayload).pipe(
+              catchError(error => {
+                return of({ error: error, qbin_b64: null } as any);
+              })
+            ),
+            qir: this.http.post<IQirResponse>(environment.apiGatewayUrl + '/qasm-to-qir', qirQasmPayload).pipe(
+              catchError(error => {
+                return of({ error: error, qir: null } as any);
+              })
+            )
+          });
         }),
         catchError((error) => {
           console.error('Script generation error:', error);
@@ -181,25 +189,43 @@ export class ScriptGeneratorComponent implements OnInit {
         })
       )
       .subscribe({
-        next: ([qbinResponse, qirResponse]: [IQbinResponse, IQirResponse]) => {
-          // Process the second response (QBIN generation)
-          if (qbinResponse.qbin_b64) {
+        next: (responses: { qbin: IQbinResponse | any, qir: IQirResponse | any }) => {
+          // Process QBIN response
+          if (responses.qbin && responses.qbin.qbin_b64) {
             try {
-              this.generatedQBIN = atob(qbinResponse.qbin_b64); // Store the base64 encoded QBIN
+              this.generatedQBIN = atob(responses.qbin.qbin_b64);
               this.generatedQBINSize = this.getFileSize(this.generatedQBIN);
-              this.hasGenerated = true;
             } catch (error) {
               console.error('Error decoding QBIN data:', error);
-              this.errorMessage = 'Error processing QBIN response data.';
+              this.errorMessage += 'Error processing QBIN response data. ';
             }
-          } else {
-            this.errorMessage = 'Error converting OpenQASM to QBIN. Please check your code syntax and try again.';
+          } else if (responses.qbin && responses.qbin.error) {
+            console.error('QBIN compilation failed:', responses.qbin.error);
+            this.errorMessage += 'QBIN compilation failed: ' + (responses.qbin.error.error?.error || 'Unknown error') + '. ';
           }
+
+          // Process QIR response
+          if (responses.qir && responses.qir.qir) {
+            try {
+              this.generatedQIRBinary = atob(responses.qir.qir);
+              this.generatedQIRBinarySize = this.getFileSize(this.generatedQIRBinary);
+            } catch (error) {
+              console.error('Error decoding QIR data:', error);
+              this.errorMessage += 'Error processing QIR response data. ';
+            }
+          } else if (responses.qir && responses.qir.error) {
+            console.error('QIR conversion failed:', responses.qir.error);
+            this.errorMessage += 'QIR conversion failed: ' + (responses.qir.error.error?.error || 'Unknown error') + '. ';
+          }
+
+          // Set hasGenerated to true if at least one conversion succeeded
+          this.hasGenerated = !!(this.generatedQBIN || this.generatedQIRBinary);
+          
           this.isGenerating = false;
         },
-        error: (error) => {
-          console.error('Error converting OpenQASM to QBIN:', error);
-          this.errorMessage = 'Error converting OpenQASM to QBIN. Please check your code syntax and try again.';
+        error: (errorResponse) => {
+          console.error('Error in script generation:', errorResponse);
+          this.errorMessage = 'Error generating Files. The error is: ' + errorResponse.error.error;
           this.isGenerating = false;
         }
       });
