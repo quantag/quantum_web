@@ -176,7 +176,7 @@ export class ScriptGeneratorComponent implements OnInit {
             ),
             qir: this.http.post<IQirResponse>(environment.apiGatewayUrl + '/qasm-to-qir', qirQasmPayload).pipe(
               catchError(error => {
-                return of({ error: error, qir: null } as any);
+                return of({ error: error, qir_b64: null } as any);
               })
             )
           });
@@ -205,9 +205,9 @@ export class ScriptGeneratorComponent implements OnInit {
           }
 
           // Process QIR response
-          if (responses.qir && responses.qir.qir) {
+          if (responses.qir && responses.qir.qir_b64) {
             try {
-              this.generatedQIRBinary = atob(responses.qir.qir);
+              this.generatedQIRBinary = atob(responses.qir.qir_b64);
               this.generatedQIRBinarySize = this.getFileSize(this.generatedQIRBinary);
             } catch (error) {
               console.error('Error decoding QIR data:', error);
