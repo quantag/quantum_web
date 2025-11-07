@@ -1,0 +1,10 @@
+[
+  {
+    "name": "QBIN Compiler/Decompiler",
+    "url": "https://cryspprod3.quantag-it.com:444/api18/health"
+  },
+  {
+    "name": "QImage",
+    "url": "https://cryspprod3.quantag-it.com:444/api13/health"
+  }
+]

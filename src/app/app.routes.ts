@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
     {
@@ -50,6 +51,15 @@ export const routes: Routes = [
         path: 'labs',
         loadComponent: () => import('./pages/labs/labs.component').then(m => m.LabsComponent),
         pathMatch: 'full'
+    },
+    {
+        path: 'admin',
+        loadComponent: () => import('./pages/admin/login/login.component').then(m => m.LoginComponent)
+    },
+    {
+        path: 'admin/dashboard',
+        loadComponent: () => import('./pages/admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
+        canActivate: [adminGuard]
     },
     {
         path: '**',
