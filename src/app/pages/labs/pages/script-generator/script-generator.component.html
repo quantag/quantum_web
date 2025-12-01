@@ -119,31 +119,6 @@
                         </div>
                     </div>
 
-                    <div class="result-card" *ngIf="generatedQIRBinary">
-                        <div class="result-header">
-                            <div class="format-info">
-                                <h4>QIR Binary</h4>
-                                <div class="file-size-info">
-                                    <span class="file-size">Size: {{ formatFileSize(generatedQIRBinarySize) }}</span>
-                                    <span class="compression-ratio">Compression: 
-                                        <span
-                                            class="compression-ratio-value"
-                                            [class.good-compression-value]="generatedQIRBinaryCompressionRatio > 50"
-                                        >
-                                            {{ generatedQIRBinaryCompressionRatio.toFixed(2) }}%</span>
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="result-actions">
-                            <app-button
-                                [type]="'stroked'"
-                                [label]="'Download .qir'"
-                                (clicked)="downloadQIRBinary()">
-                            </app-button>
-                        </div>
-                    </div>
-
                     <!-- QBIN Result -->
                     <div class="result-card" *ngIf="generatedQBIN">
                         <div class="result-header">
@@ -154,7 +129,7 @@
                                     <span class="compression-ratio">Compression: 
                                         <span
                                             class="compression-ratio-value"
-                                            [class.good-compression-value]="generatedQBINCompressionRatio > 50"
+                                            [class.good-compression-value]="generatedQBINCompressionRatio < 100"
                                         >
                                             {{ generatedQBINCompressionRatio.toFixed(2) }}%</span>
                                         </span>
@@ -166,6 +141,31 @@
                                 [type]="'stroked'"
                                 [label]="'Download .qbin'"
                                 (clicked)="downloadQBIN()">
+                            </app-button>
+                        </div>
+                    </div>
+
+                    <div class="result-card" *ngIf="generatedQIRBinary">
+                        <div class="result-header">
+                            <div class="format-info">
+                                <h4>QIR Binary</h4>
+                                <div class="file-size-info">
+                                    <span class="file-size">Size: {{ formatFileSize(generatedQIRBinarySize) }}</span>
+                                    <span class="compression-ratio">Compression: 
+                                        <span
+                                            class="compression-ratio-value"
+                                            [class.good-compression-value]="generatedQIRBinaryCompressionRatio < 100"
+                                        >
+                                            {{ generatedQIRBinaryCompressionRatio.toFixed(2) }}%</span>
+                                        </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="result-actions">
+                            <app-button
+                                [type]="'stroked'"
+                                [label]="'Download .qir'"
+                                (clicked)="downloadQIRBinary()">
                             </app-button>
                         </div>
                     </div>

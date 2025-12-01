@@ -169,7 +169,7 @@ export class ScriptGeneratorComponent implements OnInit {
           
           // Use the qasm_base64 from the first response for the second request
           const qbinQasmPayload = { qasm_b64: response.qasm_base64 };
-          const qirQasmPayload = { qasm: response.qasm_base64 };
+          const qirQasmPayload = { qasm: response.qasm_base64, format: 'bitcode' };
           
           // Chain the second HTTP request with individual error handling
           return forkJoin({
@@ -323,6 +323,6 @@ export class ScriptGeneratorComponent implements OnInit {
   }
 
   private calculateCompressionRatio(originalSize: number, compressedSize: number): number {
-    return Math.round(((originalSize - compressedSize) / originalSize) * 100);
+    return Math.round((compressedSize / originalSize) * 100);
   }
 }

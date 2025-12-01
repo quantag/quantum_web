@@ -118,8 +118,8 @@
                                 <div class="size-comparison">
                                     <span class="original-size">Original: {{ formatFileSize(originalImage!.size) }}</span>
                                     <span class="compressed-size">Compressed: {{ formatFileSize(compressed.size) }}</span>
-                                    <span class="compression-ratio" [class.good-compression]="compressed.compressionRatio > 50">
-                                        {{ compressed.compressionRatio.toFixed(1) }}% smaller
+                                    <span class="compression-ratio" [class.good-compression]="compressed.compressionRatio < 100">
+                                        {{ compressed.compressionRatio.toFixed(1) }}% {{compressed.compressionRatio > 100 ? 'larger' : 'smaller'}}
                                     </span>
                                 </div>
                                 <button class="download-btn" (click)="downloadImage(compressed)">
@@ -153,7 +153,7 @@
                                 <div class="size-comparison">
                                     <span class="original-size">Original: {{ formatFileSize(originalImage!.size) }}</span>
                                     <span class="compressed-size">Reconstructed: {{ formatFileSize(reconstructed.size) }}</span>
-                                    <span class="compression-ratio" [class.good-compression]="reconstructed.compressionRatio > 50">
+                                    <span class="compression-ratio" [class.good-compression]="reconstructed.compressionRatio < 100">
                                         {{ reconstructed.compressionRatio.toFixed(1) }}% difference
                                     </span>
                                 </div>
@@ -188,7 +188,7 @@
                                 <div class="size-comparison">
                                     <span class="original-size">Original: {{ formatFileSize(originalImage!.size) }}</span>
                                     <span class="compressed-size">Overlay: {{ formatFileSize(overlay.size) }}</span>
-                                    <span class="compression-ratio" [class.good-compression]="overlay.compressionRatio > 50">
+                                    <span class="compression-ratio" [class.good-compression]="overlay.compressionRatio < 100">
                                         {{ overlay.compressionRatio.toFixed(1) }}% difference
                                     </span>
                                 </div>
