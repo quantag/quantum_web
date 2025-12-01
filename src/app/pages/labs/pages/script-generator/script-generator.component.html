@@ -106,10 +106,9 @@
                     <div class="result-card" *ngIf="generatedOpenQASM">
                         <div class="result-header">
                             <div class="format-info">
-                                <h4>OpenQASM Format</h4>
-                                <span class="file-size">{{ formatFileSize(generatedOpenQASMSize) }}</span>
+                                <h4>OpenQASM</h4>
+                                <span class="file-size">Size: {{ formatFileSize(generatedOpenQASMSize) }}</span>
                             </div>
-                            <span class="format-badge openqasm">QASM</span>
                         </div>
                         <div class="result-actions">
                             <app-button
@@ -123,10 +122,18 @@
                     <div class="result-card" *ngIf="generatedQIRBinary">
                         <div class="result-header">
                             <div class="format-info">
-                                <h4>QIR Binary Format</h4>
-                                <span class="file-size">{{ formatFileSize(generatedQIRBinarySize) }}</span>
+                                <h4>QIR Binary</h4>
+                                <div class="file-size-info">
+                                    <span class="file-size">Size: {{ formatFileSize(generatedQIRBinarySize) }}</span>
+                                    <span class="compression-ratio">Compression: 
+                                        <span
+                                            class="compression-ratio-value"
+                                            [class.good-compression-value]="generatedQIRBinaryCompressionRatio > 50"
+                                        >
+                                            {{ generatedQIRBinaryCompressionRatio.toFixed(2) }}%</span>
+                                        </span>
+                                </div>
                             </div>
-                            <span class="format-badge qir">QIR</span>
                         </div>
                         <div class="result-actions">
                             <app-button
@@ -141,10 +148,18 @@
                     <div class="result-card" *ngIf="generatedQBIN">
                         <div class="result-header">
                             <div class="format-info">
-                                <h4>QBIN Format</h4>
-                                <span class="file-size">{{ formatFileSize(generatedQBINSize) }}</span>
+                                <h4>QBIN</h4>
+                                <div class="file-size-info">
+                                    <span class="file-size">Size: {{ formatFileSize(generatedQBINSize) }}</span>
+                                    <span class="compression-ratio">Compression: 
+                                        <span
+                                            class="compression-ratio-value"
+                                            [class.good-compression-value]="generatedQBINCompressionRatio > 50"
+                                        >
+                                            {{ generatedQBINCompressionRatio.toFixed(2) }}%</span>
+                                        </span>
+                                </div>
                             </div>
-                            <span class="format-badge qbin">QBIN</span>
                         </div>
                         <div class="result-actions">
                             <app-button

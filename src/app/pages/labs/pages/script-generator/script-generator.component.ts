@@ -30,8 +30,10 @@ export class ScriptGeneratorComponent implements OnInit {
   public generatedOpenQASMSize: number = 0;
   public generatedQBINSize: number = 0;
   public generatedQBIN: string = '';
+  public generatedQBINCompressionRatio: number = 0;
   public generatedQIRBinary: string = '';
   public generatedQIRBinarySize: number = 0;
+  public generatedQIRBinaryCompressionRatio: number = 0;
   public hasGenerated: boolean = false;
   public isDragOver: boolean = false;
   
@@ -74,6 +76,8 @@ export class ScriptGeneratorComponent implements OnInit {
     this.generatedOpenQASMSize = 0;
     this.generatedQBINSize = 0;
     this.generatedQIRBinarySize = 0;
+    this.generatedQBINCompressionRatio = 0;
+    this.generatedQIRBinaryCompressionRatio = 0;
     this.hasGenerated = false;
     this.errorMessage = '';
   }
@@ -176,7 +180,7 @@ export class ScriptGeneratorComponent implements OnInit {
             ),
             qir: this.http.post<IQirResponse>(environment.apiGatewayUrl + '/qasm-to-qir', qirQasmPayload).pipe(
               catchError(error => {
-                return of({ error: error, qir_b64: null } as any);
+                return of({ error: error, qir: null } as any);
               })
             )
           });
@@ -195,6 +199,7 @@ export class ScriptGeneratorComponent implements OnInit {
             try {
               this.generatedQBIN = atob(responses.qbin.qbin_b64);
               this.generatedQBINSize = this.getFileSize(this.generatedQBIN);
+              this.generatedQBINCompressionRatio = this.calculateCompressionRatio(this.generatedOpenQASMSize, this.generatedQBINSize);
             } catch (error) {
               console.error('Error decoding QBIN data:', error);
               this.errorMessage += 'Error processing QBIN response data. ';
@@ -205,10 +210,11 @@ export class ScriptGeneratorComponent implements OnInit {
           }
 
           // Process QIR response
-          if (responses.qir && responses.qir.qir_b64) {
+          if (responses.qir && responses.qir.qir) {
             try {
-              this.generatedQIRBinary = atob(responses.qir.qir_b64);
+              this.generatedQIRBinary = atob(responses.qir.qir);
               this.generatedQIRBinarySize = this.getFileSize(this.generatedQIRBinary);
+              this.generatedQIRBinaryCompressionRatio = this.calculateCompressionRatio(this.generatedOpenQASMSize, this.generatedQIRBinarySize);
             } catch (error) {
               console.error('Error decoding QIR data:', error);
               this.errorMessage += 'Error processing QIR response data. ';
@@ -314,5 +320,9 @@ export class ScriptGeneratorComponent implements OnInit {
 
   getFileSize(content: string): number {
     return new Blob([content]).size;
+  }
+
+  private calculateCompressionRatio(originalSize: number, compressedSize: number): number {
+    return Math.round(((originalSize - compressedSize) / originalSize) * 100);
   }
 }
