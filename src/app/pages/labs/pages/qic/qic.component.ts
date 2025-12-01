@@ -329,7 +329,7 @@ export class QicComponent implements OnInit {
   }
 
   private calculateCompressionRatio(originalSize: number, compressedSize: number): number {
-    return Math.round((compressedSize / originalSize) * 100);
+    return Math.round((1 - (compressedSize / originalSize)) * 100);
   }
 
   convertImageToBase64(image: OriginalImage): string {
