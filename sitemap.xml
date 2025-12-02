@@ -81,6 +81,7 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Quantum Portfolio Optimizer Lab -->
   <url>
     <loc>https://quantum.quantag-it.com/labs/quantum-portfolio-optimizer</loc>
     <lastmod>2025-10-02</lastmod>
@@ -88,9 +89,18 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Script Generator Lab -->
   <url>
     <loc>https://quantum.quantag-it.com/labs/script-generator</loc>
     <lastmod>2025-12-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Circuit Optimizer Lab -->
+  <url>
+    <loc>https://quantum.quantag-it.com/labs/circuit-optimizer</loc>
+    <lastmod>2025-12-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

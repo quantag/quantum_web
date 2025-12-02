@@ -1,0 +1,123 @@
+<div class="optimizer-container">
+    <app-lab-header title="Circuit Optimizer" [maxWidth]="'100%'"></app-lab-header>
+
+    <div class="converter-content">
+        <app-upload-section
+            [config]="uploadConfig"
+            [currentContent]="inputCode"
+            [disabled]="isOptimizing"
+            (contentUploaded)="onContentUploaded($event)"
+            (contentCleared)="clearFields()"
+            (error)="onUploadError($event)">
+        </app-upload-section>
+
+        <div class="converter-grid">
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="section-header">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12L11 14L15 10"/>
+                            <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3.25806 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"/>
+                        </svg>
+                        Input OpenQASM
+                    </h3>
+                    <div class="section-actions">
+                        <button 
+                            type="button" 
+                            (click)="clearFields()" 
+                            class="clear-btn"
+                            [disabled]="isOptimizing"
+                        >
+                            Clear
+                        </button>
+                    </div>
+                </div>
+                
+                <textarea
+                    [(ngModel)]="inputCode"
+                    placeholder="Enter your OpenQASM code here...&#10;&#10;Example:&#10;OPENQASM 2.0;&#10;include &quot;qelib1.inc&quot;;&#10;qreg q[2];&#10;creg c[2];&#10;h q[0];&#10;cx q[0],q[1];&#10;measure q -> c;"
+                    class="code-textarea openqasm-input"
+                    [disabled]="isOptimizing"
+                ></textarea>
+            </div>
+
+            <!-- Optimize Button Section -->
+            <div class="convert-section">
+                <button 
+                    type="button" 
+                    (click)="optimize()" 
+                    class="convert-btn optimize-btn"
+                    [disabled]="!inputCode.trim() || isOptimizing"
+                >
+                    <svg *ngIf="!isOptimizing" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19"/>
+                    </svg>
+                    <svg *ngIf="isOptimizing" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spinner">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    {{ isOptimizing ? 'Optimizing...' : 'Optimize' }}
+                </button>
+
+                <button 
+                    type="button" 
+                    (click)="downloadOutput()" 
+                    class="download-btn"
+                    [disabled]="!outputCode.trim()"
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download Output
+                </button>
+            </div>
+
+            <!-- Output Section -->
+            <div class="output-section">
+                <div class="section-header">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="16,18 22,12 16,6"/>
+                            <polyline points="8,6 2,12 8,18"/>
+                        </svg>
+                        Optimized OpenQASM
+                    </h3>
+                    <div class="section-actions">
+                        <button 
+                            type="button" 
+                            (click)="copyOutputCode()" 
+                            class="copy-btn"
+                            [disabled]="!outputCode.trim()"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
+                <textarea
+                    [(ngModel)]="outputCode"
+                    placeholder="Optimized circuit will appear here..."
+                    class="code-textarea output-textarea"
+                    readonly
+                ></textarea>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="error-message">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ errorMessage }}
+        </div>
+    </div>
+</div>

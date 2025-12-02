@@ -48,6 +48,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/labs/pages/script-generator/script-generator.component').then(m => m.ScriptGeneratorComponent)
     },
     {
+        path: 'labs/circuit-optimizer',
+        loadComponent: () => import('./pages/labs/pages/circuit-optimizer/circuit-optimizer.component').then(m => m.CircuitOptimizerComponent)
+    },
+    {
         path: 'labs',
         loadComponent: () => import('./pages/labs/labs.component').then(m => m.LabsComponent),
         pathMatch: 'full'
