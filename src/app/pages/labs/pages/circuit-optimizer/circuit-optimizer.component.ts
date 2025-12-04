@@ -23,7 +23,7 @@ export class CircuitOptimizerComponent implements OnInit {
   uploadConfig: UploadSectionConfig = {
     acceptedFileTypes: ['text/plain', 'application/octet-stream'],
     fileExtensions: ['.qasm', '.txt'],
-    sampleBaseUrl: 'https://quantag-it.com/pub/samples/qbin/',
+    sampleBaseUrl: 'https://quantag-it.com/pub/samples/quantum/optimizer/',
     showUrlUpload: true,
     showSampleBrowser: true,
     showClearButton: true,
