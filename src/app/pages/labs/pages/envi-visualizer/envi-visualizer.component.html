@@ -1,5 +1,5 @@
 <div class="envi-container">
-    <app-lab-header title="ENVI Visualizer" [maxWidth]="'100%'"></app-lab-header>
+    <app-lab-header title="Data Cube Visualizer" [maxWidth]="'100%'"></app-lab-header>
 
     <div class="envi-content">
         <!-- Upload Section -->
@@ -179,6 +179,7 @@
                     >
                         <option value="single">Single Band</option>
                         <option value="composite">RGB Composite</option>
+                        <option value="3d">3D Multi-Layer</option>
                     </select>
                 </div>
 
@@ -302,6 +303,33 @@
                         <strong>Bands:</strong> {{ dimensions.bands }}
                     </span>
                 </div>
+
+                <!-- 3D Visualization Controls -->
+                <ng-container *ngIf="visualizationMode === '3d'">
+                    <div class="control-group" style="flex: 1;  flex-grow: 1; max-width: 100%;">
+                        <label class="control-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                            Select Layers:
+                        </label>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem;">
+                            <label *ngFor="let layer of availableLayers; let i = index" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem 0.75rem; background: #f8f9fa; border-radius: 6px; border: 1px solid #e9ecef;">
+                                <input 
+                                    type="checkbox" 
+                                    [checked]="selected3DLayers.has(i)"
+                                    (change)="toggle3DLayer(i)"
+                                    [disabled]="isLoading3D"
+                                    style="cursor: pointer;"
+                                />
+                                <span style="width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1);" [style.background-color]="getLayerColor(i)"></span>
+                                <span style="font-size: 0.85rem; color: #333;">{{ layer }}</span>
+                            </label>
+                        </div>
+                    </div>
+                </ng-container>
             </div>
 
             <!-- Loading indicator for layer switching or composite creation -->
@@ -314,8 +342,26 @@
             </div>
 
             <!-- Image Display -->
-            <div class="visualization-content" *ngIf="imageUrl && !isSwitchingLayer && !isCreatingComposite">
+            <div class="visualization-content" *ngIf="imageUrl && !isSwitchingLayer && !isCreatingComposite && visualizationMode !== '3d'">
                 <img [src]="imageUrl" alt="ENVI Visualization" class="envi-image" />
+            </div>
+
+            <!-- 3D Canvas Display -->
+            <div class="visualization-content" *ngIf="visualizationMode === '3d'" style="min-height: 600px; padding: 0; position: relative;">
+                <canvas #threeCanvas style="width: 100%; height: 600px; display: block;"></canvas>
+                <div *ngIf="isLoading3D" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; color: white; flex-direction: column; gap: 1rem;">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spinner">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    <p>Loading 3D data...</p>
+                </div>
+                <div *ngIf="!isLoading3D && selected3DLayers.size === 0" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #666;">
+                    <p style="font-size: 1.1rem; margin: 0;">Select one or more layers above to visualize in 3D</p>
+                </div>
+                <div style="position: absolute; bottom: 1rem; background: rgba(255,255,255,0.9); padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.85rem; color: #333;">
+                    <strong>Controls:</strong> Left-click + drag to rotate | Right-click + drag to pan | Scroll to zoom
+                </div>
             </div>
 
             <!-- Layer Statistics (only shown in single band mode) -->

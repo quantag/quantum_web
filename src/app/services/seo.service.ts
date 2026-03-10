@@ -90,10 +90,10 @@ export class SeoService {
       description: 'Optimize quantum circuits using BQSKit algorithms. Convert OpenQASM code into optimized quantum circuits with reduced gate count, improved depth, and enhanced circuit efficiency for better quantum algorithm performance.',
       keywords: 'circuit optimizer, BQSKit, quantum optimization, quantum circuit optimization, gate reduction, circuit depth optimization, OpenQASM optimizer, quantum compiler, circuit synthesis, quantum algorithm optimization, quantum development tools'
     },
-    'envi-visualizer': {
-      title: 'ENVI Visualizer - Hyperspectral Image Processing and Visualization',
+    'ewald-visualizer': {
+      title: 'Data Cube Visualizer - Hyperspectral Image Processing and Visualization',
       description: 'Process and visualize ENVI hyperspectral imaging data. Upload BSQ (Band Sequential) and HDR (header) files, process them through custom Python scripts, and generate interactive visualizations of multispectral and hyperspectral data.',
-      keywords: 'ENVI visualizer, hyperspectral imaging, multispectral data, BSQ files, HDR files, remote sensing, satellite imaging, spectral analysis, image processing, geospatial data, ENVI format, band sequential, hyperspectral visualization'
+      keywords: 'Data visualizer, hyperspectral imaging, multispectral data, BSQ files, HDR files, remote sensing, satellite imaging, spectral analysis, image processing, geospatial data, ENVI format, band sequential, hyperspectral visualization'
     },
     'monaco-editor': {
       title: 'Monaco Editor Lab - Advanced Code Editor with File System',

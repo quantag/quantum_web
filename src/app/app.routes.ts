@@ -52,7 +52,7 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/labs/pages/circuit-optimizer/circuit-optimizer.component').then(m => m.CircuitOptimizerComponent)
     },
     {
-        path: 'labs/envi-visualizer',
+        path: 'labs/ewald-visualizer',
         loadComponent: () => import('./pages/labs/pages/envi-visualizer/envi-visualizer.component').then(m => m.EnviVisualizerComponent)
     },
     {
