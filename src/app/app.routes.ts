@@ -52,6 +52,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/labs/pages/circuit-optimizer/circuit-optimizer.component').then(m => m.CircuitOptimizerComponent)
     },
     {
+        path: 'labs/envi-visualizer',
+        loadComponent: () => import('./pages/labs/pages/envi-visualizer/envi-visualizer.component').then(m => m.EnviVisualizerComponent)
+    },
+    {
         path: 'labs',
         loadComponent: () => import('./pages/labs/labs.component').then(m => m.LabsComponent),
         pathMatch: 'full'

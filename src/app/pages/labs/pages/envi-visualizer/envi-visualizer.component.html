@@ -1,0 +1,352 @@
+<div class="envi-container">
+    <app-lab-header title="ENVI Visualizer" [maxWidth]="'100%'"></app-lab-header>
+
+    <div class="envi-content">
+        <!-- Upload Section -->
+        <div class="upload-area">
+            <div class="section-header">
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17,8 12,3 7,8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Upload Files
+                </h3>
+                <button 
+                    type="button" 
+                    (click)="clearFiles()" 
+                    class="clear-btn"
+                    [disabled]="isProcessing"
+                >
+                    Clear All
+                </button>
+            </div>
+
+            <div class="file-inputs">
+                <!-- BSQ File Upload -->
+                <div class="file-input-group">
+                    <label class="file-label">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                            <polyline points="13 2 13 9 20 9"/>
+                        </svg>
+                        BSQ File (Binary Data)
+                    </label>
+                    <div class="file-input-wrapper">
+                        <input 
+                            type="file" 
+                            accept=".bsq" 
+                            (change)="onBsqFileSelected($event)"
+                            [disabled]="isProcessing"
+                            id="bsq-file-input"
+                            class="file-input"
+                        />
+                        <label for="bsq-file-input" class="file-input-button">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17,8 12,3 7,8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                            Choose .bsq file
+                        </label>
+                        <span class="file-name" *ngIf="bsqFileName">
+                            {{ bsqFileName }}
+                            <button type="button" (click)="removeBsqFile()" class="remove-file-btn" [disabled]="isProcessing">
+                                ×
+                            </button>
+                        </span>
+                        <span class="file-name empty" *ngIf="!bsqFileName">No file selected</span>
+                    </div>
+                </div>
+
+                <!-- HDR File Upload -->
+                <div class="file-input-group">
+                    <label class="file-label">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                        HDR File (Header)
+                    </label>
+                    <div class="file-input-wrapper">
+                        <input 
+                            type="file" 
+                            accept=".hdr" 
+                            (change)="onHdrFileSelected($event)"
+                            [disabled]="isProcessing"
+                            id="hdr-file-input"
+                            class="file-input"
+                        />
+                        <label for="hdr-file-input" class="file-input-button">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17,8 12,3 7,8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                            Choose .hdr file
+                        </label>
+                        <span class="file-name" *ngIf="hdrFileName">
+                            {{ hdrFileName }}
+                            <button type="button" (click)="removeHdrFile()" class="remove-file-btn" [disabled]="isProcessing">
+                                ×
+                            </button>
+                        </span>
+                        <span class="file-name empty" *ngIf="!hdrFileName">No file selected</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Process Button -->
+            <div class="action-buttons">
+                <button 
+                    type="button" 
+                    (click)="processFiles()" 
+                    class="process-btn"
+                    [disabled]="!bsqFile || !hdrFile || isProcessing"
+                >
+                    <svg *ngIf="!isProcessing" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <svg *ngIf="isProcessing" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spinner">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    {{ isProcessing ? 'Processing...' : 'Process & Visualize' }}
+                </button>
+
+                <button 
+                    type="button" 
+                    (click)="downloadResult()" 
+                    class="download-btn"
+                    [disabled]="!imageUrl"
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download Result
+                </button>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="error-message">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ errorMessage }}
+        </div>
+
+        <!-- Visualization Area -->
+        <div class="visualization-area" *ngIf="imageUrl || visualizationData">
+            <div class="section-header">
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                        <line x1="8" y1="21" x2="16" y2="21"/>
+                        <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                    ENVI Visualization
+                </h3>
+            </div>
+
+            <!-- Layer Controls -->
+            <div class="controls-section" *ngIf="availableLayers.length > 0">
+                <!-- Visualization Mode -->
+                <div class="control-group">
+                    <label for="mode-select" class="control-label">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        Mode:
+                    </label>
+                    <select 
+                        id="mode-select" 
+                        class="mode-select" 
+                        [(ngModel)]="visualizationMode"
+                        (change)="onVisualizationModeChange($event)"
+                        [disabled]="isSwitchingLayer || isCreatingComposite"
+                    >
+                        <option value="single">Single Band</option>
+                        <option value="composite">RGB Composite</option>
+                    </select>
+                </div>
+
+                <!-- Single Band Controls -->
+                <ng-container *ngIf="visualizationMode === 'single'">
+                    <div class="control-group">
+                        <label for="layer-select" class="control-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                            Layer:
+                        </label>
+                        <select 
+                            id="layer-select" 
+                            class="layer-select" 
+                            [value]="selectedLayerIndex" 
+                            (change)="onLayerChange($event)"
+                            [disabled]="isSwitchingLayer"
+                        >
+                            <option *ngFor="let layer of availableLayers; let i = index" [value]="i">
+                                {{ layer }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="colormap-select" class="control-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 2v20"/>
+                                <path d="M2 12h20"/>
+                            </svg>
+                            Colormap:
+                        </label>
+                        <select 
+                            id="colormap-select" 
+                            class="colormap-select" 
+                            [(ngModel)]="selectedColormap" 
+                            (change)="onColormapChange($event)"
+                            [disabled]="isSwitchingLayer"
+                        >
+                            <option *ngFor="let cmap of availableColormaps" [value]="cmap">
+                                {{ cmap }}
+                            </option>
+                        </select>
+                    </div>
+                </ng-container>
+
+                <!-- RGB Composite Controls -->
+                <ng-container *ngIf="visualizationMode === 'composite'">
+                    <div class="control-group">
+                        <label for="r-band-select" class="control-label rgb-label r-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                            </svg>
+                            Red:
+                        </label>
+                        <select 
+                            id="r-band-select" 
+                            class="band-select" 
+                            [value]="rBand" 
+                            (change)="onRBandChange($event)"
+                            [disabled]="isCreatingComposite"
+                        >
+                            <option *ngFor="let layer of availableLayers; let i = index" [value]="i">
+                                {{ layer }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="g-band-select" class="control-label rgb-label g-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                            </svg>
+                            Green:
+                        </label>
+                        <select 
+                            id="g-band-select" 
+                            class="band-select" 
+                            [value]="gBand" 
+                            (change)="onGBandChange($event)"
+                            [disabled]="isCreatingComposite"
+                        >
+                            <option *ngFor="let layer of availableLayers; let i = index" [value]="i">
+                                {{ layer }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="b-band-select" class="control-label rgb-label b-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                            </svg>
+                            Blue:
+                        </label>
+                        <select 
+                            id="b-band-select" 
+                            class="band-select" 
+                            [value]="bBand" 
+                            (change)="onBBandChange($event)"
+                            [disabled]="isCreatingComposite"
+                        >
+                            <option *ngFor="let layer of availableLayers; let i = index" [value]="i">
+                                {{ layer }}
+                            </option>
+                        </select>
+                    </div>
+                </ng-container>
+
+                <!-- Data Info -->
+                <div class="data-info" *ngIf="dimensions">
+                    <span class="info-item">
+                        <strong>Dimensions:</strong> 
+                        {{ dimensions.samples }} × {{ dimensions.lines }} pixels
+                    </span>
+                    <span class="info-item">
+                        <strong>Bands:</strong> {{ dimensions.bands }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Loading indicator for layer switching or composite creation -->
+            <div class="switching-indicator" *ngIf="isSwitchingLayer || isCreatingComposite">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spinner">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                {{ isSwitchingLayer ? 'Switching layer...' : 'Creating RGB composite...' }}
+            </div>
+
+            <!-- Image Display -->
+            <div class="visualization-content" *ngIf="imageUrl && !isSwitchingLayer && !isCreatingComposite">
+                <img [src]="imageUrl" alt="ENVI Visualization" class="envi-image" />
+            </div>
+
+            <!-- Layer Statistics (only shown in single band mode) -->
+            <div class="statistics-section" *ngIf="layerStatistics.length > 0 && visualizationMode === 'single'">
+                <h4 class="stats-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="20" x2="12" y2="10"/>
+                        <line x1="18" y1="20" x2="18" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="16"/>
+                    </svg>
+                    Current Layer Statistics
+                </h4>
+                <div class="stats-grid" *ngIf="layerStatistics[selectedLayerIndex]">
+                    <div class="stat-item">
+                        <span class="stat-label">Min:</span>
+                        <span class="stat-value">{{ layerStatistics[selectedLayerIndex].min | number:'1.2-4' }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Max:</span>
+                        <span class="stat-value">{{ layerStatistics[selectedLayerIndex].max | number:'1.2-4' }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Mean:</span>
+                        <span class="stat-value">{{ layerStatistics[selectedLayerIndex].mean | number:'1.2-4' }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Std Dev:</span>
+                        <span class="stat-value">{{ layerStatistics[selectedLayerIndex].std | number:'1.2-4' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
