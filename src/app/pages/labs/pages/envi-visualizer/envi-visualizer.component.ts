@@ -59,6 +59,14 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     'jet', 'rainbow', 'terrain', 'ocean'
   ];
 
+  // Image zoom & pan
+  zoomLevel: number = 1;
+  panX: number = 0;
+  panY: number = 0;
+  private isPanning: boolean = false;
+  private panStartX: number = 0;
+  private panStartY: number = 0;
+
   // Fullscreen
   isFullscreen: boolean = false;
 
@@ -113,6 +121,50 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       this.camera.aspect = width / height;
       this.camera.updateProjectionMatrix();
     }
+  }
+
+  // Image zoom & pan methods
+  onImageWheel(event: WheelEvent): void {
+    event.preventDefault();
+    const delta = event.deltaY > 0 ? -0.1 : 0.1;
+    this.zoomLevel = Math.min(10, Math.max(1, this.zoomLevel + delta));
+  }
+
+  onImagePanStart(event: MouseEvent): void {
+    if (event.button !== 0) return;
+    this.isPanning = true;
+    this.panStartX = event.clientX - this.panX;
+    this.panStartY = event.clientY - this.panY;
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onImagePanMove(event: MouseEvent): void {
+    if (!this.isPanning) return;
+    this.panX = event.clientX - this.panStartX;
+    this.panY = event.clientY - this.panStartY;
+  }
+
+  @HostListener('document:mouseup')
+  onImagePanEnd(): void {
+    this.isPanning = false;
+  }
+
+  zoomIn(): void {
+    this.zoomLevel = Math.min(10, this.zoomLevel + 0.25);
+  }
+
+  zoomOut(): void {
+    this.zoomLevel = Math.max(1, this.zoomLevel - 0.25);
+  }
+
+  resetZoom(): void {
+    this.zoomLevel = 1;
+    this.panX = 0;
+    this.panY = 0;
+  }
+
+  get imageTransform(): string {
+    return `translate(${this.panX}px, ${this.panY}px) scale(${this.zoomLevel})`;
   }
 
   onBsqFileSelected(event: any): void {
@@ -275,6 +327,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     this.bBand = 2;
     this.selected3DLayers = new Set();
     this.threeDData = null;
+    this.resetZoom();
   }
 
   onVisualizationModeChange(event: any): void {
