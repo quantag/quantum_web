@@ -15,6 +15,7 @@
     padding: 1rem 0;
     margin: 0 auto;
     width: 85%;
+    max-width: 1400px;
 }
 
 .upload-area,
@@ -377,6 +378,46 @@
     align-items: center;
     justify-content: center;
     border-bottom: 1px solid #e9ecef;
+
+    &.fullscreen-mode {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9999;
+        padding: 0;
+        margin: 0;
+        background: #1a1a1a;
+    }
+}
+
+.fullscreen-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #333;
+    transition: background 0.2s, transform 0.2s;
+    backdrop-filter: blur(4px);
+
+    &:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: scale(1.1);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
 }
 
 .envi-image {

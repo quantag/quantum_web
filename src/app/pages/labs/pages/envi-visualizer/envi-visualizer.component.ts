@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +17,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 })
 export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('threeCanvas', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('threeContainer', { static: false }) containerRef!: ElementRef<HTMLDivElement>;
   
   bsqFile: File | null = null;
   hdrFile: File | null = null;
@@ -58,6 +59,9 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     'jet', 'rainbow', 'terrain', 'ocean'
   ];
 
+  // Fullscreen
+  isFullscreen: boolean = false;
+
   // 3D Viewer properties
   show3DView: boolean = false;
   isLoading3D: boolean = false;
@@ -80,6 +84,35 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
 
   ngAfterViewInit(): void {
     // 3D scene will be initialized when user opens 3D view
+  }
+
+  @HostListener('document:fullscreenchange')
+  onFullscreenChange(): void {
+    this.isFullscreen = !!document.fullscreenElement;
+    // Resize renderer to match new dimensions
+    setTimeout(() => this.resize3DRenderer(), 50);
+  }
+
+  toggleFullscreen(): void {
+    if (!this.containerRef) return;
+    const el = this.containerRef.nativeElement;
+    if (!document.fullscreenElement) {
+      el.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  private resize3DRenderer(): void {
+    if (!this.renderer || !this.canvasRef) return;
+    const canvas = this.canvasRef.nativeElement;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    this.renderer.setSize(width, height);
+    if (this.camera) {
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
+    }
   }
 
   onBsqFileSelected(event: any): void {
