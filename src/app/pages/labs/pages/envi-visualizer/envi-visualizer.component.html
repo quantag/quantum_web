@@ -313,20 +313,21 @@
                                 <path d="M2 17l10 5 10-5"/>
                                 <path d="M2 12l10 5 10-5"/>
                             </svg>
-                            Select Layers:
+                            3D Layers:
                         </label>
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem;">
-                            <label *ngFor="let layer of availableLayers; let i = index" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem 0.75rem; background: #f8f9fa; border-radius: 6px; border: 1px solid #e9ecef;">
-                                <input 
-                                    type="checkbox" 
-                                    [checked]="selected3DLayers.has(i)"
-                                    (change)="toggle3DLayer(i)"
-                                    [disabled]="isLoading3D"
-                                    style="cursor: pointer;"
-                                />
-                                <span style="width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1);" [style.background-color]="getLayerColor(i)"></span>
-                                <span style="font-size: 0.85rem; color: #333;">{{ layer }}</span>
-                            </label>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <button 
+                                type="button" 
+                                class="config-3d-btn" 
+                                (click)="openLayerConfig()" 
+                                [disabled]="isLoading3D">
+                                <mat-icon style="font-size: 18px; width: 18px; height: 18px; margin-right: 4px;">settings</mat-icon>
+                                Configure 3D View
+                            </button>
+                            
+                            <span class="selected-layers-summary" *ngIf="selected3DLayers.length > 0">
+                                {{ selected3DLayers.length }} layer(s) selected
+                            </span>
                         </div>
                     </div>
                 </ng-container>
@@ -405,7 +406,7 @@
                     </svg>
                     <p>Loading 3D data...</p>
                 </div>
-                <div *ngIf="!isLoading3D && selected3DLayers.size === 0" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #666;">
+                <div *ngIf="!isLoading3D && selected3DLayers.length === 0" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #666;">
                     <p style="font-size: 1.1rem; margin: 0;">Select one or more layers above to visualize in 3D</p>
                 </div>
                 <div style="position: absolute; bottom: 1rem; background: rgba(255,255,255,0.9); padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.85rem; color: #333;">

@@ -71,6 +71,21 @@ ul, li {
     background-color: $white;
 }
 
+// Layer config dialog: remove default padding so header spans full width
+.layer-config-dialog-panel .mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 6px;
+  overflow: hidden;
+
+  .mat-mdc-dialog-title {
+    margin: 0;
+    padding: 0;
+  }
+
+  > .mat-mdc-dialog-component-host > :first-child {
+    padding: 0;
+  }
+}
+
 .mdc-checkbox .mdc-checkbox__checkmark {
   color: $primary-900;
 }

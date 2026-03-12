@@ -1,0 +1,37 @@
+<div class="dialog-header">
+  <h2 mat-dialog-title>
+    <mat-icon>layers</mat-icon>
+    Configure 3D Layers
+  </h2>
+</div>
+
+<mat-dialog-content>
+  <p class="config-description">
+    Drag to reorder layers from bottom (first) to top (last). Check layers to include them in the 3D visualization.
+  </p>
+
+  <div cdkDropList class="layer-list" (cdkDropListDropped)="drop($event)">
+    <div class="layer-box" *ngFor="let layer of layers" cdkDrag>
+      <div class="layer-custom-placeholder" *cdkDragPlaceholder></div>
+      
+      <div class="layer-handle" cdkDragHandle>
+        <mat-icon>drag_indicator</mat-icon>
+      </div>
+
+      <mat-checkbox [(ngModel)]="layer.selected" color="primary">
+        <div class="layer-info">
+          <span class="layer-color-dot" [style.background-color]="getLayerColor(layer.name)"></span>
+          <span class="layer-name">{{ layer.name }}</span>
+        </div>
+      </mat-checkbox>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button class="cancel-btn" (click)="cancel()">Cancel</button>
+  <button mat-flat-button class="apply-btn" (click)="apply()">
+    <mat-icon style="margin-right: 4px; font-size: 18px; height: 18px; width: 18px;">check</mat-icon>
+    Apply 3D View
+  </button>
+</mat-dialog-actions>

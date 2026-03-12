@@ -725,53 +725,47 @@
     }
 }
 
-.layer-checkboxes {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.layer-checkbox {
-    display: flex;
+.config-3d-btn {
+    display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    background: white;
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
+    justify-content: center;
+    padding: 10px 20px;
+    background: $primary-500;
+    color: $white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 
-    &:hover {
-        border-color: #667eea;
-        background: #f8f9fa;
+    &:hover:not(:disabled) {
+        background: $primary-700;
+        box-shadow: 0 4px 12px rgba($primary-500, 0.35);
     }
 
-    input[type="checkbox"] {
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    mat-icon {
+        font-size: 18px;
         width: 18px;
         height: 18px;
-        cursor: pointer;
-        
-        &:checked + .layer-color {
-            border-width: 2px;
-        }
+        margin-right: 6px;
     }
 }
 
-.layer-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    flex-shrink: 0;
-    transition: border-width 0.2s ease;
-}
-
-.layer-name {
-    flex: 1;
-    font-size: 0.9rem;
-    color: #333;
+.selected-layers-summary {
+    font-size: 0.85rem;
+    color: $primary-500;
     font-weight: 500;
+    background: $primary-50;
+    padding: 0.6rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid $primary-100;
 }
 
 .canvas-container {

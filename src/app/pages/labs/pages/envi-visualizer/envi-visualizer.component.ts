@@ -2,8 +2,13 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, Hos
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
+import { LayerConfigDialogComponent } from './layer-config-dialog.component';
+import { getLayerColorByName, getLayerColorThreeByName } from './layer-colors.enum';
 import { environment } from '../../../../../environments/environment';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -13,7 +18,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
   templateUrl: './envi-visualizer.component.html',
   styleUrls: ['./envi-visualizer.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, LabHeaderComponent]
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    LabHeaderComponent,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule
+  ]
 })
 export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('threeCanvas', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -73,7 +85,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   // 3D Viewer properties
   show3DView: boolean = false;
   isLoading3D: boolean = false;
-  selected3DLayers: Set<number> = new Set();
+  selected3DLayers: number[] = [];
   threeDData: any = null;
   
   // Three.js objects
@@ -82,9 +94,14 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   private renderer: any;
   private controls: any;
   private layerMeshes: Map<number, any> = new Map();
+  private layerLabels: Map<number, any> = new Map();
   private animationId: any;
 
-  constructor(private http: HttpClient, private seoService: SeoService) { }
+  constructor(
+    private http: HttpClient, 
+    private seoService: SeoService,
+    private dialog: MatDialog
+  ) { }
 
   ngOnInit(): void {
     this.seoService.updateSeoTags(this.seoService.getSeoData('envi-visualizer'));
@@ -325,7 +342,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     this.rBand = 0;
     this.gBand = 1;
     this.bBand = 2;
-    this.selected3DLayers = new Set();
+    this.selected3DLayers = [];
     this.threeDData = null;
     this.resetZoom();
   }
@@ -436,35 +453,55 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   // 3D Visualization methods
   toggle3DView(): void {
     this.show3DView = !this.show3DView;
-    
-    if (this.show3DView && !this.threeDData) {
-      // Initialize 3D view
-      setTimeout(() => {
-        this.init3DScene();
-      }, 100);
-    }
+  }
+
+  openLayerConfig(): void {
+    const dialogRef = this.dialog.open(LayerConfigDialogComponent, {
+      width: '450px',
+      panelClass: 'layer-config-dialog-panel',
+      data: {
+        availableLayers: this.availableLayers,
+        selected3DLayers: [...this.selected3DLayers] // Pass a copy
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const newLayers: number[] = result;
+        if (this.visualizationMode === '3d' && newLayers.length > 0) {
+          // Clear the 3D scene without wiping selected layers
+          this.clear3DSceneMeshes();
+          this.selected3DLayers = newLayers;
+          // Ensure canvas renders correctly
+          setTimeout(() => {
+            this.tryInit3DScene();
+            this.load3DLayer(this.selected3DLayers);
+          }, 150);
+        } else if (this.visualizationMode === '3d' && newLayers.length === 0) {
+          this.reset3DScene();
+        } else {
+          this.selected3DLayers = newLayers;
+        }
+      }
+    });
   }
 
   getLayerColor(index: number): string {
-    const colors = [
-      '#3498db', // Blue
-      '#2ecc71', // Green
-      '#e74c3c', // Red
-      '#f39c12', // Orange
-      '#9b59b6', // Purple
-      '#1abc9c', // Turquoise
-      '#e67e22'  // Carrot
-    ];
-    return colors[index % colors.length];
+    const name = this.availableLayers[index] || '';
+    return getLayerColorByName(name);
   }
 
+  // Note: toggle3DLayer is no longer strictly used since configuration is via dialog,
+  // but kept for backward compatibility if needed.
   toggle3DLayer(layerIndex: number): void {
-    if (this.selected3DLayers.has(layerIndex)) {
-      this.selected3DLayers.delete(layerIndex);
+    const idx = this.selected3DLayers.indexOf(layerIndex);
+    if (idx > -1) {
+      this.selected3DLayers.splice(idx, 1);
       this.removeLayerFromScene(layerIndex);
     } else {
-      this.selected3DLayers.add(layerIndex);
-      this.load3DLayer([layerIndex]);
+      this.selected3DLayers.push(layerIndex);
+      // Reload everything in order
+      this.load3DLayer(this.selected3DLayers);
     }
   }
 
@@ -537,7 +574,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Camera
     this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    this.camera.position.set(0, 50, 100);
+    this.camera.position.set(0, 50, 200);
     this.camera.lookAt(0, 0, 0);
 
     // Renderer
@@ -581,17 +618,8 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     }
     geometry.computeVertexNormals();
 
-    // Create material with color based on layer index
-    const colors = [
-      0x3498db, // Blue
-      0x2ecc71, // Green
-      0xe74c3c, // Red
-      0xf39c12, // Orange
-      0x9b59b6, // Purple
-      0x1abc9c, // Turquoise
-      0xe67e22  // Carrot
-    ];
-    const color = colors[index % colors.length];
+    // Create material with color based on layer name
+    const color = getLayerColorThreeByName(name || '');
 
     const material = new THREE.MeshStandardMaterial({
       color: color,
@@ -604,10 +632,55 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     // Create mesh
     const mesh = new THREE.Mesh(geometry, material);
     mesh.rotation.x = -Math.PI / 2;
-    mesh.position.y = index * 5; // Stack layers vertically
+    
+    // Find stacking index from the selected layers array
+    // Invert so that top of the list = top in the 3D scene (highest Y)
+    const stackingIndex = this.selected3DLayers.indexOf(index);
+    const validStackIndex = stackingIndex !== -1
+      ? (this.selected3DLayers.length - 1 - stackingIndex)
+      : 0;
+    
+    // Increase vertical spacing to prevent intersections (from 5 to 25)
+    mesh.position.y = validStackIndex * 20; 
 
     this.scene.add(mesh);
     this.layerMeshes.set(index, mesh);
+
+    // Add text label sprite in front of the layer
+    const label = this.createTextSprite(name || `Band ${index + 1}`, color);
+    label.position.set(0, mesh.position.y, height / 2 + 8);
+    this.scene.add(label);
+    this.layerLabels.set(index, label);
+  }
+
+  private createTextSprite(text: string, color: number): any {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d')!;
+    canvas.width = 5120;
+    canvas.height = 640;
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const hex = '#' + color.toString(16).padStart(6, '0');
+    ctx.font = 'bold 256px Inter, Arial, sans-serif';
+    ctx.fillStyle = hex;
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, canvas.width - 8, canvas.height / 2);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+
+    const material = new THREE.SpriteMaterial({
+      map: texture,
+      transparent: true,
+      depthTest: false
+    });
+
+    const sprite = new THREE.Sprite(material);
+    sprite.scale.set(30, 4, 1);
+    return sprite;
   }
 
   private removeLayerFromScene(layerIndex: number): void {
@@ -617,6 +690,13 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       mesh.geometry.dispose();
       mesh.material.dispose();
       this.layerMeshes.delete(layerIndex);
+    }
+    const label = this.layerLabels.get(layerIndex);
+    if (label) {
+      this.scene.remove(label);
+      label.material.map?.dispose();
+      label.material.dispose();
+      this.layerLabels.delete(layerIndex);
     }
   }
 
@@ -632,18 +712,15 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  private reset3DScene(): void {
+  private clear3DSceneMeshes(): void {
     // Stop animation
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
       this.animationId = null;
     }
 
-    // Clear selected layers - create new Set for Angular change detection
-    this.selected3DLayers = new Set();
-
     // Remove all meshes from scene and dispose of them
-    this.layerMeshes.forEach((mesh, index) => {
+    this.layerMeshes.forEach((mesh) => {
       if (this.scene) {
         this.scene.remove(mesh);
       }
@@ -660,6 +737,16 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     });
     this.layerMeshes.clear();
 
+    // Remove all label sprites
+    this.layerLabels.forEach((label) => {
+      if (this.scene) {
+        this.scene.remove(label);
+      }
+      label.material.map?.dispose();
+      label.material.dispose();
+    });
+    this.layerLabels.clear();
+
     // Clear controls
     if (this.controls) {
       this.controls.dispose();
@@ -674,7 +761,6 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Clear scene references
     if (this.scene) {
-      // Clear all children from scene
       while (this.scene.children.length > 0) {
         this.scene.remove(this.scene.children[0]);
       }
@@ -683,8 +769,16 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.camera = null;
     this.threeDData = null;
-    this.show3DView = false;
     this.isLoading3D = false;
+  }
+
+  private reset3DScene(): void {
+    this.clear3DSceneMeshes();
+
+    // Clear selected layers - create new array for Angular change detection
+    this.selected3DLayers = [];
+
+    this.show3DView = false;
   }
 
   ngOnDestroy(): void {
@@ -696,6 +790,11 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     this.layerMeshes.forEach((mesh) => {
       mesh.geometry.dispose();
       mesh.material.dispose();
+    });
+
+    this.layerLabels.forEach((label) => {
+      label.material.map?.dispose();
+      label.material.dispose();
     });
 
     if (this.renderer) {
