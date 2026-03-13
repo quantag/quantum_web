@@ -62,14 +62,6 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   rBand: number = 0;
   gBand: number = 1;
   bBand: number = 2;
-  
-  // Colormap options
-  selectedColormap: string = 'viridis';
-  availableColormaps: string[] = [
-    'viridis', 'plasma', 'inferno', 'magma', 'cividis',
-    'hot', 'cool', 'spring', 'summer', 'autumn', 'winter',
-    'jet', 'rainbow', 'terrain', 'ocean'
-  ];
 
   // Image zoom & pan
   zoomLevel: number = 1;
@@ -78,6 +70,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   private isPanning: boolean = false;
   private panStartX: number = 0;
   private panStartY: number = 0;
+  @ViewChild('imageClipper') imageClipper!: ElementRef<HTMLElement>;
 
   // Fullscreen
   isFullscreen: boolean = false;
@@ -86,6 +79,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   show3DView: boolean = false;
   isLoading3D: boolean = false;
   selected3DLayers: number[] = [];
+  layerOpacities = new Map<number, number>(); // opacity per layer index (0-1)
   threeDData: any = null;
   
   // Three.js objects
@@ -145,6 +139,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     event.preventDefault();
     const delta = event.deltaY > 0 ? -0.1 : 0.1;
     this.zoomLevel = Math.min(10, Math.max(1, this.zoomLevel + delta));
+    this.clampPan();
   }
 
   onImagePanStart(event: MouseEvent): void {
@@ -159,6 +154,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     if (!this.isPanning) return;
     this.panX = event.clientX - this.panStartX;
     this.panY = event.clientY - this.panStartY;
+    this.clampPan();
   }
 
   @HostListener('document:mouseup')
@@ -166,12 +162,25 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     this.isPanning = false;
   }
 
+  private clampPan(): void {
+    const el = this.imageClipper?.nativeElement;
+    if (!el) return;
+    const img = el.querySelector('img');
+    if (!img) return;
+    const maxPanX = Math.max(0, (img.offsetWidth * this.zoomLevel - el.clientWidth) / 2);
+    const maxPanY = Math.max(0, (img.offsetHeight * this.zoomLevel - el.clientHeight) / 2);
+    this.panX = Math.max(-maxPanX, Math.min(maxPanX, this.panX));
+    this.panY = Math.max(-maxPanY, Math.min(maxPanY, this.panY));
+  }
+
   zoomIn(): void {
     this.zoomLevel = Math.min(10, this.zoomLevel + 0.25);
+    this.clampPan();
   }
 
   zoomOut(): void {
     this.zoomLevel = Math.max(1, this.zoomLevel - 0.25);
+    this.clampPan();
   }
 
   resetZoom(): void {
@@ -227,8 +236,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       const payload = {
         bsq: this.bsqBase64,
         hdr: this.hdrBase64,
-        band_index: 0,
-        colormap: this.selectedColormap
+        band_index: 0
       };
 
       // Use environment variable for API URL
@@ -281,7 +289,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       bsq: this.bsqBase64,
       hdr: this.hdrBase64,
       band_index: layerIndex,
-      colormap: this.selectedColormap
+      band_name: this.availableLayers[layerIndex] || null
     };
 
     const apiUrl = environment.enviApiUrl + '/envi/switch-layer';
@@ -306,13 +314,6 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   onLayerChange(event: any): void {
     const layerIndex = parseInt(event.target.value, 10);
     this.switchLayer(layerIndex);
-  }
-
-  onColormapChange(event: any): void {
-    this.selectedColormap = event.target.value;
-    if (this.bsqBase64 && this.hdrBase64) {
-      this.switchLayer(this.selectedLayerIndex);
-    }
   }
 
   private fileToBase64(file: File): Promise<string> {
@@ -348,13 +349,8 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onVisualizationModeChange(event: any): void {
-    const previousMode = this.visualizationMode;
     this.visualizationMode = event.target.value;
-    
-    // Reset 3D scene and selected layers when switching from 3D mode
-    if (previousMode === '3d' && this.visualizationMode !== '3d') {
-      this.reset3DScene();
-    }
+    this.reset3DScene();
     
     if (this.bsqBase64 && this.hdrBase64) {
       if (this.visualizationMode === 'composite') {
@@ -457,17 +453,26 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
 
   openLayerConfig(): void {
     const dialogRef = this.dialog.open(LayerConfigDialogComponent, {
-      width: '450px',
+      width: '50vw',
       panelClass: 'layer-config-dialog-panel',
       data: {
         availableLayers: this.availableLayers,
-        selected3DLayers: [...this.selected3DLayers] // Pass a copy
+        selected3DLayers: [...this.selected3DLayers], // Pass a copy
+        layerOpacities: this.layerOpacities // Pass opacity Map
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const newLayers: number[] = result;
+        // Handle new result structure with selectedIndices and opacities
+        const newLayers: number[] = result.selectedIndices || result; // Support old and new format
+        const newOpacities: Map<number, number> | undefined = result.opacities;
+        
+        // Update opacity map if provided
+        if (newOpacities) {
+          this.layerOpacities = newOpacities;
+        }
+        
         if (this.visualizationMode === '3d' && newLayers.length > 0) {
           // Clear the 3D scene without wiping selected layers
           this.clear3DSceneMeshes();
@@ -620,13 +625,16 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Create material with color based on layer name
     const color = getLayerColorThreeByName(name || '');
+    
+    // Get opacity from Map, default to 1.0 if not set
+    const opacity = this.layerOpacities.get(index) ?? 1.0;
 
     const material = new THREE.MeshStandardMaterial({
       color: color,
       wireframe: false,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.7
+      opacity: opacity
     });
 
     // Create mesh

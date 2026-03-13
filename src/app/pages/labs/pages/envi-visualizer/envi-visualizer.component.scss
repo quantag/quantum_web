@@ -308,7 +308,6 @@
 
 .mode-select,
 .layer-select,
-.colormap-select,
 .band-select {
     padding: 0.5rem 2rem 0.5rem 0.75rem;
     background: white;
@@ -448,6 +447,10 @@
     transform-origin: center center;
     transition: transform 0.05s ease-out;
     pointer-events: none;
+
+    &.pixelated {
+        image-rendering: pixelated;
+    }
 }
 
 .zoom-controls {
@@ -464,6 +467,12 @@
     backdrop-filter: blur(4px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     z-index: 10;
+
+    .zoom-divider {
+        width: 1px;
+        height: 18px;
+        background: #d0d0d0;
+    }
 }
 
 .zoom-btn {
@@ -473,6 +482,12 @@
     align-items: center;
     justify-content: center;
     background: transparent;
+
+    &.active {
+        color: #4E61F6;
+        background: rgba(78, 97, 246, 0.1);
+        border-radius: 4px;
+    }
     border: 1px solid #ddd;
     border-radius: 6px;
     cursor: pointer;
@@ -613,8 +628,7 @@
         width: 100%;
     }
 
-    .layer-select,
-    .colormap-select {
+    .layer-select {
         width: 100%;
     }
 

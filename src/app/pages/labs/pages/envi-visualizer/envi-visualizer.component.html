@@ -206,28 +206,6 @@
                             </option>
                         </select>
                     </div>
-
-                    <div class="control-group">
-                        <label for="colormap-select" class="control-label">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <path d="M12 2v20"/>
-                                <path d="M2 12h20"/>
-                            </svg>
-                            Colormap:
-                        </label>
-                        <select 
-                            id="colormap-select" 
-                            class="colormap-select" 
-                            [(ngModel)]="selectedColormap" 
-                            (change)="onColormapChange($event)"
-                            [disabled]="isSwitchingLayer"
-                        >
-                            <option *ngFor="let cmap of availableColormaps" [value]="cmap">
-                                {{ cmap }}
-                            </option>
-                        </select>
-                    </div>
                 </ng-container>
 
                 <!-- RGB Composite Controls -->
@@ -344,12 +322,13 @@
 
             <!-- Image Display with Zoom -->
             <div class="visualization-content image-zoom-container" *ngIf="imageUrl && !isSwitchingLayer && !isCreatingComposite && visualizationMode !== '3d'">
-                <div class="image-clipper"
+                <div class="image-clipper" #imageClipper
                      (wheel)="onImageWheel($event)"
                      (mousedown)="onImagePanStart($event)">
                     <img [src]="imageUrl" 
                          alt="ENVI Visualization" 
                          class="envi-image" 
+                         [class.pixelated]="zoomLevel > 1"
                          [style.transform]="imageTransform"
                          draggable="false" />
                 </div>

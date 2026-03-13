@@ -12,7 +12,7 @@
 .dialog-header {
   display: flex;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1.5rem;
   background: $primary-25;
   border-bottom: 1px solid $primary-100;
 
@@ -59,8 +59,8 @@
   border-bottom: 1px solid $primary-50;
   color: $primary;
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   box-sizing: border-box;
   background: $white;
   transition: background 0.2s ease;
@@ -113,6 +113,43 @@
   color: $primary;
 }
 
+.layer-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.opacity-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  margin-left: 48px; // align with checkbox content
+  padding: 8px 12px;
+  background: $primary-25;
+  border-radius: 4px;
+
+  .opacity-label {
+    font-size: 0.85rem;
+    color: $gray-600;
+    font-weight: 500;
+    min-width: 60px;
+  }
+
+  .opacity-slider {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .opacity-value {
+    font-size: 0.85rem;
+    color: $primary-500;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: right;
+  }
+}
+
 .dialog-actions {
   padding: 0.75rem 1.5rem;
   border-top: 1px solid $primary-100;
@@ -147,11 +184,16 @@
   border-radius: 4px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   background: $white;
   padding: 10px 14px;
   border: 1px solid $primary-500;
+  
+  // Hide opacity control in drag preview for cleaner look
+  .opacity-control {
+    display: none;
+  }
 }
 
 .cdk-drag-animating {
@@ -165,7 +207,7 @@
 .layer-custom-placeholder {
   background: $primary-25;
   border: 2px dashed $primary-200;
-  min-height: 48px;
+  min-height: 60px;
   border-radius: 3px;
   margin: 2px;
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);

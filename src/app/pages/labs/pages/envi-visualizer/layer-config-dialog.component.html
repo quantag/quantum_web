@@ -7,23 +7,41 @@
 
 <mat-dialog-content>
   <p class="config-description">
-    Drag to reorder layers from bottom (first) to top (last). Check layers to include them in the 3D visualization.
+    Drag to reorder layers from bottom (first) to top (last). Check layers to include them in the 3D visualization. Adjust opacity for selected layers using the slider.
   </p>
 
   <div cdkDropList class="layer-list" (cdkDropListDropped)="drop($event)">
     <div class="layer-box" *ngFor="let layer of layers" cdkDrag>
       <div class="layer-custom-placeholder" *cdkDragPlaceholder></div>
       
-      <div class="layer-handle" cdkDragHandle>
-        <mat-icon>drag_indicator</mat-icon>
+      <div class="layer-header">
+        <div class="layer-handle" cdkDragHandle>
+          <mat-icon>drag_indicator</mat-icon>
+        </div>
+
+        <mat-checkbox 
+          [(ngModel)]="layer.selected" 
+          [name]="'selected-' + layer.index"
+          color="primary">
+          <div class="layer-info">
+            <span class="layer-color-dot" [style.background-color]="getLayerColor(layer.name)"></span>
+            <span class="layer-name">{{ layer.name }}</span>
+          </div>
+        </mat-checkbox>
       </div>
 
-      <mat-checkbox [(ngModel)]="layer.selected" color="primary">
-        <div class="layer-info">
-          <span class="layer-color-dot" [style.background-color]="getLayerColor(layer.name)"></span>
-          <span class="layer-name">{{ layer.name }}</span>
-        </div>
-      </mat-checkbox>
+      <div class="opacity-control" *ngIf="layer.selected">
+        <label class="opacity-label">Opacity:</label>
+        <mat-slider 
+          min="0" 
+          max="1" 
+          step="0.05"
+          discrete
+          class="opacity-slider">
+          <input matSliderThumb [(ngModel)]="layer.opacity" [name]="'opacity-' + layer.index">
+        </mat-slider>
+        <span class="opacity-value">{{ (layer.opacity * 100) | number:'1.0-0' }}%</span>
+      </div>
     </div>
   </div>
 </mat-dialog-content>

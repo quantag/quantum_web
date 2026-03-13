@@ -8,6 +8,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSliderModule } from '@angular/material/slider';
 import { FormsModule } from '@angular/forms';
 import { 
   CdkDragDrop, 
@@ -19,12 +20,19 @@ import { getLayerColorByName } from './layer-colors.enum';
 export interface LayerConfigData {
   availableLayers: string[];
   selected3DLayers: number[];
+  layerOpacities?: Map<number, number>; // opacity per layer index (0-1)
 }
 
 export interface LayerItem {
   index: number;
   name: string;
   selected: boolean;
+  opacity: number; // 0-1 range
+}
+
+export interface LayerConfigResult {
+  selectedIndices: number[];
+  opacities: Map<number, number>;
 }
 
 @Component({
@@ -38,6 +46,7 @@ export interface LayerItem {
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,
+    MatSliderModule,
     FormsModule,
     DragDropModule
   ]
@@ -52,13 +61,15 @@ export class LayerConfigDialogComponent {
     // Initialize layers list based on original order or previous selection order
     // First, add the selected lists in their specific order
     const selectedIndices = new Set(data.selected3DLayers);
+    const opacities = data.layerOpacities || new Map();
     
     // Add selected layers first in their defined order
     data.selected3DLayers.forEach(index => {
       this.layers.push({
         index: index,
         name: data.availableLayers[index],
-        selected: true
+        selected: true,
+        opacity: opacities.get(index) ?? 1.0
       });
     });
 
@@ -68,10 +79,12 @@ export class LayerConfigDialogComponent {
         this.layers.push({
           index: index,
           name: name,
-          selected: false
+          selected: false,
+          opacity: opacities.get(index) ?? 1.0
         });
       }
     });
+
   }
 
   drop(event: CdkDragDrop<LayerItem[]>) {
@@ -83,12 +96,16 @@ export class LayerConfigDialogComponent {
   }
 
   apply() {
-    // Return only the selected layer indices in their current visual order
-    const selectedIndices = this.layers
-      .filter(layer => layer.selected)
-      .map(layer => layer.index);
+    // Return selected layer indices and their opacity values
+    const selectedLayers = this.layers.filter(layer => layer.selected);
+    const selectedIndices = selectedLayers.map(layer => layer.index);
+    
+    const opacities = new Map<number, number>();
+    selectedLayers.forEach(layer => {
+      opacities.set(layer.index, layer.opacity);
+    });
       
-    this.dialogRef.close(selectedIndices);
+    this.dialogRef.close({ selectedIndices, opacities });
   }
 
   cancel() {
