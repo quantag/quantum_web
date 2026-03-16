@@ -391,7 +391,8 @@
     }
 }
 
-.fullscreen-btn {
+.fullscreen-btn,
+.reset-camera-btn {
     position: absolute;
     top: 1rem;
     right: 1rem;
@@ -419,6 +420,10 @@
     }
 }
 
+.reset-camera-btn {
+    right: calc(1rem + 48px);
+}
+
 .image-zoom-container {
     position: relative;
     user-select: none;
@@ -427,7 +432,7 @@
 
 .image-clipper {
     overflow: hidden;
-    cursor: grab;
+    cursor: crosshair;
     border-radius: 8px;
     width: 100%;
     display: flex;
@@ -437,6 +442,20 @@
     &:active {
         cursor: grabbing;
     }
+}
+
+.pixel-tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: monospace;
+    white-space: nowrap;
+    z-index: 100;
+    transform: translateY(-50%);
 }
 
 .envi-image {

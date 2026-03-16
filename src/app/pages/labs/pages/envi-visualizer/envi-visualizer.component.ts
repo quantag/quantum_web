@@ -72,6 +72,15 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   private panStartY: number = 0;
   @ViewChild('imageClipper') imageClipper!: ElementRef<HTMLElement>;
 
+  // Pixel value tooltip
+  bandValues: number[][] | null = null;
+  showTooltip: boolean = false;
+  hoveredValue: number | null = null;
+  hoveredX: number = 0;
+  hoveredY: number = 0;
+  tooltipScreenX: number = 0;
+  tooltipScreenY: number = 0;
+
   // Fullscreen
   isFullscreen: boolean = false;
 
@@ -120,6 +129,14 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     } else {
       document.exitFullscreen();
     }
+  }
+
+  resetCamera(): void {
+    if (!this.camera || !this.controls) return;
+    this.camera.position.set(0, 50, 200);
+    this.camera.lookAt(0, 0, 0);
+    this.controls.target.set(0, 0, 0);
+    this.controls.update();
   }
 
   private resize3DRenderer(): void {
@@ -189,6 +206,49 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     this.panY = 0;
   }
 
+  onImageMouseMove(event: MouseEvent): void {
+    if (this.isPanning || !this.bandValues || this.visualizationMode !== 'single') {
+      this.showTooltip = false;
+      return;
+    }
+
+    const el = this.imageClipper?.nativeElement;
+    if (!el) return;
+    const img = el.querySelector('img') as HTMLImageElement;
+    if (!img) return;
+
+    const rect = el.getBoundingClientRect();
+    const mouseRelX = event.clientX - rect.left;
+    const mouseRelY = event.clientY - rect.top;
+
+    const containerCenterX = el.clientWidth / 2;
+    const containerCenterY = el.clientHeight / 2;
+    const imgCenterX = img.offsetWidth / 2;
+    const imgCenterY = img.offsetHeight / 2;
+
+    // Inverse of CSS transform: translate(panX, panY) scale(zoomLevel)
+    const dataX = (mouseRelX - containerCenterX - this.panX) / this.zoomLevel + imgCenterX;
+    const dataY = (mouseRelY - containerCenterY - this.panY) / this.zoomLevel + imgCenterY;
+
+    const col = Math.floor(dataX);
+    const row = Math.floor(dataY);
+
+    if (row >= 0 && row < this.bandValues.length && col >= 0 && col < this.bandValues[0].length) {
+      this.hoveredValue = this.bandValues[row][col];
+      this.hoveredX = col;
+      this.hoveredY = row;
+      this.tooltipScreenX = event.clientX - rect.left + 12;
+      this.tooltipScreenY = event.clientY - rect.top - 8;
+      this.showTooltip = true;
+    } else {
+      this.showTooltip = false;
+    }
+  }
+
+  onImageMouseLeave(): void {
+    this.showTooltip = false;
+  }
+
   get imageTransform(): string {
     return `translate(${this.panX}px, ${this.panY}px) scale(${this.zoomLevel})`;
   }
@@ -250,6 +310,9 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
               this.imageUrl = 'data:image/png;base64,' + response.image;
             }
             
+            // Store raw band values for pixel tooltip
+            this.bandValues = response.band_values || null;
+            
             // Handle data response
             if (response.data) {
               this.visualizationData = response.data;
@@ -298,6 +361,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       next: (response) => {
         if (response.status === 0 && response.image) {
           this.imageUrl = 'data:image/png;base64,' + response.image;
+          this.bandValues = response.band_values || null;
         } else {
           this.errorMessage = 'Error switching layer';
         }
@@ -340,6 +404,8 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     this.dimensions = null;
     this.selectedLayerIndex = 0;
     this.visualizationMode = 'single';
+    this.bandValues = null;
+    this.showTooltip = false;
     this.rBand = 0;
     this.gBand = 1;
     this.bBand = 2;
@@ -351,6 +417,11 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   onVisualizationModeChange(event: any): void {
     this.visualizationMode = event.target.value;
     this.reset3DScene();
+    
+    if (this.visualizationMode !== 'single') {
+      this.bandValues = null;
+      this.showTooltip = false;
+    }
     
     if (this.bsqBase64 && this.hdrBase64) {
       if (this.visualizationMode === 'composite') {
@@ -649,7 +720,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       : 0;
     
     // Increase vertical spacing to prevent intersections (from 5 to 25)
-    mesh.position.y = validStackIndex * 20; 
+    mesh.position.y = validStackIndex * 30; 
 
     this.scene.add(mesh);
     this.layerMeshes.set(index, mesh);
