@@ -30,17 +30,36 @@
         </mat-checkbox>
       </div>
 
-      <div class="opacity-control" *ngIf="layer.selected">
-        <label class="opacity-label">Opacity:</label>
-        <mat-slider 
-          min="0" 
-          max="1" 
-          step="0.05"
-          discrete
-          class="opacity-slider">
-          <input matSliderThumb [(ngModel)]="layer.opacity" [name]="'opacity-' + layer.index">
-        </mat-slider>
-        <span class="opacity-value">{{ (layer.opacity * 100) | number:'1.0-0' }}%</span>
+      <div class="layer-controls" *ngIf="layer.selected">
+        <div class="opacity-control">
+          <label class="opacity-label">Opacity:</label>
+          <mat-slider 
+            min="0" 
+            max="1" 
+            step="0.05"
+            discrete
+            class="opacity-slider">
+            <input matSliderThumb [(ngModel)]="layer.opacity" [name]="'opacity-' + layer.index">
+          </mat-slider>
+          <span class="opacity-value">{{ (layer.opacity * 100) | number:'1.0-0' }}%</span>
+        </div>
+        
+        <div class="color-control">
+          <label class="color-label">Color:</label>
+              <input 
+              type="text" 
+              [(ngModel)]="layer.color"
+              [colorPicker]="layer.color"
+              (colorPickerChange)="layer.color = $event"
+              [style.background]="layer.color"
+              [cpPosition]="'bottom'"
+              [cpOutputFormat]="'hex'"
+              [cpAlphaChannel]="'disabled'"
+
+              [name]="'color-' + layer.index"
+              class="color-picker-input"
+              readonly>
+          </div>
       </div>
     </div>
   </div>

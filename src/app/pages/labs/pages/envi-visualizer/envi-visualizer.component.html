@@ -269,6 +269,16 @@
                             </option>
                         </select>
                     </div>
+
+                    <div class="control-group">
+                        <button 
+                            class="apply-rgb-btn"
+                            (click)="applyRGBComposite()"
+                            [disabled]="isCreatingComposite"
+                        >
+                            Apply RGB Composite
+                        </button>
+                    </div>
                 </ng-container>
 
                 <!-- Data Info -->

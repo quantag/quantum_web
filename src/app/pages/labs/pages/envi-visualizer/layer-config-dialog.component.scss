@@ -119,13 +119,19 @@
   align-items: center;
 }
 
+.layer-controls {
+  margin-top: 8px;
+  margin-left: 48px; // align with checkbox content
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .opacity-control {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 8px;
-  margin-left: 48px; // align with checkbox content
-  padding: 8px 12px;
+  padding: 0 12px;
   background: $primary-25;
   border-radius: 4px;
 
@@ -147,6 +153,46 @@
     font-weight: 600;
     min-width: 40px;
     text-align: right;
+  }
+}
+
+.color-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: $primary-25;
+  border-radius: 4px;
+
+  .color-label {
+    font-size: 0.85rem;
+    color: $gray-600;
+    font-weight: 500;
+    min-width: 60px;
+  }
+
+  .color-picker-input {
+    width: 120px;
+    height: 32px;
+    border: 2px solid $primary-200;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba($primary-500, 0.2);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $primary-500;
+      box-shadow: 0 0 0 3px rgba($primary-500, 0.1);
+    }
   }
 }
 

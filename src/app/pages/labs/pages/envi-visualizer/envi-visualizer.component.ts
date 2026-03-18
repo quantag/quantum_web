@@ -89,6 +89,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   isLoading3D: boolean = false;
   selected3DLayers: number[] = [];
   layerOpacities = new Map<number, number>(); // opacity per layer index (0-1)
+  layerColors = new Map<number, string>(); // color per layer index (hex format)
   threeDData: any = null;
   
   // Three.js objects
@@ -283,6 +284,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     this.imageUrl = null;
     this.availableLayers = [];
     this.layerStatistics = [];
+    this.layerColors.clear(); // Clear custom colors when processing new files
 
     try {
       // Read files as base64
@@ -410,6 +412,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     this.gBand = 1;
     this.bBand = 2;
     this.selected3DLayers = [];
+    this.layerColors.clear(); // Clear custom colors
     this.threeDData = null;
     this.resetZoom();
   }
@@ -474,20 +477,17 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
 
   onRBandChange(event: any): void {
     this.rBand = parseInt(event.target.value, 10);
-    if (this.visualizationMode === 'composite' && this.bsqBase64 && this.hdrBase64) {
-      this.createComposite();
-    }
   }
 
   onGBandChange(event: any): void {
     this.gBand = parseInt(event.target.value, 10);
-    if (this.visualizationMode === 'composite' && this.bsqBase64 && this.hdrBase64) {
-      this.createComposite();
-    }
   }
 
   onBBandChange(event: any): void {
     this.bBand = parseInt(event.target.value, 10);
+  }
+
+  applyRGBComposite(): void {
     if (this.visualizationMode === 'composite' && this.bsqBase64 && this.hdrBase64) {
       this.createComposite();
     }
@@ -529,19 +529,26 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       data: {
         availableLayers: this.availableLayers,
         selected3DLayers: [...this.selected3DLayers], // Pass a copy
-        layerOpacities: this.layerOpacities // Pass opacity Map
+        layerOpacities: this.layerOpacities, // Pass opacity Map
+        layerColors: this.layerColors // Pass colors Map
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Handle new result structure with selectedIndices and opacities
+        // Handle new result structure with selectedIndices, opacities, and colors
         const newLayers: number[] = result.selectedIndices || result; // Support old and new format
         const newOpacities: Map<number, number> | undefined = result.opacities;
+        const newColors: Map<number, string> | undefined = result.colors;
         
         // Update opacity map if provided
         if (newOpacities) {
           this.layerOpacities = newOpacities;
+        }
+        
+        // Update colors map if provided
+        if (newColors) {
+          this.layerColors = newColors;
         }
         
         if (this.visualizationMode === '3d' && newLayers.length > 0) {
@@ -589,10 +596,20 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     this.isLoading3D = true;
     this.errorMessage = '';
 
+    // Prepare layer colors array - use custom color or default
+    const layerColors: string[] = layerIndices.map(index => {
+      if (this.layerColors.has(index)) {
+        return this.layerColors.get(index)!;
+      }
+      // Use default color if not customized
+      return this.getLayerColor(index);
+    });
+
     const payload = {
       bsq: this.bsqBase64,
       hdr: this.hdrBase64,
       layer_indices: layerIndices,
+      layer_colors: layerColors,
       downsample: 4  // Adjust for performance
     };
 
@@ -663,6 +680,10 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       this.controls = new OrbitControls(this.camera, this.renderer.domElement);
       this.controls.enableDamping = true;
       this.controls.dampingFactor = 0.05;
+      
+      // Restrict zoom limits
+      this.controls.minDistance = 50;  // Minimum zoom in distance
+      this.controls.maxDistance = 500; // Maximum zoom out distance
     }
 
     // Lights
@@ -682,7 +703,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   private add3DLayerToScene(layerData: any): void {
-    const { heightmap, width, height, index, name } = layerData;
+    const { heightmap, width, height, index, name, color: customColor } = layerData;
 
     // Create geometry
     const geometry = new THREE.PlaneGeometry(width, height, width - 1, height - 1);
@@ -694,8 +715,15 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     }
     geometry.computeVertexNormals();
 
-    // Create material with color based on layer name
-    const color = getLayerColorThreeByName(name || '');
+    // Use custom color if provided, otherwise use default color based on layer name
+    let color: number;
+    if (customColor) {
+      // Convert hex string to number (remove # if present)
+      const hexString = customColor.startsWith('#') ? customColor.slice(1) : customColor;
+      color = parseInt(hexString, 16);
+    } else {
+      color = getLayerColorThreeByName(name || '');
+    }
     
     // Get opacity from Map, default to 1.0 if not set
     const opacity = this.layerOpacities.get(index) ?? 1.0;
@@ -719,8 +747,8 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       ? (this.selected3DLayers.length - 1 - stackingIndex)
       : 0;
     
-    // Increase vertical spacing to prevent intersections (from 5 to 25)
-    mesh.position.y = validStackIndex * 30; 
+    // Increase vertical spacing to prevent intersections (from 5 to 50)
+    mesh.position.y = validStackIndex * 40; 
 
     this.scene.add(mesh);
     this.layerMeshes.set(index, mesh);

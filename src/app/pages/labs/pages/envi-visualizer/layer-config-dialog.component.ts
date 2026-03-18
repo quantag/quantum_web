@@ -15,12 +15,14 @@ import {
   DragDropModule, 
   moveItemInArray 
 } from '@angular/cdk/drag-drop';
+import { ColorPickerDirective } from 'ngx-color-picker';
 import { getLayerColorByName } from './layer-colors.enum';
 
 export interface LayerConfigData {
   availableLayers: string[];
   selected3DLayers: number[];
   layerOpacities?: Map<number, number>; // opacity per layer index (0-1)
+  layerColors?: Map<number, string>; // color per layer index (hex format)
 }
 
 export interface LayerItem {
@@ -28,11 +30,13 @@ export interface LayerItem {
   name: string;
   selected: boolean;
   opacity: number; // 0-1 range
+  color: string; // hex color
 }
 
 export interface LayerConfigResult {
   selectedIndices: number[];
   opacities: Map<number, number>;
+  colors: Map<number, string>;
 }
 
 @Component({
@@ -48,7 +52,8 @@ export interface LayerConfigResult {
     MatIconModule,
     MatSliderModule,
     FormsModule,
-    DragDropModule
+    DragDropModule,
+    ColorPickerDirective
   ]
 })
 export class LayerConfigDialogComponent {
@@ -62,14 +67,17 @@ export class LayerConfigDialogComponent {
     // First, add the selected lists in their specific order
     const selectedIndices = new Set(data.selected3DLayers);
     const opacities = data.layerOpacities || new Map();
+    const colors = data.layerColors || new Map();
     
     // Add selected layers first in their defined order
     data.selected3DLayers.forEach(index => {
+      const name = data.availableLayers[index];
       this.layers.push({
         index: index,
-        name: data.availableLayers[index],
+        name: name,
         selected: true,
-        opacity: opacities.get(index) ?? 1.0
+        opacity: opacities.get(index) ?? 1.0,
+        color: colors.get(index) ?? getLayerColorByName(name)
       });
     });
 
@@ -80,7 +88,8 @@ export class LayerConfigDialogComponent {
           index: index,
           name: name,
           selected: false,
-          opacity: opacities.get(index) ?? 1.0
+          opacity: opacities.get(index) ?? 1.0,
+          color: colors.get(index) ?? getLayerColorByName(name)
         });
       }
     });
@@ -96,16 +105,18 @@ export class LayerConfigDialogComponent {
   }
 
   apply() {
-    // Return selected layer indices and their opacity values
+    // Return selected layer indices, their opacity values, and colors
     const selectedLayers = this.layers.filter(layer => layer.selected);
     const selectedIndices = selectedLayers.map(layer => layer.index);
     
     const opacities = new Map<number, number>();
+    const colors = new Map<number, string>();
     selectedLayers.forEach(layer => {
       opacities.set(layer.index, layer.opacity);
+      colors.set(layer.index, layer.color);
     });
       
-    this.dialogRef.close({ selectedIndices, opacities });
+    this.dialogRef.close({ selectedIndices, opacities, colors });
   }
 
   cancel() {
