@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Export 3D View</h2>
+<mat-dialog-content>
+  <p class="subtitle">Select the format you want to export:</p>
+  <div class="options-container">
+    <div class="export-option" (click)="selectOption('screenshot')">
+      <div class="icon-wrapper">
+        <mat-icon>image</mat-icon>
+      </div>
+      <div class="details">
+        <h3>Screenshot (PNG)</h3>
+        <p>A high-resolution image of the exact view.</p>
+      </div>
+    </div>
+    
+    <div class="export-option" (click)="selectOption('model')">
+      <div class="icon-wrapper">
+        <mat-icon>3d_rotation</mat-icon>
+      </div>
+      <div class="details">
+        <h3>3D Model (GLB)</h3>
+        <p>An interactive 3D model containing all layers.</p>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>

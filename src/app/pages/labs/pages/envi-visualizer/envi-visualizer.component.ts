@@ -8,10 +8,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 import { LayerConfigDialogComponent } from './layer-config-dialog.component';
+import { ExportDialogComponent } from './export-dialog.component';
 import { getLayerColorByName, getLayerColorThreeByName } from './layer-colors.enum';
 import { environment } from '../../../../../environments/environment';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 
 @Component({
   selector: 'app-envi-visualizer',
@@ -493,7 +495,27 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
+  private getExportBaseName(): string {
+    if (this.bsqFileName) {
+      const lastDotIndex = this.bsqFileName.lastIndexOf('.');
+      if (lastDotIndex > 0) {
+        return this.bsqFileName.substring(0, lastDotIndex);
+      }
+      return this.bsqFileName;
+    }
+    return `envi_data_${Date.now()}`;
+  }
+
   downloadResult(): void {
+    if (this.visualizationMode === '3d') {
+      if (this.selected3DLayers.length > 0) {
+        this.export3DView();
+      } else {
+        this.errorMessage = 'No 3D layers selected to download.';
+      }
+      return;
+    }
+
     if (!this.imageUrl) {
       this.errorMessage = 'No visualization to download.';
       return;
@@ -501,7 +523,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
 
     const link = document.createElement('a');
     link.href = this.imageUrl;
-    link.download = `envi_visualization_${Date.now()}.png`;
+    link.download = `${this.getExportBaseName()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -520,6 +542,86 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   // 3D Visualization methods
   toggle3DView(): void {
     this.show3DView = !this.show3DView;
+  }
+
+  export3DView(): void {
+    const dialogRef = this.dialog.open(ExportDialogComponent, {
+      width: '450px',
+      panelClass: 'export-dialog-panel'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'screenshot') {
+        this.export3DScreenshot();
+      } else if (result === 'model') {
+        this.export3DModel();
+      }
+    });
+  }
+
+  private export3DScreenshot(): void {
+    if (!this.renderer || !this.scene || !this.camera) {
+      this.errorMessage = '3D renderer not initialized.';
+      return;
+    }
+
+    try {
+      this.renderer.render(this.scene, this.camera);
+      const dataUrl = this.renderer.domElement.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `${this.getExportBaseName()}_3d_snapshot.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error capturing 3D screenshot:', error);
+      this.errorMessage = 'Could not capture 3D screenshot. Make sure preserveDrawingBuffer is enabled.';
+    }
+  }
+
+  private export3DModel(): void {
+    if (!this.scene) {
+      this.errorMessage = 'No 3D scene available to export.';
+      return;
+    }
+
+    try {
+      const exporter = new GLTFExporter();
+      exporter.parse(
+        this.scene,
+        (gltf: any) => {
+          let blob;
+          let filename;
+          const baseName = this.getExportBaseName();
+          
+          if (gltf instanceof ArrayBuffer) {
+            blob = new Blob([gltf], { type: 'application/octet-stream' });
+            filename = `${baseName}_3d_model.glb`;
+          } else {
+            const output = JSON.stringify(gltf, null, 2);
+            blob = new Blob([output], { type: 'text/plain' });
+            filename = `${baseName}_3d_model.gltf`;
+          }
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        },
+        (error: any) => {
+          console.error('An error happened during GLTF export:', error);
+          this.errorMessage = 'Error exporting 3D model.';
+        },
+        { binary: true } // Export as GLB by default
+      );
+    } catch (error) {
+       console.error('Error in export3DModel:', error);
+       this.errorMessage = 'Failed to start 3D model export.';
+    }
   }
 
   openLayerConfig(): void {
@@ -671,7 +773,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     this.camera.lookAt(0, 0, 0);
 
     // Renderer
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(window.devicePixelRatio);
 
