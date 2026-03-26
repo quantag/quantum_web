@@ -50,9 +50,15 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public sampleSlides = [
     {
+      image: 'assets/images/sample-10.webp',
+      title: '',
+      active: true,
+      positionForMobile: 'center'
+    },
+    {
       image: 'assets/images/sample-7.png',
       title: '3D circuit visualization',
-      active: true,
+      active: false,
       positionForMobile: 'right'
     },
     {

@@ -94,7 +94,7 @@
             @for (slide of sampleSlides; track slide.title) {
                 <div class="slider__item" [ngClass]="{'active': slide.active}">
                     <img [src]="slide.image" alt="Slide Image" [ngStyle]="{'object-position': 'top ' + slide.positionForMobile}" />
-                    <div class="slider__content">
+                    <div class="slider__content" *ngIf="slide.title">
                         <h2 [innerHTML]="slide.title"></h2>
                     </div>
                 </div>
