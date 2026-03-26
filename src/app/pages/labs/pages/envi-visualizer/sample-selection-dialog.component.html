@@ -1,0 +1,77 @@
+<h2 mat-dialog-title>Select Server Sample</h2>
+
+<mat-dialog-content>
+  <!-- Available Samples -->
+  <div class="samples-list-container">
+    <div *ngIf="isLoadingSamples" class="loading-text">Loading samples...</div>
+    <div *ngIf="!isLoadingSamples && samples.length === 0" class="empty-text">No samples found on server.</div>
+    
+    <div class="samples-list" *ngIf="!isLoadingSamples">
+      <div *ngFor="let sample of samples" class="sample-item" (click)="selectSample(sample)">
+        <mat-icon class="folder-icon">insert_drive_file</mat-icon>
+        <span class="sample-name">{{ sample }}</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Upload New Sample -->
+  <div class="upload-container">
+    <h3>Upload New Sample</h3>
+    <div class="form-group">
+      <label>Sample Name:</label>
+      <input type="text" [(ngModel)]="newSampleName" [disabled]="isUploading" placeholder="Enter sample name"/>
+    </div>
+    <div class="form-row">
+      <div class="file-input-group half">
+        <label class="file-label">BSQ File:</label>
+        <div class="file-input-wrapper">
+          <input type="file" accept=".bsq,.img" (change)="onBsqSelected($event)" [disabled]="isUploading" id="dialog-bsq-input" class="file-input"/>
+          <label for="dialog-bsq-input" class="file-input-button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17,8 12,3 7,8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Choose .bsq
+          </label>
+          <span class="file-name" *ngIf="bsqFile">{{ bsqFile.name }} <button type="button" (click)="bsqFile = null; $event.stopPropagation()" class="remove-file-btn"><mat-icon>close</mat-icon></button></span>
+          <span class="file-name empty" *ngIf="!bsqFile">No file</span>
+        </div>
+      </div>
+      
+      <div class="file-input-group half">
+        <label class="file-label">HDR File:</label>
+        <div class="file-input-wrapper">
+          <input type="file" accept=".hdr" (change)="onHdrSelected($event)" [disabled]="isUploading" id="dialog-hdr-input" class="file-input"/>
+          <label for="dialog-hdr-input" class="file-input-button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17,8 12,3 7,8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Choose .hdr
+          </label>
+          <span class="file-name" *ngIf="hdrFile">{{ hdrFile.name }} <button type="button" (click)="hdrFile = null; $event.stopPropagation()" class="remove-file-btn"><mat-icon>close</mat-icon></button></span>
+          <span class="file-name empty" *ngIf="!hdrFile">No file</span>
+        </div>
+      </div>
+    </div>
+    
+    <div *ngIf="uploadError" class="error-text">{{ uploadError }}</div>
+    
+    <div *ngIf="isUploading" class="progress-container">
+      <div class="progress-text">Uploading... {{ uploadProgress | number:'1.0-0' }}%</div>
+      <mat-progress-bar mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+    </div>
+    
+    <button type="button" class="upload-btn" (click)="uploadNewSample()" [disabled]="isUploading || !bsqFile || !hdrFile || !newSampleName">
+      <mat-icon>cloud_upload</mat-icon> Upload Sample
+    </button>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>

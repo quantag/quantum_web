@@ -5,12 +5,16 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 import { LayerConfigDialogComponent } from './layer-config-dialog.component';
 import { ExportDialogComponent } from './export-dialog.component';
+import { SampleSelectionDialogComponent } from './sample-selection-dialog.component';
 import { getLayerColorByName, getLayerColorThreeByName } from './layer-colors.enum';
 import { environment } from '../../../../../environments/environment';
+import { lastValueFrom, forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
@@ -26,7 +30,8 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
     LabHeaderComponent,
     MatDialogModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressBarModule
   ]
 })
 export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -38,6 +43,11 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   bsqFileName: string = '';
   hdrFileName: string = '';
   
+  // Server sample display name
+  selectedSampleName: string | null = null;
+  // Internal sample ID for API calls (can be a server sample name or an ad-hoc fileId)
+  private activeSampleId: string | null = null;
+  
   // Store base64 data for layer switching
   bsqBase64: string = '';
   hdrBase64: string = '';
@@ -46,6 +56,13 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   isSwitchingLayer: boolean = false;
   isCreatingComposite: boolean = false;
   errorMessage: string = '';
+  
+  private readonly PROD_API_URL = 'https://quantum.quantag-it.com/envi-api';
+  
+  // Upload state for direct processing
+  isUploading: boolean = false;
+  uploadProgress: number = 0;
+  uploadStatus: string = '';
   
   // Visualization mode
   visualizationMode: 'single' | 'composite' | '3d' = 'single';
@@ -261,6 +278,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     if (file) {
       this.bsqFile = file;
       this.bsqFileName = file.name;
+      this.selectedSampleName = null; // Clear server sample if local file selected
       this.errorMessage = '';
     }
   }
@@ -270,81 +288,163 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     if (file) {
       this.hdrFile = file;
       this.hdrFileName = file.name;
+      this.selectedSampleName = null; // Clear server sample if local file selected
       this.errorMessage = '';
     }
   }
 
+  openSampleSelection(): void {
+    const dialogRef = this.dialog.open(SampleSelectionDialogComponent, {
+      width: '600px',
+      panelClass: 'sample-selection-dialog-panel'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.selectedSampleName = result;
+        this.activeSampleId = result;
+        this.bsqFile = null;
+        this.hdrFile = null;
+        this.bsqFileName = '';
+        this.hdrFileName = '';
+        this.bsqBase64 = '';
+        this.hdrBase64 = '';
+      }
+    });
+  }
+
   async processFiles(): Promise<void> {
-    if (!this.bsqFile || !this.hdrFile) {
-      this.errorMessage = 'Please upload both .bsq and .hdr files.';
+    if (!this.selectedSampleName && (!this.bsqFile || !this.hdrFile)) {
+      this.errorMessage = 'Please select a server sample or upload both .bsq and .hdr files.';
       return;
     }
 
     this.isProcessing = true;
+    this.isUploading = false;
+    this.uploadProgress = 0;
+    this.uploadStatus = '';
     this.errorMessage = '';
     this.visualizationData = null;
     this.imageUrl = null;
     this.availableLayers = [];
     this.layerStatistics = [];
-    this.layerColors.clear(); // Clear custom colors when processing new files
+    this.layerColors.clear();
 
     try {
-      // Read files as base64
-      const bsqBase64Full = await this.fileToBase64(this.bsqFile);
-      const hdrBase64Full = await this.fileToBase64(this.hdrFile);
+      let sampleName = this.selectedSampleName || this.activeSampleId;
 
-      // Store for layer switching
-      this.bsqBase64 = bsqBase64Full.split(',')[1]; // Remove data URL prefix
-      this.hdrBase64 = hdrBase64Full.split(',')[1];
+      // If local files are provided, upload them in chunks first
+      if (!sampleName && this.bsqFile && this.hdrFile) {
+        this.isUploading = true;
+        this.uploadStatus = 'Preparing files...';
+        
+        // Use the BSQ filename (without extension) as a recognizable fileId with a numeric suffix
+        const safeBaseName = this.bsqFileName.replace(/\.[^/.]+$/, "").replace(/[^a-z0-9]/gi, '_');
+        const fileId = `${safeBaseName}_${Math.floor(1000 + Math.random() * 9000)}`;
 
-      const payload = {
-        bsq: this.bsqBase64,
-        hdr: this.hdrBase64,
-        band_index: 0
+        try {
+          // Upload BSQ
+          this.uploadStatus = `Uploading ${this.bsqFileName}...`;
+          await this.uploadFileInChunksCore(this.bsqFile, fileId, 'bsq');
+          
+          // Upload HDR
+          this.uploadStatus = `Uploading ${this.hdrFileName}...`;
+          await this.uploadFileInChunksCore(this.hdrFile, fileId, 'hdr');
+          
+          sampleName = fileId; 
+          this.isUploading = false;
+          this.uploadStatus = 'Processing started...';
+        } catch (uploadError: any) {
+          console.error('Upload failed:', uploadError);
+          this.errorMessage = `Upload failed: ${uploadError.message || 'Check connection'}`;
+          this.isUploading = false;
+          this.isProcessing = false;
+          return;
+        }
+      }
+
+      const payload: any = {
+        band_index: 0,
+        sample_name: sampleName
       };
 
-      // Use environment variable for API URL
-      const apiUrl = environment.enviApiUrl + '/envi/process';
+      if (!sampleName) {
+         // Fallback logic if needed, but we prefer chunked now.
+         this.errorMessage = 'Could not establish a sample for processing.';
+         this.isProcessing = false;
+         return;
+      }
+
+      const apiUrl = `${this.PROD_API_URL}/envi/process`;
       
+      console.log('Sending process request with sample_name:', payload.sample_name);
       this.http.post<any>(apiUrl, payload).subscribe({
         next: (response) => {
+          console.log('Process response received:', response.status);
           if (response.status === 0) {
-            // Handle image response
-            if (response.image) {
-              this.imageUrl = 'data:image/png;base64,' + response.image;
-            }
-            
-            // Store raw band values for pixel tooltip
+            if (response.image) this.imageUrl = 'data:image/png;base64,' + response.image;
             this.bandValues = response.band_values || null;
-            
-            // Handle data response
             if (response.data) {
               this.visualizationData = response.data;
               this.availableLayers = response.data.layers || [];
               this.layerStatistics = response.data.statistics || [];
               this.dimensions = response.data.dimensions || null;
               this.selectedLayerIndex = response.data.current_band || 0;
+              // Store the uploaded sample name for API but DON'T show in UI if it's ad-hoc
+              this.activeSampleId = sampleName;
+              if (this.bsqFile) {
+                // If it was a local upload, keep selectedSampleName as null to hide the ID in UI
+                this.selectedSampleName = null;
+              } else {
+                this.selectedSampleName = sampleName;
+              }
             }
           } else {
             this.errorMessage = `Processing failed: ${response.message || 'Unknown error'}`;
           }
           this.isProcessing = false;
+          this.uploadStatus = '';
         },
         error: (error) => {
-          console.error('Error processing ENVI files:', error);
-          this.errorMessage = `Error processing ENVI files. Make sure the ENVI API is running at ${environment.enviApiUrl}`;
+          console.error('Error processing:', error);
+          this.errorMessage = 'Error during processing. Make sure the API is running.';
           this.isProcessing = false;
+          this.uploadStatus = '';
         }
       });
     } catch (error) {
-      console.error('Error reading files:', error);
-      this.errorMessage = 'Error reading files. Please try again.';
+      console.error('Error in processFiles:', error);
+      this.errorMessage = 'An unexpected error occurred.';
       this.isProcessing = false;
     }
   }
 
+  private async uploadFileInChunksCore(file: File, fileId: string, type: 'bsq'|'hdr') {
+    const chunkSize = 5 * 1024 * 1024; // 5MB
+    const totalChunks = Math.ceil(file.size / chunkSize);
+    
+    for (let i = 0; i < totalChunks; i++) {
+        const start = i * chunkSize;
+        const end = Math.min(start + chunkSize, file.size);
+        const chunk = file.slice(start, end);
+
+        const formData = new FormData();
+        formData.append('file_id', fileId);
+        formData.append('chunk_index', i.toString());
+        formData.append('total_chunks', totalChunks.toString());
+        formData.append('filename', file.name);
+        formData.append('file', chunk);
+        
+        await lastValueFrom(this.http.post<any>(`${this.PROD_API_URL}/envi/samples/upload-chunk`, formData));
+
+        const baseProgress = type === 'bsq' ? 0 : 50;
+        const currentTypeProgress = ((i + 1) / totalChunks) * 50;
+        this.uploadProgress = baseProgress + currentTypeProgress;
+    }
+  }
+
   switchLayer(layerIndex: number): void {
-    if (!this.bsqBase64 || !this.hdrBase64) {
+    if (!this.activeSampleId && (!this.bsqBase64 || !this.hdrBase64)) {
       return;
     }
 
@@ -352,14 +452,20 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     this.errorMessage = '';
     this.selectedLayerIndex = layerIndex;
 
-    const payload = {
-      bsq: this.bsqBase64,
-      hdr: this.hdrBase64,
+    const payload: any = {
       band_index: layerIndex,
       band_name: this.availableLayers[layerIndex] || null
     };
 
-    const apiUrl = environment.enviApiUrl + '/envi/switch-layer';
+    console.log('Switching layer to:', layerIndex, 'with activeSampleId:', this.activeSampleId);
+    if (this.activeSampleId) {
+      payload.sample_name = this.activeSampleId;
+    } else {
+      payload.bsq = this.bsqBase64;
+      payload.hdr = this.hdrBase64;
+    }
+
+    const apiUrl = `${this.PROD_API_URL}/envi/switch-layer`;
 
     this.http.post<any>(apiUrl, payload).subscribe({
       next: (response) => {
@@ -398,6 +504,8 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     this.hdrFile = null;
     this.bsqFileName = '';
     this.hdrFileName = '';
+    this.selectedSampleName = null;
+    this.activeSampleId = null;
     this.bsqBase64 = '';
     this.hdrBase64 = '';
     this.visualizationData = null;
@@ -420,6 +528,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onVisualizationModeChange(event: any): void {
+    console.log('Mode changed to:', event.target.value, 'activeSampleId:', this.activeSampleId);
     this.visualizationMode = event.target.value;
     this.reset3DScene();
     
@@ -428,7 +537,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       this.showTooltip = false;
     }
     
-    if (this.bsqBase64 && this.hdrBase64) {
+    if (this.activeSampleId || (this.bsqBase64 && this.hdrBase64)) {
       if (this.visualizationMode === 'composite') {
         this.createComposite();
       } else if (this.visualizationMode === '3d') {
@@ -443,22 +552,28 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   createComposite(): void {
-    if (!this.bsqBase64 || !this.hdrBase64) {
+    if (!this.activeSampleId && (!this.bsqBase64 || !this.hdrBase64)) {
       return;
     }
 
     this.isCreatingComposite = true;
     this.errorMessage = '';
 
-    const payload = {
-      bsq: this.bsqBase64,
-      hdr: this.hdrBase64,
+    const payload: any = {
       r_band: this.rBand,
       g_band: this.gBand,
       b_band: this.bBand
     };
 
-    const apiUrl = environment.enviApiUrl + '/envi/composite';
+    if (this.activeSampleId) {
+      payload.sample_name = this.activeSampleId;
+    } else {
+      payload.bsq = this.bsqBase64;
+      payload.hdr = this.hdrBase64;
+    }
+
+    console.log('Creating RGB composite with bands:', this.rBand, this.gBand, this.bBand, 'activeSampleId:', this.activeSampleId);
+    const apiUrl = `${this.PROD_API_URL}/envi/composite`;
 
     this.http.post<any>(apiUrl, payload).subscribe({
       next: (response) => {
@@ -490,12 +605,18 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   applyRGBComposite(): void {
-    if (this.visualizationMode === 'composite' && this.bsqBase64 && this.hdrBase64) {
+    if (this.visualizationMode === 'composite' && (this.activeSampleId || (this.bsqBase64 && this.hdrBase64))) {
       this.createComposite();
     }
   }
 
   private getExportBaseName(): string {
+    if (this.selectedSampleName) {
+      return this.selectedSampleName;
+    }
+    if (this.activeSampleId) {
+      return this.activeSampleId;
+    }
     if (this.bsqFileName) {
       const lastDotIndex = this.bsqFileName.lastIndexOf('.');
       if (lastDotIndex > 0) {
@@ -691,31 +812,28 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   load3DLayer(layerIndices: number[]): void {
-    if (!this.bsqBase64 || !this.hdrBase64) {
+    if (!this.activeSampleId && (!this.bsqBase64 || !this.hdrBase64)) {
       return;
     }
 
     this.isLoading3D = true;
     this.errorMessage = '';
 
-    // Prepare layer colors array - use custom color or default
-    const layerColors: string[] = layerIndices.map(index => {
-      if (this.layerColors.has(index)) {
-        return this.layerColors.get(index)!;
-      }
-      // Use default color if not customized
-      return this.getLayerColor(index);
-    });
-
-    const payload = {
-      bsq: this.bsqBase64,
-      hdr: this.hdrBase64,
+    const payload: any = {
       layer_indices: layerIndices,
-      layer_colors: layerColors,
-      downsample: 4  // Adjust for performance
+      layer_colors: layerIndices.map(idx => this.layerColors.get(idx) || null),
+      downsample: 4
     };
 
-    const apiUrl = environment.enviApiUrl + '/envi/get-3d-data';
+    console.log('Loading 3D layer with indices:', layerIndices, 'activeSampleId:', this.activeSampleId);
+    if (this.activeSampleId) {
+      payload.sample_name = this.activeSampleId;
+    } else {
+      payload.bsq = this.bsqBase64;
+      payload.hdr = this.hdrBase64;
+    }
+
+    const apiUrl = `${this.PROD_API_URL}/envi/get-3d-data`;
 
     this.http.post<any>(apiUrl, payload).subscribe({
       next: (response) => {
