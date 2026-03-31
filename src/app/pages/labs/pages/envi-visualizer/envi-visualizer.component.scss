@@ -126,7 +126,8 @@
     display: flex;
     gap: 1rem;
     flex-direction: column;
-    max-width: 400px;
+    min-width: 200px;
+    max-width: fit-content;
 }
 
 .file-input {
@@ -396,7 +397,8 @@
     }
 }
 
-.apply-rgb-btn {
+.apply-rgb-btn,
+.apply-layer-btn {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -411,7 +413,7 @@
     transition: all 0.2s ease;
     white-space: nowrap;
 
-    mat-icon {
+    mat-icon, svg {
         font-size: 18px;
         width: 18px;
         height: 18px;
@@ -625,6 +627,42 @@
     color: #555;
     min-width: 42px;
     text-align: center;
+}
+
+.placeholder-container {
+    background: #fdfdfd;
+    border: 2px dashed #e2e8f0;
+    margin: 1rem;
+    border-radius: 12px;
+}
+
+.placeholder-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    color: #64748b;
+
+    .placeholder-icon {
+        color: #94a3b8;
+        margin-bottom: 0.5rem;
+    }
+
+    .main-msg {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #475569;
+        margin: 0 !important;
+    }
+
+    .sub-msg {
+        font-size: 1rem;
+        max-width: 400px;
+        line-height: 1.5;
+        margin: 0 !important;
+    }
 }
 
 .statistics-section {

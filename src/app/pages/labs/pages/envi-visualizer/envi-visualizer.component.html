@@ -165,7 +165,7 @@
                         <circle cx="12" cy="12" r="10"/>
                         <polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    Process & Visualize
+                    Process
                 </button>
 
                 <button 
@@ -247,7 +247,7 @@
                         <select 
                             id="layer-select" 
                             class="layer-select" 
-                            [value]="selectedLayerIndex" 
+                            [value]="pendingLayerIndex" 
                             (change)="onLayerChange($event)"
                             [disabled]="isSwitchingLayer"
                         >
@@ -255,6 +255,19 @@
                                 {{ layer }}
                             </option>
                         </select>
+                    </div>
+
+                    <div class="control-group">
+                        <button 
+                            class="apply-layer-btn"
+                            (click)="applyLayerChange()"
+                            [disabled]="isSwitchingLayer || pendingLayerIndex === -1 || pendingLayerIndex === selectedLayerIndex"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Apply
+                        </button>
                     </div>
                 </ng-container>
 
@@ -378,6 +391,21 @@
                     <path d="M12 6v6l4 2"/>
                 </svg>
                 {{ isSwitchingLayer ? 'Switching layer...' : 'Creating RGB composite...' }}
+            </div>
+
+            <!-- Pre-visualization Placeholder -->
+            <div class="visualization-content placeholder-container" *ngIf="!imageUrl && visualizationData && !isSwitchingLayer && !isCreatingComposite && visualizationMode !== '3d'">
+                <div class="placeholder-message">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="placeholder-icon">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    <p class="main-msg">Dataset loaded successfully</p>
+                    <p class="sub-msg">
+                        {{ visualizationMode === 'single' ? 'Select a layer and click "Apply" to visualize.' : 'Select bands and click "Apply RGB Composite" to visualize.' }}
+                    </p>
+                </div>
             </div>
 
             <!-- Image Display with Zoom -->

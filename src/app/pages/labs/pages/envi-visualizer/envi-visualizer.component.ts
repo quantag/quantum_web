@@ -74,6 +74,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   // Layer management
   availableLayers: string[] = [];
   selectedLayerIndex: number = 0;
+  pendingLayerIndex: number = 0;
   layerStatistics: any[] = [];
   dimensions: any = null;
   
@@ -364,8 +365,8 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       }
 
       const payload: any = {
-        band_index: 0,
-        sample_name: sampleName
+        sample_name: sampleName,
+        metadata_only: true
       };
 
       if (!sampleName) {
@@ -377,7 +378,6 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
 
       const apiUrl = `${this.PROD_API_URL}/envi/process`;
       
-      console.log('Sending process request with sample_name:', payload.sample_name);
       this.http.post<any>(apiUrl, payload).subscribe({
         next: (response) => {
           console.log('Process response received:', response.status);
@@ -389,7 +389,14 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
               this.availableLayers = response.data.layers || [];
               this.layerStatistics = response.data.statistics || [];
               this.dimensions = response.data.dimensions || null;
-              this.selectedLayerIndex = response.data.current_band || 0;
+              this.selectedLayerIndex = -1;
+              this.pendingLayerIndex = 0;
+              console.log(this.selectedLayerIndex,this.pendingLayerIndex)
+              this.visualizationMode = 'single';
+              this.rBand = 0;
+              this.gBand = 1;
+              this.bBand = 2;
+              this.selected3DLayers = [];
               // Store the uploaded sample name for API but DON'T show in UI if it's ad-hoc
               this.activeSampleId = sampleName;
               if (this.bsqFile) {
@@ -486,8 +493,11 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onLayerChange(event: any): void {
-    const layerIndex = parseInt(event.target.value, 10);
-    this.switchLayer(layerIndex);
+    this.pendingLayerIndex = parseInt(event.target.value, 10);
+  }
+
+  applyLayerChange(): void {
+    this.switchLayer(this.pendingLayerIndex);
   }
 
   private fileToBase64(file: File): Promise<string> {
@@ -530,6 +540,9 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   onVisualizationModeChange(event: any): void {
     console.log('Mode changed to:', event.target.value, 'activeSampleId:', this.activeSampleId);
     this.visualizationMode = event.target.value;
+    this.imageUrl = null;
+    this.selectedLayerIndex = -1;
+    this.pendingLayerIndex = 0;
     this.reset3DScene();
     
     if (this.visualizationMode !== 'single') {
@@ -537,17 +550,11 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       this.showTooltip = false;
     }
     
-    if (this.activeSampleId || (this.bsqBase64 && this.hdrBase64)) {
-      if (this.visualizationMode === 'composite') {
-        this.createComposite();
-      } else if (this.visualizationMode === '3d') {
-        // Initialize 3D view - wait for Angular to render the canvas
-        setTimeout(() => {
-          this.tryInit3DScene();
-        }, 150);
-      } else {
-        this.switchLayer(this.selectedLayerIndex);
-      }
+    if (this.visualizationMode === '3d' && (this.activeSampleId || (this.bsqBase64 && this.hdrBase64))) {
+      // Initialize 3D view infrastructure - but don't load specific layer yet
+      setTimeout(() => {
+        this.tryInit3DScene();
+      }, 150);
     }
   }
 
