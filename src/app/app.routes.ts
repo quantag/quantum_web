@@ -56,6 +56,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/labs/pages/envi-visualizer/envi-visualizer.component').then(m => m.EnviVisualizerComponent)
     },
     {
+        path: 'labs/envi-datacube-generator',
+        loadComponent: () => import('./pages/labs/pages/envi-datacube-generator/envi-datacube-generator.component').then(m => m.EnviDatacubeGeneratorComponent)
+    },
+    {
         path: 'labs',
         loadComponent: () => import('./pages/labs/labs.component').then(m => m.LabsComponent),
         pathMatch: 'full'

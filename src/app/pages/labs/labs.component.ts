@@ -4,10 +4,11 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SeoService } from '../../services/seo.service';
 import { ThemeService } from '../../services/theme.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-labs',
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './labs.component.html',
   styleUrls: ['./labs.component.scss']
 })

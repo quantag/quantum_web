@@ -99,6 +99,11 @@ export class SeoService {
       title: 'Monaco Editor Lab - Advanced Code Editor with File System',
       description: 'Professional web-based code editor powered by Monaco Editor with virtual file system, syntax highlighting, IntelliSense, and multi-language support. Perfect for coding, prototyping, and educational purposes.',
       keywords: 'Monaco Editor, code editor, online IDE, web editor, syntax highlighting, IntelliSense, file system, TypeScript editor, JavaScript editor, web development, coding lab, online compiler, code playground'
+    },
+    'envi-datacube-generator': {
+      title: 'Datacube Generator - Create Environmental Datacubes from GEE',
+      description: 'Generate environmental datacubes using Google Earth Engine based on a reference mask. Select a mask, specify the year, and create a multi-layer datacube with Land Cover, LST, Precipitation, and more.',
+      keywords: 'datacube generator, Google Earth Engine, environmental data, remote sensing, satellite data, GEE, hyperspectral, multispectral, land cover, MODIS, TerraClimate, SRTM, soil carbon'
     }
   };
 
