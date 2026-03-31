@@ -280,6 +280,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       this.bsqFile = file;
       this.bsqFileName = file.name;
       this.selectedSampleName = null; // Clear server sample if local file selected
+      this.activeSampleId = '';       // Clear previous upload ID
       this.errorMessage = '';
     }
   }
@@ -290,6 +291,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       this.hdrFile = file;
       this.hdrFileName = file.name;
       this.selectedSampleName = null; // Clear server sample if local file selected
+      this.activeSampleId = '';       // Clear previous upload ID
       this.errorMessage = '';
     }
   }
