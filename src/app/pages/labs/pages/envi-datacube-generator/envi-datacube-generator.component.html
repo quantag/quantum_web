@@ -75,10 +75,19 @@
             </div>
 
             <div class="config-section">
-                <div class="config-group">
-                    <label>Study Year (Apr-Sep)</label>
-                    <input type="number" [(ngModel)]="year" [disabled]="isUploading" min="2000" max="2025" />
-                </div>
+                <mat-form-field class="example-form-field">
+                    <mat-label>First campaign</mat-label>
+                    <mat-date-range-input
+                        [formGroup]="dateRangeForm"
+                        [rangePicker]="campaignOnePicker"
+                        [comparisonStart]="dateRangeForm.value.start"
+                        [comparisonEnd]="dateRangeForm.value.end">
+                        <input matStartDate placeholder="Start date" formControlName="start">
+                        <input matEndDate placeholder="End date" formControlName="end">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matIconSuffix [for]="campaignOnePicker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #campaignOnePicker></mat-date-range-picker>
+                </mat-form-field>
             </div>
 
             <div class="action-buttons">
@@ -126,6 +135,15 @@
                 <p style="text-align: center; color: #718096; margin-top: 1.5rem; font-size: 0.9rem;">
                     Fetching data from Earth Engine and processing layers. This may take a few minutes.
                 </p>
+                <div *ngIf="taskErrors.length > 0" class="task-errors-list" style="margin-top: 1rem;">
+                    <div *ngFor="let err of taskErrors" class="task-error-alert" style="margin-bottom: 0.5rem; padding: 0.75rem; background-color: rgba(254, 226, 226, 0.5); border-left: 4px solid #ef4444; color: #b91c1c; border-radius: 4px; font-size: 0.9rem;">
+                        <strong style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                            <mat-icon style="font-size: 18px; width: 18px; height: 18px;">warning</mat-icon>
+                            Encountered Issue
+                        </strong>
+                        {{ err }}
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -30,6 +30,12 @@ html {
     outlined-disabled-label-text-color: $grey-400,
     protected-disabled-label-text-color: $grey-400
   ));
+  @include mat.datepicker-overrides((
+    calendar-date-in-overlap-range-selected-state-background-color: #4E61F6,
+  ));
+  @include mat.form-field-overrides((
+  filled-container-color: $white
+  ));
 }
 
 

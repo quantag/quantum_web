@@ -160,7 +160,8 @@
 .config-section {
     padding: 0 2rem 1.5rem;
     display: flex;
-    gap: 2rem;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 .config-group {
@@ -186,6 +187,62 @@
             border-color: #667eea;
         }
     }
+
+    .example-form-field {
+        width: 100%;
+        margin-top: 5px;
+        
+        ::ng-deep {
+            .mat-mdc-text-field-wrapper {
+                background-color: #f8f9fa !important;
+                border-radius: 10px !important;
+                transition: background-color 0.2s ease;
+            }
+
+            .mat-mdc-form-field-flex {
+                height: 56px !important;
+                align-items: center !important;
+            }
+
+            .mat-mdc-form-field-infix {
+                padding-top: 14px !important;
+                padding-bottom: 14px !important;
+            }
+
+            .mat-mdc-form-field-subscript-wrapper {
+                padding: 0 16px;
+            }
+
+            .mat-datepicker-toggle {
+                color: #667eea !important;
+            }
+
+            // Style the internal range inputs
+            .mat-mdc-input-element {
+                font-family: inherit;
+                font-size: 1rem !important;
+                color: #2d3748 !important;
+                font-weight: 500;
+            }
+
+            .mat-date-range-input-separator {
+                color: #667eea !important;
+                font-weight: bold;
+                margin: 0 8px;
+            }
+        }
+    }
+}
+
+// Solid calendar background and shadow
+::ng-deep .mat-datepicker-content {
+    background-color: white !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 12px !important;
+
+    .mat-calendar {
+        background-color: white !important;
+    }
 }
 
 .action-buttons {
@@ -193,7 +250,6 @@
     display: flex;
     gap: 1rem;
     width: 100%;
-    box-sizing: border-box;
 }
 
 .generate-btn {
