@@ -1,7 +1,7 @@
-<div class="envi-container">
+<div class="ewald-container">
     <app-lab-header title="Data Cube Visualizer"></app-lab-header>
 
-    <div class="envi-content">
+    <div class="ewald-content">
         <!-- Upload Section -->
         <div class="upload-area">
             <div class="section-header">
@@ -416,8 +416,8 @@
                      (mousemove)="onImageMouseMove($event)"
                      (mouseleave)="onImageMouseLeave()">
                     <img [src]="imageUrl" 
-                         alt="ENVI Visualization" 
-                         class="envi-image" 
+                         alt="EWALD Visualization" 
+                         class="ewald-image" 
                          [class.pixelated]="zoomLevel > 1"
                          [style.transform]="imageTransform"
                          draggable="false" />

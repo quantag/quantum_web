@@ -92,15 +92,15 @@ export class SeoService {
     },
     'ewald-visualizer': {
       title: 'Data Cube Visualizer - Hyperspectral Image Processing and Visualization',
-      description: 'Process and visualize ENVI hyperspectral imaging data. Upload BSQ (Band Sequential) and HDR (header) files, process them through custom Python scripts, and generate interactive visualizations of multispectral and hyperspectral data.',
-      keywords: 'Data visualizer, hyperspectral imaging, multispectral data, BSQ files, HDR files, remote sensing, satellite imaging, spectral analysis, image processing, geospatial data, ENVI format, band sequential, hyperspectral visualization'
+      description: 'Process and visualize EWALD hyperspectral imaging data. Upload BSQ (Band Sequential) and HDR (header) files, process them through custom Python scripts, and generate interactive visualizations of multispectral and hyperspectral data.',
+      keywords: 'Data visualizer, hyperspectral imaging, multispectral data, BSQ files, HDR files, remote sensing, satellite imaging, spectral analysis, image processing, geospatial data, EWALD format, band sequential, hyperspectral visualization'
     },
     'monaco-editor': {
       title: 'Monaco Editor Lab - Advanced Code Editor with File System',
       description: 'Professional web-based code editor powered by Monaco Editor with virtual file system, syntax highlighting, IntelliSense, and multi-language support. Perfect for coding, prototyping, and educational purposes.',
       keywords: 'Monaco Editor, code editor, online IDE, web editor, syntax highlighting, IntelliSense, file system, TypeScript editor, JavaScript editor, web development, coding lab, online compiler, code playground'
     },
-    'envi-datacube-generator': {
+    'ewald-datacube-generator': {
       title: 'Datacube Generator - Create Environmental Datacubes from GEE',
       description: 'Generate environmental datacubes using Google Earth Engine based on a reference mask. Select a mask, specify the year, and create a multi-layer datacube with Land Cover, LST, Precipitation, and more.',
       keywords: 'datacube generator, Google Earth Engine, environmental data, remote sensing, satellite data, GEE, hyperspectral, multispectral, land cover, MODIS, TerraClimate, SRTM, soil carbon'

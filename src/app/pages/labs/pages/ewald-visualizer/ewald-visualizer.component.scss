@@ -1,13 +1,13 @@
 @use 'colors' as *;
 
-.envi-container {
+.ewald-container {
     min-height: calc(100vh - 64px - 90px);
     background: $primary-900;
     display: flex;
     flex-direction: column;
 }
 
-.envi-content {
+.ewald-content {
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -557,7 +557,7 @@
     transform: translateY(-50%);
 }
 
-.envi-image {
+.ewald-image {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
@@ -726,7 +726,7 @@
 
 // Responsive Design
 @media (max-width: 1024px) {
-    .envi-content {
+    .ewald-content {
         width: 95%;
     }
 
@@ -742,7 +742,7 @@
 }
 
 @media (max-width: 768px) {
-    .envi-content {
+    .ewald-content {
         width: 95%;
     }
 

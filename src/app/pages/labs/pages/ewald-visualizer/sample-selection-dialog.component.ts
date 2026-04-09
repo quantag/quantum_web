@@ -22,7 +22,7 @@ export class SampleSelectionDialogComponent implements OnInit {
   samples: string[] = [];
   isLoadingSamples = false;
   
-  private readonly PROD_API_URL = 'https://quantum.quantag-it.com/envi-api';
+  private readonly PROD_API_URL = 'https://quantum.quantag-it.com/ewald-api';
   private readonly APACHE_SAMPLES_URL = 'https://quantag-it.com/pub/samples/ewald/';
   
   // Upload state
@@ -140,7 +140,7 @@ export class SampleSelectionDialogComponent implements OnInit {
         formData.append('file', chunk);
         
         // Always upload to remote API server
-        await lastValueFrom(this.http.post<any>(`${this.PROD_API_URL}/envi/samples/upload-chunk`, formData));
+        await lastValueFrom(this.http.post<any>(`${this.PROD_API_URL}/ewald/samples/upload-chunk`, formData));
 
         // Progress weight
         const baseProgress = type === 'bsq' ? 0 : 50;
@@ -151,7 +151,7 @@ export class SampleSelectionDialogComponent implements OnInit {
 
   private async finalizeUpload(fileId: string, sampleName: string) {
     // Always finalize on remote API server
-    return lastValueFrom(this.http.post<any>(`${this.PROD_API_URL}/envi/samples/finalize`, {
+    return lastValueFrom(this.http.post<any>(`${this.PROD_API_URL}/ewald/samples/finalize`, {
       file_id: fileId,
       sample_name: sampleName
     }));

@@ -53,11 +53,11 @@ export const routes: Routes = [
     },
     {
         path: 'labs/ewald-visualizer',
-        loadComponent: () => import('./pages/labs/pages/envi-visualizer/envi-visualizer.component').then(m => m.EnviVisualizerComponent)
+        loadComponent: () => import('./pages/labs/pages/ewald-visualizer/ewald-visualizer.component').then(m => m.EwaldVisualizerComponent)
     },
     {
-        path: 'labs/envi-datacube-generator',
-        loadComponent: () => import('./pages/labs/pages/envi-datacube-generator/envi-datacube-generator.component').then(m => m.EnviDatacubeGeneratorComponent)
+        path: 'labs/ewald-datacube-generator',
+        loadComponent: () => import('./pages/labs/pages/ewald-datacube-generator/ewald-datacube-generator.component').then(m => m.EwaldDatacubeGeneratorComponent)
     },
     {
         path: 'labs',

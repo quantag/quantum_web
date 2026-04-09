@@ -12,17 +12,15 @@ import { LayerConfigDialogComponent } from './layer-config-dialog.component';
 import { ExportDialogComponent } from './export-dialog.component';
 import { SampleSelectionDialogComponent } from './sample-selection-dialog.component';
 import { getLayerColorByName, getLayerColorThreeByName } from './layer-colors.enum';
-import { environment } from '../../../../../environments/environment';
-import { lastValueFrom, forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { lastValueFrom } from 'rxjs';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 
 @Component({
-  selector: 'app-envi-visualizer',
-  templateUrl: './envi-visualizer.component.html',
-  styleUrls: ['./envi-visualizer.component.scss'],
+  selector: 'app-ewald-visualizer',
+  templateUrl: './ewald-visualizer.component.html',
+  styleUrls: ['./ewald-visualizer.component.scss'],
   standalone: true,
   imports: [
     CommonModule, 
@@ -34,7 +32,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
     MatProgressBarModule
   ]
 })
-export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy {
+export class EwaldVisualizerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('threeCanvas', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('threeContainer', { static: false }) containerRef!: ElementRef<HTMLDivElement>;
   
@@ -57,7 +55,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   isCreatingComposite: boolean = false;
   errorMessage: string = '';
   
-  private readonly PROD_API_URL = 'https://quantum.quantag-it.com/envi-api';
+  private readonly PROD_API_URL = 'https://quantum.quantag-it.com/ewald-api';
   
   // Upload state for direct processing
   isUploading: boolean = false;
@@ -128,7 +126,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
   ) { }
 
   ngOnInit(): void {
-    this.seoService.updateSeoTags(this.seoService.getSeoData('envi-visualizer'));
+    this.seoService.updateSeoTags(this.seoService.getSeoData('ewald-visualizer'));
   }
 
   ngAfterViewInit(): void {
@@ -378,7 +376,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
          return;
       }
 
-      const apiUrl = `${this.PROD_API_URL}/envi/process`;
+      const apiUrl = `${this.PROD_API_URL}/ewald/process`;
       
       this.http.post<any>(apiUrl, payload).subscribe({
         next: (response) => {
@@ -444,7 +442,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
         formData.append('filename', file.name);
         formData.append('file', chunk);
         
-        await lastValueFrom(this.http.post<any>(`${this.PROD_API_URL}/envi/samples/upload-chunk`, formData));
+        await lastValueFrom(this.http.post<any>(`${this.PROD_API_URL}/ewald/samples/upload-chunk`, formData));
 
         const baseProgress = type === 'bsq' ? 0 : 50;
         const currentTypeProgress = ((i + 1) / totalChunks) * 50;
@@ -474,7 +472,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       payload.hdr = this.hdrBase64;
     }
 
-    const apiUrl = `${this.PROD_API_URL}/envi/switch-layer`;
+    const apiUrl = `${this.PROD_API_URL}/ewald/switch-layer`;
 
     this.http.post<any>(apiUrl, payload).subscribe({
       next: (response) => {
@@ -582,7 +580,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     console.log('Creating RGB composite with bands:', this.rBand, this.gBand, this.bBand, 'activeSampleId:', this.activeSampleId);
-    const apiUrl = `${this.PROD_API_URL}/envi/composite`;
+    const apiUrl = `${this.PROD_API_URL}/ewald/composite`;
 
     this.http.post<any>(apiUrl, payload).subscribe({
       next: (response) => {
@@ -842,7 +840,7 @@ export class EnviVisualizerComponent implements OnInit, AfterViewInit, OnDestroy
       payload.hdr = this.hdrBase64;
     }
 
-    const apiUrl = `${this.PROD_API_URL}/envi/get-3d-data`;
+    const apiUrl = `${this.PROD_API_URL}/ewald/get-3d-data`;
 
     this.http.post<any>(apiUrl, payload).subscribe({
       next: (response) => {

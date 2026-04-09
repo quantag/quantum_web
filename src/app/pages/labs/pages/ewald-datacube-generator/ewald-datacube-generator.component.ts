@@ -57,7 +57,7 @@ export const MY_DATE_FORMATS = {
 };
 
 @Component({
-  selector: 'app-envi-datacube-generator',
+  selector: 'app-ewald-datacube-generator',
   standalone: true,
   imports: [
     CommonModule,
@@ -71,15 +71,15 @@ export const MY_DATE_FORMATS = {
     MatFormFieldModule,
     MatInputModule
   ],
-  templateUrl: './envi-datacube-generator.component.html',
-  styleUrls: ['./envi-datacube-generator.component.scss'],
+  templateUrl: './ewald-datacube-generator.component.html',
+  styleUrls: ['./ewald-datacube-generator.component.scss'],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
     { provide: DateAdapter, useClass: AppDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
   ]
 })
-export class EnviDatacubeGeneratorComponent implements OnInit, OnDestroy {
+export class EwaldDatacubeGeneratorComponent implements OnInit, OnDestroy {
   bipFile: File | null = null;
   hdrFile: File | null = null;
   bipFileName: string = '';
@@ -105,7 +105,7 @@ export class EnviDatacubeGeneratorComponent implements OnInit, OnDestroy {
   generatedSampleName: string | null = null;
 
   private progressSubscription?: Subscription;
-  private readonly API_URL = environment.enviApiUrl;
+  private readonly API_URL = environment.ewaldApiUrl;
 
   constructor(
     private http: HttpClient,
@@ -114,7 +114,7 @@ export class EnviDatacubeGeneratorComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.seoService.updateSeoTags(this.seoService.getSeoData('envi-datacube-generator'));
+    this.seoService.updateSeoTags(this.seoService.getSeoData('ewald-datacube-generator'));
   }
 
   ngOnDestroy(): void {
@@ -190,7 +190,7 @@ export class EnviDatacubeGeneratorComponent implements OnInit, OnDestroy {
         return `${year}-${month}-${day}`;
       };
 
-      const response: any = await lastValueFrom(this.http.post(`${this.API_URL}/envi/generate-datacube`, {
+      const response: any = await lastValueFrom(this.http.post(`${this.API_URL}/ewald/generate-datacube`, {
         mask_name: fileId,
         start_date: formatDate(this.dateRangeForm.value.start as Date),
         end_date: formatDate(this.dateRangeForm.value.end as Date)
@@ -228,7 +228,7 @@ export class EnviDatacubeGeneratorComponent implements OnInit, OnDestroy {
       formData.append('filename', file.name);
       formData.append('file', chunk);
 
-      await lastValueFrom(this.http.post(`${this.API_URL}/envi/samples/upload-chunk`, formData));
+      await lastValueFrom(this.http.post(`${this.API_URL}/ewald/samples/upload-chunk`, formData));
 
       const baseProgress = type === 'bip' ? 0 : 50;
       const currentTypeProgress = ((i + 1) / totalChunks) * 50;
@@ -240,7 +240,7 @@ export class EnviDatacubeGeneratorComponent implements OnInit, OnDestroy {
     if (!this.taskId) return;
 
     this.progressSubscription = interval(2000).pipe(
-      switchMap(() => this.http.get<any>(`${this.API_URL}/envi/generation-progress/${this.taskId}`)),
+      switchMap(() => this.http.get<any>(`${this.API_URL}/ewald/generation-progress/${this.taskId}`)),
       takeWhile(response => response.status === 0 && response.task.progress >= 0 && response.task.progress < 100, true)
     ).subscribe({
       next: (response) => {
@@ -277,7 +277,7 @@ export class EnviDatacubeGeneratorComponent implements OnInit, OnDestroy {
   downloadFile(type: 'bsq' | 'hdr'): void {
     if (!this.taskId) return;
 
-    const url = `${environment.enviApiUrl}/envi/download-datacube/${this.taskId}/${type}`;
+    const url = `${environment.ewaldApiUrl}/ewald/download-datacube/${this.taskId}/${type}`;
     const link = document.createElement('a');
     link.href = url;
     link.download = ''; // Let the server set the filename
