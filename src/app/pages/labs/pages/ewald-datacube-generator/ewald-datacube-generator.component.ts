@@ -12,6 +12,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MAT_DATE_LOCALE, DateAdapter, NativeDateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
+import { CustomSpinnerComponent } from '../../../../shared/components/custom-spinner/custom-spinner.component';
+import { UploadIconComponent } from '../../../../shared/components/upload-icon/upload-icon.component';
 import { environment } from '../../../../../environments/environment';
 import { lastValueFrom, interval, Subscription } from 'rxjs';
 import { takeWhile, switchMap } from 'rxjs/operators';
@@ -64,12 +66,14 @@ export const MY_DATE_FORMATS = {
     FormsModule,
     ReactiveFormsModule,
     LabHeaderComponent,
+    UploadIconComponent,
     MatIconModule,
     MatProgressBarModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    CustomSpinnerComponent
   ],
   templateUrl: './ewald-datacube-generator.component.html',
   styleUrls: ['./ewald-datacube-generator.component.scss'],
@@ -103,6 +107,10 @@ export class EwaldDatacubeGeneratorComponent implements OnInit, OnDestroy {
   successMessage: string = '';
   taskErrors: string[] = [];
   generatedSampleName: string | null = null;
+  layerSummary: Array<{id: string, name: string, status: string, error?: string, showError?: boolean}> = [];
+
+  private expectedOrder: string[] = [];
+  private enviBandNamesMap: {[key: string]: string} = {};
 
   private progressSubscription?: Subscription;
   private readonly API_URL = environment.ewaldApiUrl;
@@ -115,6 +123,23 @@ export class EwaldDatacubeGeneratorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.seoService.updateSeoTags(this.seoService.getSeoData('ewald-datacube-generator'));
+    this.fetchMetadata();
+  }
+
+  fetchMetadata(): void {
+    this.http.get<any>(`${this.API_URL}/ewald/datacube-metadata`).subscribe({
+      next: (data) => {
+        if (data.expected_order) {
+          this.expectedOrder = data.expected_order;
+        }
+        if (data.band_names_map) {
+          this.enviBandNamesMap = data.band_names_map;
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch datacube metadata:', err);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -166,6 +191,7 @@ export class EwaldDatacubeGeneratorComponent implements OnInit, OnDestroy {
     this.errorMessage = '';
     this.successMessage = '';
     this.taskErrors = [];
+    this.layerSummary = [];
     this.generatedSampleName = null;
 
     try {
@@ -256,10 +282,34 @@ export class EwaldDatacubeGeneratorComponent implements OnInit, OnDestroy {
             this.taskErrors.push(task.error);
           }
 
+          if (task.layer_states && this.expectedOrder.length > 0) {
+            if (this.layerSummary.length === 0) {
+              this.layerSummary = this.expectedOrder.map(id => {
+                const st = task.layer_states[id];
+                return {
+                  id,
+                  name: this.enviBandNamesMap[id] || id,
+                  status: st?.status || 'pending',
+                  error: st?.error,
+                  showError: false
+                };
+              });
+            } else {
+              for (const layer of this.layerSummary) {
+                const st = task.layer_states[layer.id];
+                if (st) {
+                  layer.status = st.status;
+                  layer.error = st.error;
+                }
+              }
+            }
+          }
+
           if (task.progress === 100) {
             this.isGenerating = false;
             this.successMessage = 'Datacube generated successfully!';
             this.generatedSampleName = task.sample_name;
+            // layerSummary is already updated from layer_states above
           } else if (task.progress === -1) {
             this.isGenerating = false;
             this.errorMessage = task.status || 'Generation failed.';
@@ -284,5 +334,16 @@ export class EwaldDatacubeGeneratorComponent implements OnInit, OnDestroy {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  downloadFiles(): void {
+    this.downloadFile('bsq');
+    setTimeout(() => {
+      this.downloadFile('hdr');
+    }, 500);
+  }
+
+  trackByLayerId(index: number, layer: any): string {
+    return layer.id;
   }
 }

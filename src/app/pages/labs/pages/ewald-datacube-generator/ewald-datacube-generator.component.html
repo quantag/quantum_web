@@ -27,7 +27,7 @@
                             class="file-input"
                         />
                         <label for="bip-file-input" class="file-input-button">
-                            <mat-icon>cloud_upload</mat-icon>
+                            <app-upload-icon></app-upload-icon>
                             Choose .bip
                         </label>
                         <span class="file-name" *ngIf="bipFileName">
@@ -60,7 +60,7 @@
                             class="file-input"
                         />
                         <label for="hdr-file-input" class="file-input-button">
-                            <mat-icon>cloud_upload</mat-icon>
+                            <app-upload-icon></app-upload-icon>
                             Choose .hdr
                         </label>
                         <span class="file-name" *ngIf="hdrFileName">
@@ -132,18 +132,34 @@
                     <span class="progress-percent">{{ generationProgress }}%</span>
                 </div>
                 <mat-progress-bar [mode]="generationProgress > 0 ? 'determinate' : 'indeterminate'" [value]="generationProgress"></mat-progress-bar>
-                <p style="text-align: center; color: #718096; margin-top: 1.5rem; font-size: 0.9rem;">
-                    Fetching data from Earth Engine and processing layers. This may take a few minutes.
-                </p>
-                <div *ngIf="taskErrors.length > 0" class="task-errors-list" style="margin-top: 1rem;">
-                    <div *ngFor="let err of taskErrors" class="task-error-alert" style="margin-bottom: 0.5rem; padding: 0.75rem; background-color: rgba(254, 226, 226, 0.5); border-left: 4px solid #ef4444; color: #b91c1c; border-radius: 4px; font-size: 0.9rem;">
-                        <strong style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                            <mat-icon style="font-size: 18px; width: 18px; height: 18px;">warning</mat-icon>
-                            Encountered Issue
-                        </strong>
-                        {{ err }}
+                
+                <div class="layer-live-list" *ngIf="layerSummary && layerSummary.length > 0">
+                    <div class="layer-live-item-container" *ngFor="let layer of layerSummary; trackBy: trackByLayerId">
+                        <div class="layer-live-item" [ngClass]="layer.status">
+                            <app-custom-spinner *ngIf="layer.status === 'fetching'" [background]="'#667eea'"></app-custom-spinner>
+                            <mat-icon *ngIf="layer.status === 'pending'" class="state-icon pending">schedule</mat-icon>
+                            <mat-icon *ngIf="layer.status === 'success'" class="state-icon success">check_circle</mat-icon>
+                            <mat-icon *ngIf="layer.status === 'failed'" class="state-icon failed">cancel</mat-icon>
+                            
+                            <span class="layer-name">{{ layer.name }}</span>
+                            <span class="layer-status-text">{{ layer.status | titlecase }}</span>
+                            
+                            <button *ngIf="layer.status === 'failed' && layer.error" 
+                                    class="error-info-btn"
+                                    (click)="layer.showError = !layer.showError"
+                                    title="View Error Details">
+                                <mat-icon>info</mat-icon>
+                            </button>
+                        </div>
+                        <div class="layer-error-detail" *ngIf="layer.showError">
+                            {{ layer.error }}
+                        </div>
                     </div>
                 </div>
+                
+                <p *ngIf="!layerSummary || layerSummary.length === 0" style="text-align: center; color: #718096; margin-top: 1.5rem; font-size: 0.9rem;">
+                    Fetching data from Earth Engine and processing layers. This may take a few minutes.
+                </p>
             </div>
         </div>
 
@@ -161,14 +177,34 @@
                 <p>Your datacube is ready for download.</p>
                 
                 <div class="result-actions">
-                    <button class="download-btn primary" (click)="downloadFile('bsq')">
+                    <button class="download-btn primary" (click)="downloadFiles()">
                         <mat-icon>download</mat-icon>
-                        Download .bsq
+                        Download
                     </button>
-                    <button class="download-btn accent" (click)="downloadFile('hdr')">
-                        <mat-icon>description</mat-icon>
-                        Download .hdr
-                    </button>
+                </div>
+                
+                <!-- Layer Summary Display -->
+                <div class="layer-live-list" *ngIf="layerSummary && layerSummary.length > 0">
+                    <h4 class="summary-title" style="font-size: 1.1rem; font-weight: 600; color: #2d3748; margin-bottom: 1rem;">Layer Processing Summary</h4>
+                    <div class="layer-live-item-container" *ngFor="let layer of layerSummary; trackBy: trackByLayerId">
+                        <div class="layer-live-item" [ngClass]="layer.status">
+                            <mat-icon *ngIf="layer.status === 'success'" class="state-icon success">check_circle</mat-icon>
+                            <mat-icon *ngIf="layer.status === 'failed'" class="state-icon failed">cancel</mat-icon>
+                            
+                            <span class="layer-name">{{ layer.name }}</span>
+                            <span class="layer-status-text">{{ layer.status | titlecase }}</span>
+                            
+                            <button *ngIf="layer.status === 'failed' && layer.error" 
+                                    class="error-info-btn"
+                                    (click)="layer.showError = !layer.showError"
+                                    title="View Error Details">
+                                <mat-icon>info</mat-icon>
+                            </button>
+                        </div>
+                        <div class="layer-error-detail" *ngIf="layer.showError">
+                            {{ layer.error }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

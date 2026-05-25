@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
+import { UploadIconComponent } from '../../../../shared/components/upload-icon/upload-icon.component';
 import { LayerConfigDialogComponent } from './layer-config-dialog.component';
 import { ExportDialogComponent } from './export-dialog.component';
 import { SampleSelectionDialogComponent } from './sample-selection-dialog.component';
@@ -26,6 +27,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
     CommonModule, 
     FormsModule, 
     LabHeaderComponent,
+    UploadIconComponent,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,

@@ -392,3 +392,109 @@
         width: 100%;
     }
 }
+
+.layer-live-list {
+    margin-top: 2rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.layer-live-item-container {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.layer-live-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    
+    app-custom-spinner {
+        margin: 0; /* Override default auto margin */
+        width: 30px;
+    }
+
+    .state-icon {
+        &.pending { color: #cbd5e1; }
+        &.success { color: #38a169; }
+        &.failed { color: #e53e3e; }
+    }
+
+    .layer-name {
+        flex: 1;
+        font-size: 0.95rem;
+        color: #4a5568;
+        font-weight: 500;
+        text-align: left;
+    }
+
+    .layer-status-text {
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        background: #f1f5f9;
+        color: #64748b;
+    }
+
+    &.fetching {
+        border-left: 4px solid #667eea;
+        .layer-status-text {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+    }
+
+    &.success {
+        border-left: 4px solid #38a169;
+        .layer-status-text {
+            background: #f0fff4;
+            color: #2f855a;
+        }
+    }
+
+    &.failed {
+        border-left: 4px solid #e53e3e;
+        .layer-status-text {
+            background: #fff5f5;
+            color: #c53030;
+        }
+    }
+
+    &.pending {
+        border-left: 4px solid #e2e8f0;
+    }
+
+    .error-info-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #e53e3e;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s;
+
+        &:hover { opacity: 0.8; }
+
+    }
+}
+
+.layer-error-detail {
+    padding: 1rem;
+    background-color: #fff5f5;
+    border-top: 1px dashed #fed7d7;
+    color: #c53030;
+    font-size: 0.85rem;
+    font-family: monospace;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
