@@ -1,0 +1,137 @@
+<div class="datacube-container">
+    <app-lab-header title="Datacube Transformator"></app-lab-header>
+
+    <div class="datacube-content">
+        <!-- Main Configuration Area -->
+        <div class="main-card" *ngIf="!isProcessing && !successMessage">
+            <div class="section-header">
+                <h3><mat-icon>transform</mat-icon> Upload Satellite Data Stacks</h3>
+            </div>
+            <!-- Block 1: Upload BSQ / HDR Stacks -->
+            <div class="section-block">
+                <div class="file-inputs-horizontal">
+                    <!-- BSQ Upload -->
+                    <app-import-btn inputId="bsq-file-input" label="BSQ Stack Files (.bsq)" labelIcon="description" accept=".bsq" [multiple]="true"
+                        [useAppUploadIcon]="true" buttonText="Choose .bsq Files" [files]="bsqFiles" emptyText="No BSQ files selected"
+                        (filesSelected)="onBsqFilesSelected($event)" (fileRemoved)="removeBsqFile($event)">
+                    </app-import-btn>
+
+                    <!-- HDR Upload -->
+                    <app-import-btn inputId="hdr-file-input" label="HDR Header Files (.hdr)" labelIcon="description" accept=".hdr" [multiple]="true"
+                        [useAppUploadIcon]="true" buttonText="Choose .hdr Files" [files]="hdrFiles" emptyText="No HDR files selected"
+                        (filesSelected)="onHdrFilesSelected($event)" (fileRemoved)="removeHdrFile($event)">
+                    </app-import-btn>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="section-header">
+                <h3><mat-icon>map</mat-icon> Study Area Mask (Optional)</h3>
+            </div>
+            <!-- Optional: Study Area Mask Upload -->
+            <div class="section-block">
+                <app-import-btn inputId="mask-file-input" label="Study Area Mask File" labelIcon="description" accept=".hdr"
+                    buttonText="Choose Mask" [useAppUploadIcon]="true" [files]="maskFile ? [maskFile] : []" emptyText="No mask selected"
+                    (filesSelected)="onMaskFileSelected($event)" (fileRemoved)="removeMaskFile()">
+                </app-import-btn>
+            </div>
+
+            <hr class="divider">
+
+            <div class="section-header">
+                <h3><mat-icon>tune</mat-icon> Weight Coefficients Mode</h3>
+                <p class="subtitle">Select the mode for applying weights during processing.</p>
+            </div>
+            <!-- Block 2: Weights Mode Selection -->
+            <div class="section-block">
+                <mat-radio-group [(ngModel)]="weightsMode" class="weights-radio-group">
+                    <mat-radio-button value="climate">Climate Changes</mat-radio-button>
+                    <mat-radio-button value="anthropogenic">Anthropogenic Changes</mat-radio-button>
+                    <mat-radio-button value="custom">Custom Weights</mat-radio-button>
+                </mat-radio-group>
+
+                <!-- Block 3: Custom Weights File Input (Shown conditionally) -->
+                <div class="custom-weights-upload" *ngIf="weightsMode === 'custom'">
+                    <app-import-btn inputId="custom-weights-input" label="Upload ASCII File with custom weights:" accept=".txt,.asc,.ascii"
+                        [isInline]="true" buttonIcon="upload_file" buttonText="Choose ASCII File"
+                        [files]="customWeightsFile ? [customWeightsFile] : []" emptyText="Required" (filesSelected)="onCustomWeightsSelected($event)"
+                        (fileRemoved)="removeCustomWeightsFile()">
+                    </app-import-btn>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="errorMessage" class="error-message">
+                <mat-icon>error_outline</mat-icon>
+                {{ errorMessage }}
+            </div>
+
+            <!-- Block 4: Action Buttons -->
+            <div class="action-buttons">
+                <button type="button" (click)="startProcessing()" class="process-btn" [disabled]="bsqFiles.length == 0 && hdrFiles.length == 0">
+                    <app-process-icon [size]="20"></app-process-icon>
+                    Start Processing
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress Block -->
+        <div class="progress-card" *ngIf="isProcessing">
+            <div class="section-header">
+                <h3>
+                    <mat-icon>sync</mat-icon>
+                    Processing in Progress
+                </h3>
+            </div>
+            <div class="progress-container">
+                <div class="status-header">
+                    <span class="status-text">{{ processingStatus }}</span>
+                    <span class="progress-percent">{{ processingProgress }}%</span>
+                </div>
+                <mat-progress-bar mode="determinate" [value]="processingProgress"></mat-progress-bar>
+
+                <p class="processing-info">
+                    Applying {{ weightsMode }} transformations on {{ bsqFiles.length }} input stack(s). Please wait...
+                </p>
+            </div>
+        </div>
+
+        <!-- Success/Results Block -->
+        <div class="success-card" *ngIf="successMessage">
+            <div class="section-header">
+                <h3>
+                    <mat-icon>task_alt</mat-icon>
+                    Processing Complete
+                </h3>
+            </div>
+            <div class="success-message-content">
+                <mat-icon class="success-icon">check_circle</mat-icon>
+                <h4>{{ successMessage }}</h4>
+
+                <div class="result-files-list">
+                    <h4 class="summary-title">Generated GeoTIFFs ({{ bsqFiles.length }})</h4>
+                    <div class="result-item" *ngFor="let file of bsqFiles; let i = index">
+                        <mat-icon>image</mat-icon>
+                        <span class="result-name">processed_{{ file.name | slice:0:-4 }}.tiff</span>
+                        <button class="icon-btn" (click)="downloadTiffFile(i)" title="Download this file">
+                            <mat-icon>download</mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="result-actions">
+                    <button class="download-btn primary" (click)="downloadAsZip()">
+                        <mat-icon>folder_zip</mat-icon>
+                        Download All as ZIP
+                    </button>
+
+                    <button class="download-btn secondary" (click)="successMessage = ''; bsqFiles = []; hdrFiles = []">
+                        <mat-icon>refresh</mat-icon>
+                        Process New Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

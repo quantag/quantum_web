@@ -100,6 +100,11 @@ export class SeoService {
       description: 'Professional web-based code editor powered by Monaco Editor with virtual file system, syntax highlighting, IntelliSense, and multi-language support. Perfect for coding, prototyping, and educational purposes.',
       keywords: 'Monaco Editor, code editor, online IDE, web editor, syntax highlighting, IntelliSense, file system, TypeScript editor, JavaScript editor, web development, coding lab, online compiler, code playground'
     },
+    'datacube-transformator': {
+      title: 'Datacube Transformator - Process Satellite Data Stacks',
+      description: 'Automate the processing of input satellite data stacks (.bsq format) and generate output files (.tiff format) with customizable weight coefficients for climate and anthropogenic changes analysis.',
+      keywords: 'datacube transformator, satellite data, BSQ, TIFF, data processing, remote sensing, environmental analysis, climate change, anthropogenic change, hyperspectral, multispectral'
+    },
     'ewald-datacube-generator': {
       title: 'Datacube Generator - Create Environmental Datacubes from GEE',
       description: 'Generate environmental datacubes using Google Earth Engine based on a reference mask. Select a mask, specify the year, and create a multi-layer datacube with Land Cover, LST, Precipitation, and more.',

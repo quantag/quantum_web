@@ -8,10 +8,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
-import { UploadIconComponent } from '../../../../shared/components/upload-icon/upload-icon.component';
 import { LayerConfigDialogComponent } from './layer-config-dialog.component';
 import { ExportDialogComponent } from './export-dialog.component';
 import { SampleSelectionDialogComponent } from './sample-selection-dialog.component';
+import { ImportBtnComponent } from '../../../../shared/components/import-btn/import-btn.component';
+import { UploadIconComponent } from '../../../../shared/components/upload-icon/upload-icon.component';
+import { ProcessIconComponent } from '../../../../shared/components/process-icon/process-icon.component';
 import { getLayerColorByName, getLayerColorThreeByName } from './layer-colors.enum';
 import { lastValueFrom } from 'rxjs';
 import * as THREE from 'three';
@@ -27,7 +29,8 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
     CommonModule, 
     FormsModule, 
     LabHeaderComponent,
-    UploadIconComponent,
+    ImportBtnComponent,
+    ProcessIconComponent,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,

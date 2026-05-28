@@ -24,39 +24,33 @@
       <input type="text" [(ngModel)]="newSampleName" [disabled]="isUploading" placeholder="Enter sample name"/>
     </div>
     <div class="form-row">
-      <div class="file-input-group half">
-        <label class="file-label">BSQ File:</label>
-        <div class="file-input-wrapper">
-          <input type="file" accept=".bsq,.img" (change)="onBsqSelected($event)" [disabled]="isUploading" id="dialog-bsq-input" class="file-input"/>
-          <label for="dialog-bsq-input" class="file-input-button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17,8 12,3 7,8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>
-            Choose .bsq
-          </label>
-          <span class="file-name" *ngIf="bsqFile">{{ bsqFile.name }} <button type="button" (click)="bsqFile = null; $event.stopPropagation()" class="remove-file-btn"><mat-icon>close</mat-icon></button></span>
-          <span class="file-name empty" *ngIf="!bsqFile">No file</span>
-        </div>
-      </div>
+      <app-import-btn
+          class="file-input-group half"
+          inputId="dialog-bsq-input"
+          label="BSQ File:"
+          accept=".bsq,.img"
+          [multiple]="false"
+          [disabled]="isUploading"
+          buttonText="Choose .bsq"
+          [files]="bsqFile ? [bsqFile] : []"
+          emptyText="No file"
+          (filesSelected)="onBsqSelected($event)"
+          (fileRemoved)="removeBsqFile()">
+      </app-import-btn>
       
-      <div class="file-input-group half">
-        <label class="file-label">HDR File:</label>
-        <div class="file-input-wrapper">
-          <input type="file" accept=".hdr" (change)="onHdrSelected($event)" [disabled]="isUploading" id="dialog-hdr-input" class="file-input"/>
-          <label for="dialog-hdr-input" class="file-input-button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17,8 12,3 7,8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>
-            Choose .hdr
-          </label>
-          <span class="file-name" *ngIf="hdrFile">{{ hdrFile.name }} <button type="button" (click)="hdrFile = null; $event.stopPropagation()" class="remove-file-btn"><mat-icon>close</mat-icon></button></span>
-          <span class="file-name empty" *ngIf="!hdrFile">No file</span>
-        </div>
-      </div>
+      <app-import-btn
+          class="file-input-group half"
+          inputId="dialog-hdr-input"
+          label="HDR File:"
+          accept=".hdr"
+          [multiple]="false"
+          [disabled]="isUploading"
+          buttonText="Choose .hdr"
+          [files]="hdrFile ? [hdrFile] : []"
+          emptyText="No file"
+          (filesSelected)="onHdrSelected($event)"
+          (fileRemoved)="removeHdrFile()">
+      </app-import-btn>
     </div>
     
     <div *ngIf="uploadError" class="error-text">{{ uploadError }}</div>

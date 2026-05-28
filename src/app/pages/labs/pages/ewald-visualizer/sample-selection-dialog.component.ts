@@ -11,12 +11,14 @@ import { lastValueFrom, forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DirectoryParserService } from '../../../../services/directory-parser.service';
 
+import { ImportBtnComponent } from '../../../../shared/components/import-btn/import-btn.component';
+
 @Component({
   selector: 'app-sample-selection-dialog',
   templateUrl: './sample-selection-dialog.component.html',
   styleUrls: ['./sample-selection-dialog.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, MatDialogModule, MatButtonModule, MatIconModule, MatProgressBarModule]
+  imports: [CommonModule, FormsModule, MatDialogModule, MatButtonModule, MatIconModule, MatProgressBarModule, ImportBtnComponent]
 })
 export class SampleSelectionDialogComponent implements OnInit {
   samples: string[] = [];
@@ -83,8 +85,16 @@ export class SampleSelectionDialogComponent implements OnInit {
     this.bsqFile = event.target.files[0];
   }
 
+  removeBsqFile() {
+    this.bsqFile = null;
+  }
+
   onHdrSelected(event: any) {
     this.hdrFile = event.target.files[0];
+  }
+
+  removeHdrFile() {
+    this.hdrFile = null;
   }
 
   async uploadNewSample() {

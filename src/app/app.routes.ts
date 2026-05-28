@@ -60,6 +60,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/labs/pages/ewald-datacube-generator/ewald-datacube-generator.component').then(m => m.EwaldDatacubeGeneratorComponent)
     },
     {
+        path: 'labs/datacube-transformator',
+        loadComponent: () => import('./pages/labs/pages/datacube-transformator/datacube-transformator.component').then(m => m.DatacubeTransformatorComponent)
+    },
+    {
         path: 'labs',
         loadComponent: () => import('./pages/labs/labs.component').then(m => m.LabsComponent),
         pathMatch: 'full'

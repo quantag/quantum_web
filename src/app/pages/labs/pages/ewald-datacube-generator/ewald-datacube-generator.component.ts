@@ -13,7 +13,6 @@ import { MAT_DATE_LOCALE, DateAdapter, NativeDateAdapter, MAT_DATE_FORMATS } fro
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 import { CustomSpinnerComponent } from '../../../../shared/components/custom-spinner/custom-spinner.component';
-import { UploadIconComponent } from '../../../../shared/components/upload-icon/upload-icon.component';
 import { environment } from '../../../../../environments/environment';
 import { lastValueFrom, interval, Subscription } from 'rxjs';
 import { takeWhile, switchMap } from 'rxjs/operators';
@@ -58,6 +57,8 @@ export const MY_DATE_FORMATS = {
   },
 };
 
+import { ImportBtnComponent } from '../../../../shared/components/import-btn/import-btn.component';
+
 @Component({
   selector: 'app-ewald-datacube-generator',
   standalone: true,
@@ -66,7 +67,7 @@ export const MY_DATE_FORMATS = {
     FormsModule,
     ReactiveFormsModule,
     LabHeaderComponent,
-    UploadIconComponent,
+    ImportBtnComponent,
     MatIconModule,
     MatProgressBarModule,
     MatDatepickerModule,
