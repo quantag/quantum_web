@@ -111,12 +111,9 @@
 
                 <div class="result-files-list">
                     <h4 class="summary-title">Generated GeoTIFFs ({{ bsqFiles.length }})</h4>
-                    <div class="result-item" *ngFor="let file of bsqFiles; let i = index">
+                    <div class="result-item" *ngFor="let file of bsqFiles">
                         <mat-icon>image</mat-icon>
                         <span class="result-name">processed_{{ file.name | slice:0:-4 }}.tiff</span>
-                        <button class="icon-btn" (click)="downloadTiffFile(i)" title="Download this file">
-                            <mat-icon>download</mat-icon>
-                        </button>
                     </div>
                 </div>
 

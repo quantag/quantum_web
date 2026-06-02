@@ -344,6 +344,16 @@ export class EwaldDatacubeGeneratorComponent implements OnInit, OnDestroy {
     }, 500);
   }
 
+  processNewData(): void {
+    this.successMessage = '';
+    this.bipFile = null;
+    this.hdrFile = null;
+    this.bipFileName = '';
+    this.hdrFileName = '';
+    this.taskId = null;
+    this.layerSummary = [];
+  }
+
   trackByLayerId(index: number, layer: any): string {
     return layer.id;
   }
