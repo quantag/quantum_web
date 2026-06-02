@@ -186,37 +186,6 @@
     }
 }
 
-.download-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: white;
-
-    &.primary {
-        background: linear-gradient(45deg, #667eea, #5568d3);
-
-        &:hover {
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-    }
-
-    &.accent {
-        background: linear-gradient(45deg, #ed8936, #dd6b20);
-
-        &:hover {
-            box-shadow: 0 4px 12px rgba(237, 137, 54, 0.4);
-        }
-    }
-}
-
 .progress-container {
     padding: 2rem;
     display: flex;
@@ -280,6 +249,36 @@
     .result-actions {
         display: flex;
         gap: 1rem;
+
+        .download-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &.primary {
+            background: linear-gradient(135deg, #667eea, #5568d3);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 14px rgba(102, 126, 234, 0.3);
+        }
+
+        &.secondary {
+            background: white;
+            color: #4a5568;
+            border: 1px solid #cbd5e0;
+
+            &:hover {
+            background: #f7fafc;
+            border-color: #a0aec0;
+            }
+        }
+        }
     }
 }
 

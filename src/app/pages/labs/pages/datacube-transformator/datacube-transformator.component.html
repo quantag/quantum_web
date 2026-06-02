@@ -108,14 +108,7 @@
             <div class="success-message-content">
                 <mat-icon class="success-icon">check_circle</mat-icon>
                 <h4>{{ successMessage }}</h4>
-
-                <div class="result-files-list">
-                    <h4 class="summary-title">Generated GeoTIFFs ({{ bsqFiles.length }})</h4>
-                    <div class="result-item" *ngFor="let file of bsqFiles">
-                        <mat-icon>image</mat-icon>
-                        <span class="result-name">processed_{{ file.name | slice:0:-4 }}.tiff</span>
-                    </div>
-                </div>
+                <p>Output TIFFs are ready for download.</p>
 
                 <div class="result-actions">
                     <button class="download-btn primary" (click)="downloadAsZip()">

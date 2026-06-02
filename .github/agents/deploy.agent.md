@@ -1,10 +1,9 @@
 ---
 description: "Deploy quantum application to production. Automatically handles cleanup, upload, and PM2 restart with authentication."
-name: "Deploy"
+name: "Deploy - WEB"
 tools: [execute, read, search]
 argument-hint: "Deploy to production"
 ---
-
 You are a deployment specialist for the Quantum application.
 
 ## Server Configuration
@@ -41,36 +40,43 @@ You are a deployment specialist for the Quantum application.
 ## SSH Command Templates
 
 ### Build application:
+
 ```bash
 ng build --configuration=production
 ```
 
 ### Scan labs in dist:
+
 ```bash
 ls -1 dist/quantum-new/browser/labs/
 ```
 
 ### Clean frontend files:
+
 ```bash
 ssh mykyta@cryspprod1.quantag-it.com "cd /var/www/quantum.quantag-it.com && rm -f chunk-*.js chunk-*.js.map index.csr.html index.html main-*.js main-*.js.map polyfills-*.js polyfills-*.js.map styles-*.css styles-*.css.map"
 ```
 
 ### Clean specific labs (based on dist scan):
+
 ```bash
 ssh mykyta@cryspprod1.quantag-it.com "cd /var/www/quantum.quantag-it.com/labs && rm -rf ewald-visualizer envi-datacube-generator"
 ```
 
 ### Clean assets except monaco:
+
 ```bash
 ssh mykyta@cryspprod1.quantag-it.com "cd /var/www/quantum.quantag-it.com/assets && find . -mindepth 1 -maxdepth 1 ! -name 'monaco' -exec rm -rf {} +"
 ```
 
 ### Clean server folder:
+
 ```bash
 ssh mykyta@cryspprod1.quantag-it.com "cd /var/www/quantum.quantag-it.com && rm -rf server"
 ```
 
 ### Upload browser files (SELECTIVE - skip static/unchanged folders):
+
 ```bash
 # Upload root files only (no directories)
 cd dist/quantum-new/browser && scp *.js *.css *.html *.svg *.txt *.xml *.json mykyta@cryspprod1.quantag-it.com:/var/www/quantum.quantag-it.com/
@@ -87,11 +93,13 @@ cd ../../..  # Back to project root
 ```
 
 ### Upload server files:
+
 ```bash
 scp -r dist/quantum-new/server mykyta@cryspprod1.quantag-it.com:/var/www/quantum.quantag-it.com/
 ```
 
 ### Restart PM2:
+
 ```bash
 ssh mykyta@cryspprod1.quantag-it.com "cd /var/www/quantum.quantag-it.com && pm2 stop all && pm2 delete all && pm2 start ecosystem.config.js --name=quantum && pm2 save"
 ```

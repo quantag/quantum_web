@@ -271,7 +271,7 @@ export class DatacubeTransformatorComponent implements OnInit, OnDestroy {
   private completeProcessing(): void {
     this.isProcessing = false;
     this.processingProgress = 100;
-    this.successMessage = 'Stacks processed successfully! Output TIFFs are ready for download.';
+    this.successMessage = 'Stacks processed successfully!';
   }
 
   // --- Download Logic ---
