@@ -9,7 +9,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MAT_DATE_LOCALE, DateAdapter, NativeDateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SeoService } from '../../../../services/seo.service';
 import { LabHeaderComponent } from '../../../../components/lab-header/lab-header.component';
 import { CustomSpinnerComponent } from '../../../../shared/components/custom-spinner/custom-spinner.component';
@@ -74,6 +76,8 @@ import { ImportBtnComponent } from '../../../../shared/components/import-btn/imp
     MatNativeDateModule,
     MatFormFieldModule,
     MatInputModule,
+    MatCheckboxModule,
+    MatExpansionModule,
     CustomSpinnerComponent
   ],
   templateUrl: './ewald-datacube-generator.component.html',
@@ -110,8 +114,10 @@ export class EwaldDatacubeGeneratorComponent implements OnInit, OnDestroy {
   generatedSampleName: string | null = null;
   layerSummary: Array<{id: string, name: string, status: string, error?: string, showError?: boolean}> = [];
 
-  private expectedOrder: string[] = [];
-  private enviBandNamesMap: {[key: string]: string} = {};
+  expectedOrder: string[] = [];
+  enviBandNamesMap: {[key: string]: string} = {};
+  selectedLayers: { [id: string]: boolean } = {};
+  selectAll: boolean = true;
 
   private progressSubscription?: Subscription;
   private readonly API_URL = environment.ewaldApiUrl;
@@ -136,11 +142,26 @@ export class EwaldDatacubeGeneratorComponent implements OnInit, OnDestroy {
         if (data.band_names_map) {
           this.enviBandNamesMap = data.band_names_map;
         }
+        // Initialize all layers as selected
+        this.expectedOrder.forEach(id => {
+          this.selectedLayers[id] = true;
+        });
+        this.updateSelectAllStatus();
       },
       error: (err) => {
         console.error('Failed to fetch datacube metadata:', err);
       }
     });
+  }
+
+  toggleAllLayers(): void {
+    this.expectedOrder.forEach(id => {
+      this.selectedLayers[id] = this.selectAll;
+    });
+  }
+
+  updateSelectAllStatus(): void {
+    this.selectAll = this.expectedOrder.every(id => this.selectedLayers[id]);
   }
 
   ngOnDestroy(): void {
@@ -186,6 +207,12 @@ export class EwaldDatacubeGeneratorComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const selected_layers_array = this.expectedOrder.filter(id => this.selectedLayers[id]);
+    if (selected_layers_array.length === 0) {
+      this.errorMessage = 'Please select at least one layer to generate.';
+      return;
+    }
+
     this.isUploading = true;
     this.isGenerating = false;
     this.uploadProgress = 0;
@@ -220,7 +247,8 @@ export class EwaldDatacubeGeneratorComponent implements OnInit, OnDestroy {
       const response: any = await lastValueFrom(this.http.post(`${this.API_URL}/ewald/generate-datacube`, {
         mask_name: fileId,
         start_date: formatDate(this.dateRangeForm.value.start as Date),
-        end_date: formatDate(this.dateRangeForm.value.end as Date)
+        end_date: formatDate(this.dateRangeForm.value.end as Date),
+        selected_layers: selected_layers_array
       }));
 
       if (response.status === 0) {
@@ -285,7 +313,8 @@ export class EwaldDatacubeGeneratorComponent implements OnInit, OnDestroy {
 
           if (task.layer_states && this.expectedOrder.length > 0) {
             if (this.layerSummary.length === 0) {
-              this.layerSummary = this.expectedOrder.map(id => {
+              const activeLayers = this.expectedOrder.filter(id => this.selectedLayers[id]);
+              this.layerSummary = activeLayers.map(id => {
                 const st = task.layer_states[id];
                 return {
                   id,

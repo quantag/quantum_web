@@ -56,6 +56,41 @@
                 </mat-form-field>
             </div>
 
+            <!-- Layer Selection Section -->
+            <div class="layer-selection-section" *ngIf="expectedOrder.length > 0">
+                <mat-accordion>
+                    <mat-expansion-panel class="custom-expansion-panel">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title class="panel-title">
+                                <mat-icon>format_list_bulleted</mat-icon>
+                                Select Layers to Generate
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+
+                        <div class="select-all-container">
+                            <mat-checkbox 
+                                [(ngModel)]="selectAll" 
+                                (change)="toggleAllLayers()"
+                                color="primary">
+                                <strong>Select All</strong>
+                            </mat-checkbox>
+                        </div>
+                        
+                        <div class="layers-grid">
+                            <div class="layer-checkbox-item" *ngFor="let id of expectedOrder">
+                                <mat-checkbox 
+                                    [(ngModel)]="selectedLayers[id]" 
+                                    (change)="updateSelectAllStatus()"
+                                    color="primary"
+                                    class="layer-checkbox">
+                                    {{ enviBandNamesMap[id] || id }}
+                                </mat-checkbox>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </div>
+
             <div class="action-buttons">
                 <div class="upload-status-wrapper" *ngIf="isUploading" style="width: 100%; margin-bottom: 1rem;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
