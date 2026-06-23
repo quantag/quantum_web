@@ -150,7 +150,7 @@ The following labs are currently deployed:
 - **quantum-portfolio-optimizer** - Portfolio optimization tool
 - **script-generator** - Script generation utility
 - **xyz** - XYZ file processor
-- **q3d, q3d2, q3d3** - 3D quantum visualizers
+- **q3d, q3d2, q3d3, qgx** - 3D quantum visualizers
 - **qaoa** - QAOA algorithm implementation
 
 When deploying a lab, use the exact folder name (e.g., `circuit-optimizer`, not `circuit-lab`).

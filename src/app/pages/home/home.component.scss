@@ -712,6 +712,86 @@
         }
     }
 
+    .banner-lab {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 40px 100px;
+        margin: 0 auto 40px;
+        max-width: 1200px;
+        background-color: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: '';
+            position: absolute;
+            height: 200%;
+            width: 100%;
+            background: radial-gradient(
+                ellipse at left, 
+                rgba(48, 199, 219, 0.15) 0%, 
+                rgba(33, 41, 103, 0) 60%
+            );
+            top: 50%;
+            left: 0;
+            transform: translate(0, -50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        &__content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 2;
+        }
+
+        &__title {
+            font-weight: 600;
+            font-size: 32px;
+            line-height: 40px;
+        }
+
+        &__text {
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 24px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        &__action {
+            z-index: 2;
+            transform: scale(1.2);
+            transform-origin: right center;
+
+            @media screen and (max-width: 768px) {
+                transform: scale(1.1);
+                transform-origin: center center;
+            }
+        }
+
+        @media screen and (max-width: 992px) {
+            margin: 0 40px 40px;
+            padding: 40px;
+        }
+
+        @media screen and (max-width: 768px) {
+            flex-direction: column;
+            margin: 0 20px 40px;
+            padding: 30px 20px;
+            gap: 24px;
+            text-align: center;
+            
+            &__title {
+                font-size: 24px;
+                line-height: 32px;
+            }
+        }
+    }
+
     .contact-us {
         display: flex;
         padding: 96px 100px;

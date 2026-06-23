@@ -314,6 +314,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     window.open(link, '_blank');
   }
 
+  public goToQgx() {
+    if (!this.isBrowser) return; // Don't use window during SSR
+    const link = 'https://quantum.quantag-it.com/labs/qgx';
+    window.open(link, '_blank');
+  }
+
   private nextSlide(): void {
     const nextIndex = (this.currentIndex + 1) % this.slides.length;
     this.goToSlide(nextIndex);
